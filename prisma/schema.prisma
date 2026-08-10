@@ -1,0 +1,25 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model ImageOperation {
+  id                String   @id @default(uuid())
+  originalName      String
+  inputFormat       String
+  outputFormat      String
+  originalWidth     Int
+  originalHeight    Int
+  finalWidth        Int
+  finalHeight       Int
+  unit              String   @default("px")
+  originalSizeBytes Int
+  finalSizeBytes    Int
+  targetSizeKb      Int?
+  mode              String   // "crop", "size", "percentage", "preset"
+  createdAt         DateTime @default(now())
+}

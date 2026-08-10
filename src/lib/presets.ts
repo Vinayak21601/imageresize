@@ -1,0 +1,158 @@
+import { SocialPreset } from '@/types/image';
+
+export const SOCIAL_PRESETS: SocialPreset[] = [
+  // Instagram Presets
+  {
+    id: 'insta-square',
+    platform: 'instagram',
+    name: 'Instagram Square Post',
+    width: 1080,
+    height: 1080,
+    aspectRatio: 1,
+    description: 'Standard 1:1 square post for Instagram feed',
+  },
+  {
+    id: 'insta-portrait',
+    platform: 'instagram',
+    name: 'Instagram Portrait',
+    width: 1080,
+    height: 1350,
+    aspectRatio: 4 / 5,
+    description: '4:5 vertical post optimized for mobile screens',
+  },
+  {
+    id: 'insta-landscape',
+    platform: 'instagram',
+    name: 'Instagram Landscape',
+    width: 1080,
+    height: 566,
+    aspectRatio: 1.91 / 1,
+    description: 'Horizontal widescreen feed post',
+  },
+  {
+    id: 'insta-story',
+    platform: 'instagram',
+    name: 'Instagram Story / Reels',
+    width: 1080,
+    height: 1920,
+    aspectRatio: 9 / 16,
+    description: 'Full vertical 9:16 format for Stories & Reels',
+  },
+
+  // Facebook Presets
+  {
+    id: 'fb-profile',
+    platform: 'facebook',
+    name: 'Facebook Profile Picture',
+    width: 720,
+    height: 720,
+    aspectRatio: 1,
+    description: 'Square avatar for Facebook profile',
+  },
+  {
+    id: 'fb-cover',
+    platform: 'facebook',
+    name: 'Facebook Cover Photo',
+    width: 820,
+    height: 312,
+    aspectRatio: 820 / 312,
+    description: 'Page and Profile header banner',
+  },
+  {
+    id: 'fb-post',
+    platform: 'facebook',
+    name: 'Facebook Shared Post',
+    width: 1200,
+    height: 630,
+    aspectRatio: 1200 / 630,
+    description: 'Standard Facebook post & link preview image',
+  },
+
+  // Twitter / X Presets
+  {
+    id: 'tw-profile',
+    platform: 'twitter',
+    name: 'Twitter / X Profile',
+    width: 400,
+    height: 400,
+    aspectRatio: 1,
+    description: 'Square profile photo for X / Twitter',
+  },
+  {
+    id: 'tw-header',
+    platform: 'twitter',
+    name: 'Twitter / X Header Banner',
+    width: 1500,
+    height: 500,
+    aspectRatio: 3 / 1,
+    description: '3:1 wide header banner',
+  },
+  {
+    id: 'tw-post',
+    platform: 'twitter',
+    name: 'Twitter / X Feed Post',
+    width: 1600,
+    height: 900,
+    aspectRatio: 16 / 9,
+    description: 'Standard 16:9 media post for X feed',
+  },
+
+  // YouTube Presets
+  {
+    id: 'yt-thumbnail',
+    platform: 'youtube',
+    name: 'YouTube Thumbnail',
+    width: 1280,
+    height: 720,
+    aspectRatio: 16 / 9,
+    description: 'HD 16:9 custom video thumbnail',
+  },
+  {
+    id: 'yt-banner',
+    platform: 'youtube',
+    name: 'YouTube Channel Banner',
+    width: 2560,
+    height: 1440,
+    aspectRatio: 16 / 9,
+    description: 'High-res channel header art',
+  },
+  {
+    id: 'yt-avatar',
+    platform: 'youtube',
+    name: 'YouTube Profile Avatar',
+    width: 800,
+    height: 800,
+    aspectRatio: 1,
+    description: 'Channel avatar photo',
+  },
+
+  // LinkedIn Presets
+  {
+    id: 'li-profile',
+    platform: 'linkedin',
+    name: 'LinkedIn Profile Picture',
+    width: 400,
+    height: 400,
+    aspectRatio: 1,
+    description: 'Professional headshot avatar',
+  },
+  // Open Graph & Web Meta Presets
+  {
+    id: 'og-image-standard',
+    platform: 'web',
+    name: 'Open Graph Image (OG Meta)',
+    width: 1200,
+    height: 630,
+    aspectRatio: 1200 / 630,
+    description: 'Standard 1200x630 SEO & social media share preview image (Facebook, X, LinkedIn, WhatsApp)',
+  },
+  {
+    id: 'og-image-large',
+    platform: 'web',
+    name: 'OG Large Summary Card',
+    width: 1200,
+    height: 600,
+    aspectRatio: 2 / 1,
+    description: '2:1 widescreen preview card for web articles & blog posts',
+  },
+];

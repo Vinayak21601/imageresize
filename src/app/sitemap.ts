@@ -1,0 +1,29 @@
+import { MetadataRoute } from 'next';
+
+export default function sitemap(): MetadataRoute.Sitemap {
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://imagestudio.pro';
+  const currentDate = new Date().toISOString();
+
+  const routes = [
+    '',
+    '/profile',
+    '/what-is-my-ip',
+    '/qr-generator',
+    '/url-shortener',
+    '/pricing',
+    '/convert/heic-to-jpg',
+    '/convert/webp-to-png',
+    '/convert/webp-to-jpg',
+    '/convert/png-to-jpg',
+    '/convert/png-to-svg',
+    '/convert/svg-to-png',
+    '/convert/jpg-to-png',
+  ];
+
+  return routes.map((route) => ({
+    url: `${baseUrl}${route}`,
+    lastModified: currentDate,
+    changeFrequency: route === '' ? 'daily' : 'weekly',
+    priority: route === '' ? 1.0 : 0.8,
+  }));
+}

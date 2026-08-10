@@ -1,0 +1,114 @@
+@import "cropperjs/dist/cropper.css";
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --primary: 222 47% 11%; /* Dark Slate/Black */
+    --primary-foreground: 210 40% 98%;
+  }
+}
+
+body {
+  background-color: #D6F0FF;
+  color: #0F172A;
+  font-family: var(--font-sans-body), var(--font-roboto), system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Force cursor pointer on all interactive elements globally */
+button,
+a,
+select,
+summary,
+[role="button"],
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+input[type="checkbox"],
+input[type="radio"] {
+  cursor: pointer;
+}
+
+h1, h2, h3, .font-heading {
+  font-family: var(--font-serif-heading), var(--font-abril), Georgia, serif;
+}
+
+.font-display {
+  font-family: var(--font-abril), var(--font-serif-heading), Georgia, serif;
+}
+
+.font-body {
+  font-family: var(--font-sans-body), var(--font-roboto), system-ui, sans-serif;
+}
+
+/* Mixed Serif Italic Typography Helper */
+.font-heading em, .font-heading i, h1 em, h1 i, h2 em, h2 i {
+  font-family: var(--font-serif-heading), Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  color: #0F172A;
+}
+
+/* Hero Backdrop with Mobile and Desktop WebP images */
+.bg-sky-cloud-hero {
+  background-image: url('/mobile-view-bg-image.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+@media (min-width: 768px) {
+  .bg-sky-cloud-hero {
+    background-image: url('/dekstop-view-bg-image.webp');
+  }
+}
+
+/* Custom light scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #D6F0FF;
+}
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* Cropper JS Light Mode Overrides */
+.cropper-bg {
+  background-image: linear-gradient(45deg, #E2E8F0 25%, transparent 25%),
+    linear-gradient(-45deg, #E2E8F0 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #E2E8F0 75%),
+    linear-gradient(-45deg, transparent 75%, #E2E8F0 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+  background-color: #F1F5F9;
+}
+
+.cropper-view-box {
+  outline: 2px solid #0F172A;
+  outline-color: rgba(15, 23, 42, 0.9);
+}
+
+.cropper-line, .cropper-point {
+  background-color: #0F172A;
+}
+
+.cropper-modal {
+  background-color: rgba(241, 245, 249, 0.6);
+}
+
+/* Circular Crop Mask Override for Avatars */
+.cropper-circle-mask .cropper-view-box,
+.cropper-circle-mask .cropper-face {
+  border-radius: 50% !important;
+}
