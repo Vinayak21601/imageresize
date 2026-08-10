@@ -93,6 +93,12 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
     >
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Roboto:wght@300;400;500;700&family=Source+Sans+3:wght@300;400;600;700;900&display=swap"
+          rel="stylesheet"
+        />
         <link rel="icon" href="/logo.webp" type="image/webp" sizes="any" />
         <link rel="shortcut icon" href="/logo.webp" type="image/webp" />
         <link rel="apple-touch-icon" href="/logo.webp" />
