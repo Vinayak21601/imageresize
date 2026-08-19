@@ -28,7 +28,7 @@ export function UrlStudio() {
   // Load saved links from localStorage on client side
   useEffect(() => {
     try {
-      const saved = localStorage.getItem('imagestudio_short_links');
+      const saved = localStorage.getItem('cropmyimages_short_links');
       if (saved) {
         setShortenedUrls(JSON.parse(saved));
       }
@@ -41,7 +41,7 @@ export function UrlStudio() {
   const saveLinks = (links: ShortenedUrl[]) => {
     setShortenedUrls(links);
     try {
-      localStorage.setItem('imagestudio_short_links', JSON.stringify(links));
+      localStorage.setItem('cropmyimages_short_links', JSON.stringify(links));
     } catch (e) {
       console.error('Failed to save links to localStorage', e);
     }
@@ -82,7 +82,7 @@ export function UrlStudio() {
       ? customAlias.trim().replace(/[^a-zA-Z0-9_-]/g, '')
       : generateShortCode(6);
 
-    const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://imagestudio.pro';
+    const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://cropmyimages.com';
     const shortUrl = `${baseUrl}/s/${shortCode}`;
 
     const newLink: ShortenedUrl = {

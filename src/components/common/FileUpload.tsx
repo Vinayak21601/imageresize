@@ -18,6 +18,12 @@ export function FileUpload({ onImageSelected }: FileUploadProps) {
         return;
       }
 
+      const MAX_SIZE_BYTES = 10 * 1024 * 1024; // 10MB cap
+      if (file.size > MAX_SIZE_BYTES) {
+        alert('File size exceeds the 10 MB limit. Please select a smaller image.');
+        return;
+      }
+
       const reader = new FileReader();
       reader.onload = (e) => {
         const previewUrl = e.target?.result as string;

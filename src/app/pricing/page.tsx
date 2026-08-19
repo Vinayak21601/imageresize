@@ -177,7 +177,7 @@ const FAQS = [
   },
   {
     q: 'What if I am not happy with the service?',
-    a: 'We offer a 14-day money-back guarantee for all paid subscriptions. If ImageStudio PRO does not meet your expectations, contact our support team for a full refund.'
+    a: 'We offer a 14-day money-back guarantee for all paid subscriptions. If CropMyImages does not meet your expectations, contact our support team for a full refund.'
   },
   {
     q: 'How does the billing cycle work for my subscription?',

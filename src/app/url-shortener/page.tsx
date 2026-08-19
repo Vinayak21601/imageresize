@@ -63,7 +63,7 @@ export default function UrlShortenerPage() {
           
           <div className="text-center space-y-3">
             <h2 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight font-heading">
-              Why use ImageStudio URL Shortener?
+              Why use CropMyImages URL Shortener?
             </h2>
             <p className="text-sm text-slate-700 max-w-lg mx-auto font-normal">
               Designed for digital marketers, social media creators, and businesses.

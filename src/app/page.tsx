@@ -76,7 +76,7 @@ export default function Home() {
   const handleShareWebsite = () => {
     if (navigator.share) {
       navigator.share({
-        title: 'ImageStudio PRO',
+        title: 'CropMyImages',
         text: 'High Precision Image Cropper & Resizer Engine',
         url: window.location.href,
       }).catch(() => { });

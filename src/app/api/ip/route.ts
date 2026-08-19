@@ -87,7 +87,7 @@ export async function GET(request: NextRequest) {
     const res = await fetch(apiUrl, {
       next: { revalidate: 60 }, // Cache for 60 seconds
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) ImageStudio/1.0',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) CropMyImages/1.0',
       },
     });
 

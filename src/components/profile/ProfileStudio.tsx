@@ -50,9 +50,9 @@ export function ProfileStudio() {
   };
 
   const recentShortUrls = [
-    { id: '1', short: 'imagestudio.pro/s/hero-banner', original: 'https://imagestudio.pro/pricing?ref=banner', clicks: 842, date: '2 hours ago' },
-    { id: '2', short: 'imagestudio.pro/s/qr-promo', original: 'https://imagestudio.pro/qr-generator', clicks: 394, date: '1 day ago' },
-    { id: '3', short: 'imagestudio.pro/s/ip-tool', original: 'https://imagestudio.pro/what-is-my-ip', clicks: 184, date: '3 days ago' },
+    { id: '1', short: 'cropmyimages.com/s/hero-banner', original: 'https://cropmyimages.com/pricing?ref=banner', clicks: 842, date: '2 hours ago' },
+    { id: '2', short: 'cropmyimages.com/s/qr-promo', original: 'https://cropmyimages.com/qr-generator', clicks: 394, date: '1 day ago' },
+    { id: '3', short: 'cropmyimages.com/s/ip-tool', original: 'https://cropmyimages.com/what-is-my-ip', clicks: 184, date: '3 days ago' },
   ];
 
   const savedPresets = [
@@ -210,7 +210,7 @@ export function ProfileStudio() {
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
             <Layers className="w-5 h-5 text-slate-800" />
-            Your ImageStudio PRO Suite Tools
+            Your CropMyImages Suite Tools
           </h2>
           <span className="text-xs text-slate-500 font-medium">5 Tools Available</span>
         </div>

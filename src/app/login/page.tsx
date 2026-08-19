@@ -100,7 +100,7 @@ export default function LoginPage() {
 
               {/* Subtitle */}
               <p className="text-base sm:text-lg text-slate-700 max-w-xl mx-auto font-normal leading-relaxed">
-                Access your ImageStudio PRO tools, custom presets, QR codes, and saved shortened links with Google Sign-In or email.
+                Access your CropMyImages tools, custom presets, QR codes, and saved shortened links with Google Sign-In or email.
               </p>
             </div>
           </section>
@@ -150,70 +150,73 @@ export default function LoginPage() {
                     </div>
                     <div>
                       <h4 className="text-xs font-bold text-slate-900">URL Shortener &amp; Stats</h4>
-                      <p className="text-[11px] text-slate-500">Custom slug creation &amp; click history</p>
+
+              <div className="lg:col-span-5 space-y-6">
+                <div className="bg-white/80 backdrop-blur-xl border border-white/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+                  <div className="w-12 h-12 rounded-2xl bg-slate-900 text-white flex items-center justify-center shadow-md">
+                    <Sparkles className="w-6 h-6 text-sky-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-black text-slate-900 tracking-tight font-sans">
+                      All-in-one Web Engine
+                    </h3>
+                    <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+                      Save custom crop presets, manage target image dimensions, generate styled QR codes, and track short URL click analytics in one unified workspace.
+                    </p>
+                  </div>
+
+                  <div className="space-y-3 pt-2">
+                    <div className="flex items-center gap-3 text-xs text-slate-700 font-medium">
+                      <div className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0 font-bold">✓</div>
+                      <span>High-precision unit conversion (px, in, cm, mm)</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-xs text-slate-700 font-medium">
+                      <div className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0 font-bold">✓</div>
+                      <span>Cloud preset synchronization &amp; export settings</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-xs text-slate-700 font-medium">
+                      <div className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0 font-bold">✓</div>
+                      <span>Zero image uploading — 100% browser-based privacy</span>
                     </div>
                   </div>
                 </div>
-
-                <div className="p-4 rounded-2xl bg-white/80 border border-zinc-200/80 shadow-sm">
-                  <div className="flex items-center gap-2 mb-1 text-slate-900 font-bold text-xs">
-                    <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                    <span>100% Browser Privacy Guaranteed</span>
-                  </div>
-                  <p className="text-[11px] text-slate-500 leading-snug">
-                    Your images are processed locally in your browser and never saved or stored on our servers.
-                  </p>
-                </div>
               </div>
 
-              {/* Right Column: Clean Sign In Card */}
               <div className="lg:col-span-7 w-full max-w-md mx-auto">
                 <div className="bg-white/90 backdrop-blur-2xl border border-white/80 shadow-[0_20px_50px_rgba(0,0,0,0.08)] rounded-3xl p-6 sm:p-8 space-y-6">
                   
-                  {/* Card Header */}
                   <div>
                     <h2 className="text-2xl font-black text-slate-900 tracking-tight font-sans">
-                      Sign in to ImageStudio
+                      Sign in to CropMyImages
                     </h2>
                     <p className="text-xs text-slate-500 mt-1">
                       Choose your preferred sign-in method to access your studio account.
                     </p>
                   </div>
 
-                  {/* Notification Feedback Banner */}
                   {notification && (
                     <div
-                      className={`p-3.5 rounded-2xl border text-xs flex items-start gap-2.5 animate-in fade-in duration-200 ${
+                      className={`p-3.5 rounded-2xl text-xs font-medium border flex items-start gap-2.5 ${
                         notification.type === 'success'
-                          ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-                          : notification.type === 'info'
-                          ? 'bg-sky-50 border-sky-200 text-sky-800'
-                          : 'bg-rose-50 border-rose-200 text-rose-800'
+                          ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                          : 'bg-rose-50 text-rose-800 border-rose-200'
                       }`}
                     >
-                      {notification.type === 'success' ? (
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                      ) : notification.type === 'info' ? (
-                        <ShieldCheck className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
-                      ) : (
-                        <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
-                      )}
-                      <div className="flex-1 leading-snug">{notification.message}</div>
+                      <ShieldCheck className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                      <span>{notification.message}</span>
                     </div>
                   )}
 
-                  {/* Social Single Sign-On Buttons */}
-                  <div className="space-y-2.5">
-                    {/* Google OAuth Button */}
-                    <button
-                      type="button"
-                      onClick={handleGoogleLogin}
-                      disabled={socialLoading !== null}
-                      className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-2xl bg-white hover:bg-slate-50 border border-slate-200/90 text-slate-800 font-bold text-xs transition-all shadow-sm active:scale-[0.98] cursor-pointer disabled:opacity-70"
-                    >
-                      {socialLoading === 'google' ? (
-                        <RefreshCw className="w-4 h-4 animate-spin text-slate-900" />
-                      ) : (
+                  <button
+                    type="button"
+                    onClick={handleGoogleSignIn}
+                    disabled={loadingMethod === 'google'}
+                    className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl text-xs font-bold text-slate-800 transition-all shadow-sm active:scale-[0.99] disabled:opacity-60 cursor-pointer"
+                  >
+                    {loadingMethod === 'google' ? (
+                      <Loader2 className="w-4 h-4 animate-spin text-slate-600" />
+                    ) : (
+                      <>
                         <svg className="w-4 h-4" viewBox="0 0 24 24">
                           <path
                             fill="#4285F4"
@@ -232,15 +235,6 @@ export default function LoginPage() {
                             d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
                           />
                         </svg>
-                      )}
-                      <span>Sign in with Google</span>
-                    </button>
-
-                    {/* GitHub OAuth Button */}
-                    <button
-                      type="button"
-                      onClick={handleGithubLogin}
-                      disabled={socialLoading !== null}
                       className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-2xl bg-slate-900 hover:bg-black text-white font-bold text-xs transition-all shadow-sm active:scale-[0.98] cursor-pointer disabled:opacity-70"
                     >
                       {socialLoading === 'github' ? (
@@ -350,7 +344,7 @@ export default function LoginPage() {
 
                   {/* Terms & Conditions note */}
                   <p className="text-[11px] text-slate-500 text-center leading-relaxed">
-                    By signing in, you agree to ImageStudio&apos;s{' '}
+                    By signing in, you agree to CropMyImages&apos;s{' '}
                     <Link href="#" className="underline font-medium hover:text-slate-900">Terms of Service</Link>{' '}
                     and{' '}
                     <Link href="#" className="underline font-medium hover:text-slate-900">Privacy Policy</Link>.

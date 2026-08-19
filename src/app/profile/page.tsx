@@ -4,8 +4,8 @@ import { Footer } from '@/components/common/Footer';
 import { ProfileStudio } from '@/components/profile/ProfileStudio';
 
 export const metadata: Metadata = {
-  title: 'My Profile & Account Dashboard | ImageStudio PRO',
-  description: 'Manage your ImageStudio PRO subscription, saved cropper presets, QR code history, shortened URL analytics, and PRO API keys.',
+  title: 'My Profile & Account Dashboard | CropMyImages',
+  description: 'Manage your CropMyImages subscription, saved cropper presets, QR code history, shortened URL analytics, and API keys.',
 };
 
 export default function ProfilePage() {
@@ -23,7 +23,7 @@ export default function ProfilePage() {
           </h1>
 
           <p className="text-xs sm:text-sm text-slate-600 max-w-2xl mx-auto leading-relaxed font-medium">
-            Manage your ImageStudio PRO membership, view saved cropper presets, inspect QR codes, track shortened URL analytics, and copy your PRO API key.
+            Manage your CropMyImages membership, view saved cropper presets, inspect QR codes, track shortened URL analytics, and copy your API key.
           </p>
         </div>
       </div>

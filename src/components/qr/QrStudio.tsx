@@ -141,8 +141,8 @@ export function QrStudio() {
 
   const [options, setOptions] = useState<QrOptions>({
     contentType: 'url',
-    url: 'https://imagestudio.pro',
-    text: 'Hello from ImageStudio!',
+    url: 'https://cropmyimages.com',
+    text: 'Hello from CropMyImages!',
     wifi: {
       ssid: 'MyHomeWiFi',
       password: 'SecretPassword123',
@@ -213,7 +213,7 @@ export function QrStudio() {
   const getEncodedData = (): string => {
     switch (options.contentType) {
       case 'url':
-        return options.url || 'https://imagestudio.pro';
+        return options.url || 'https://cropmyimages.com';
       case 'text':
         return options.text || 'Hello World';
       case 'wifi':

@@ -28,14 +28,14 @@ export function PremiumCta() {
           {/* LIQUID GLASS BADGE */}
           <div className="relative z-10 inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/60 text-sky-900 border border-white/90 backdrop-blur-md text-[11px] font-extrabold uppercase tracking-wider shadow-sm">
             <Sparkles className="w-3.5 h-3.5 text-sky-600 animate-pulse" />
-            <span>ImageStudio PRO &bull; Unlock Unlimited Power</span>
+            <span>CropMyImages &bull; Unlock Unlimited Power</span>
           </div>
 
-          {/* HEADLINE WITH SELECTED TEXT STYLE FOR IMAGESTUDIO PRO */}
+          {/* HEADLINE WITH SELECTED TEXT STYLE FOR CROPMYIMAGES */}
           <h3 className="relative z-10 text-xl sm:text-3xl font-black text-slate-900 tracking-tight font-heading leading-snug">
             Supercharge your workflow with{' '}
             <span className="inline-block bg-slate-950 text-white px-2.5 py-0.5 rounded-xs border border-slate-800 underline underline-offset-4 decoration-white decoration-2 font-black shadow-sm">
-              ImageStudio PRO.
+              CropMyImages.
             </span>
           </h3>
 

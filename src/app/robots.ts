@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://imagestudio.pro';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cropmyimages.com';
 
   return {
     rules: {
