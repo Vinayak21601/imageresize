@@ -187,6 +187,9 @@ export function CropSidebar({
             <span className="font-extrabold text-xs text-slate-900 tracking-tight font-sans">
               AI Magic Tools
             </span>
+            <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-amber-100 text-amber-900 border border-amber-200">
+              Beta
+            </span>
           </div>
           
           <div className="relative">
@@ -212,6 +215,9 @@ export function CropSidebar({
                 <div className="space-y-2 text-zinc-300 font-light leading-relaxed">
                   <p><strong className="text-white font-semibold">AI Remove BG:</strong> Erases image backgrounds in 1-click directly in your browser.</p>
                   <p><strong className="text-white font-semibold">AI Smart Focus:</strong> Detects faces/subjects and centers crop frames for social media ratios.</p>
+                  <p className="text-[10px] text-amber-300 pt-1 border-t border-slate-800">
+                    ⚠️ AI runs locally on your device. Results may take some time to process and accuracy can vary with complex backgrounds.
+                  </p>
                 </div>
               </div>
             )}
@@ -258,6 +264,12 @@ export function CropSidebar({
               </>
             )}
           </button>
+        </div>
+
+        {/* PROCESSING & ACCURACY NOTICE */}
+        <div className="flex items-start gap-1.5 pt-0.5 text-[10.5px] text-slate-500 font-normal leading-tight">
+          <Sparkles className="w-3 h-3 text-amber-500 shrink-0 mt-0.5" />
+          <span>AI may take a few moments to process. Results and edge accuracy can vary based on image background complexity.</span>
         </div>
       </div>
 

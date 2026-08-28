@@ -137,7 +137,8 @@ export async function GET(request: NextRequest) {
     };
 
     // Asynchronously log check event to backend admin logger
-    fetch('http://localhost:5000/api/admin/ip-logs', {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+    fetch(`${backendUrl}/api/admin/ip-logs`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

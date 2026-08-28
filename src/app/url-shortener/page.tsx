@@ -29,8 +29,8 @@ export default function UrlShortenerPage() {
               
               {/* Badge */}
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/90 border border-zinc-200/80 text-xs font-semibold text-slate-800 shadow-sm backdrop-blur-md">
-                <span className="w-2 h-2 rounded-full bg-sky-500 animate-pulse" />
-                Instant Short Link Generator &bull; Fast &amp; Secure
+                <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                Instant Short Link Generator &bull; Work In Progress
               </div>
 
               {/* H1 Heading */}
@@ -43,6 +43,17 @@ export default function UrlShortenerPage() {
               <p className="text-base sm:text-lg text-slate-700 max-w-xl mx-auto font-normal leading-relaxed">
                 Transform long website URLs into clean, memorable short links with custom aliases, click analytics, and instant QR Code generation.
               </p>
+
+              {/* Explicit In-Progress Notice Banner */}
+              <div className="max-w-2xl mx-auto p-4 bg-amber-50 border border-amber-200/90 rounded-2xl text-xs text-amber-950 font-medium space-y-1 shadow-xs">
+                <div className="font-bold flex items-center justify-center gap-1.5 text-amber-900">
+                  <span className="px-2 py-0.5 rounded-full bg-amber-200 text-amber-900 font-mono text-[10px] uppercase font-extrabold">Notice</span>
+                  Feature Currently In Progress
+                </div>
+                <p className="text-amber-900/90 font-normal">
+                  The URL Shortener tool is currently under active development and does not have full functionality yet. Custom domains, click analytics tracking, and backend redirection are currently being completed.
+                </p>
+              </div>
             </div>
           </section>
 

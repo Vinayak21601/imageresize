@@ -25,40 +25,7 @@ export function FeedbackForm() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Community Feedbacks List
-  const [publicFeedbacks, setPublicFeedbacks] = useState<PublicFeedback[]>([
-    {
-      id: 'fb-101',
-      name: 'Sarah Connor',
-      category: 'Feature Request',
-      rating: 5,
-      feedback: 'The crop speed and unit converter (px, cm, mm) is super fast! Would love a bulk watermark tool next.',
-      createdAt: '2 hours ago',
-    },
-    {
-      id: 'fb-102',
-      name: 'David Miller',
-      category: 'Usability & UI',
-      rating: 5,
-      feedback: 'Awesome UI design! Clean card layouts and the What Is My IP tool with IPv6 detection is super handy.',
-      createdAt: '5 hours ago',
-    },
-    {
-      id: 'fb-103',
-      name: 'Elena Rostova',
-      category: 'Speed & Processing',
-      rating: 5,
-      feedback: 'Processed 50+ photos in seconds with 100% client privacy. Best free image engine on the web!',
-      createdAt: '1 day ago',
-    },
-    {
-      id: 'fb-104',
-      name: 'Marcus Vance',
-      category: 'General Improvement',
-      rating: 4,
-      feedback: 'Love the QR generator and URL shortener analytics. Keep adding new format tools!',
-      createdAt: '2 days ago',
-    },
-  ]);
+  const [publicFeedbacks, setPublicFeedbacks] = useState<PublicFeedback[]>([]);
 
   const fetchPublicFeedback = async () => {
     try {
@@ -309,7 +276,9 @@ export function FeedbackForm() {
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl sm:rounded-2xl bg-zinc-50 border border-zinc-200/80">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-slate-900 text-white font-black text-base sm:text-lg flex items-center justify-center">
-                  4.9
+                  {publicFeedbacks.length > 0
+                    ? (publicFeedbacks.reduce((acc, curr) => acc + curr.rating, 0) / publicFeedbacks.length).toFixed(1)
+                    : '5.0'}
                 </div>
                 <div>
                   <div className="flex items-center space-x-1">
@@ -317,7 +286,11 @@ export function FeedbackForm() {
                       <Star key={s} className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400 fill-amber-400" />
                     ))}
                   </div>
-                  <p className="text-[11px] sm:text-xs text-slate-600 font-semibold mt-0.5">Average User Rating &bull; 500+ Verified User Reviews</p>
+                  <p className="text-[11px] sm:text-xs text-slate-600 font-semibold mt-0.5">
+                    {publicFeedbacks.length > 0
+                      ? `Average Rating • ${publicFeedbacks.length} Verified Community Review${publicFeedbacks.length > 1 ? 's' : ''}`
+                      : 'Community Feedback Wall'}
+                  </p>
                 </div>
               </div>
 
@@ -332,53 +305,61 @@ export function FeedbackForm() {
             </div>
 
             {/* REVIEWS GRID */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {publicFeedbacks.map((item) => (
-                <div
-                  key={item.id}
-                  className="p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-zinc-50 border border-zinc-200/80 space-y-3 flex flex-col justify-between"
-                >
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2.5">
-                        <div className="w-8 h-8 rounded-full bg-slate-900 text-white font-bold text-xs flex items-center justify-center">
-                          {item.name.charAt(0)}
+            {publicFeedbacks.length === 0 ? (
+              <div className="p-10 text-center rounded-2xl bg-zinc-50 border border-zinc-200/80 space-y-2 text-slate-500">
+                <MessageSquare className="w-8 h-8 mx-auto text-slate-400" />
+                <p className="text-xs font-bold text-slate-700">No community reviews submitted yet</p>
+                <p className="text-[11px]">Be the first to share your thoughts, suggestions, or tool requests!</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {publicFeedbacks.map((item) => (
+                  <div
+                    key={item.id}
+                    className="p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-zinc-50 border border-zinc-200/80 space-y-3 flex flex-col justify-between"
+                  >
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2.5">
+                          <div className="w-8 h-8 rounded-full bg-slate-900 text-white font-bold text-xs flex items-center justify-center">
+                            {item.name.charAt(0)}
+                          </div>
+                          <div>
+                            <div className="font-bold text-slate-900 text-xs">{item.name}</div>
+                            <div className="text-[10px] text-slate-500 font-medium">{item.createdAt}</div>
+                          </div>
                         </div>
-                        <div>
-                          <div className="font-bold text-slate-900 text-xs">{item.name}</div>
-                          <div className="text-[10px] text-slate-500 font-medium">{item.createdAt}</div>
+
+                        <div className="flex items-center space-x-0.5">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`w-3.5 h-3.5 ${
+                                i < item.rating ? 'text-amber-400 fill-amber-400' : 'text-zinc-300'
+                              }`}
+                            />
+                          ))}
                         </div>
                       </div>
 
-                      <div className="flex items-center space-x-0.5">
-                        {[...Array(5)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className={`w-3.5 h-3.5 ${
-                              i < item.rating ? 'text-amber-400 fill-amber-400' : 'text-zinc-300'
-                            }`}
-                          />
-                        ))}
-                      </div>
+                      <p className="text-xs text-slate-700 leading-relaxed font-medium pt-1">
+                        "{item.feedback}"
+                      </p>
                     </div>
 
-                    <p className="text-xs text-slate-700 leading-relaxed font-medium pt-1">
-                      "{item.feedback}"
-                    </p>
+                    <div className="pt-2 flex items-center justify-between border-t border-zinc-200/60 text-[10px] text-slate-500">
+                      <span className="px-2 py-0.5 rounded-md bg-white border border-zinc-200 font-bold text-slate-700">
+                        {item.category}
+                      </span>
+                      <span className="flex items-center gap-1 font-semibold text-slate-600">
+                        <ThumbsUp className="w-3 h-3 text-slate-500" />
+                        Verified Feedback
+                      </span>
+                    </div>
                   </div>
-
-                  <div className="pt-2 flex items-center justify-between border-t border-zinc-200/60 text-[10px] text-slate-500">
-                    <span className="px-2 py-0.5 rounded-md bg-white border border-zinc-200 font-bold text-slate-700">
-                      {item.category}
-                    </span>
-                    <span className="flex items-center gap-1 font-semibold text-slate-600">
-                      <ThumbsUp className="w-3 h-3 text-slate-500" />
-                      Verified Feedback
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
 
           </div>
         )}

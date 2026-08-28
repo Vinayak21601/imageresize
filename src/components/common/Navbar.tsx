@@ -3,11 +3,19 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, LogOut, User } from 'lucide-react';
+import { useAppDispatch, useAppSelector } from '@/lib/redux/store';
+import { logoutUser } from '@/lib/redux/slices/authSlice';
 
 export function Navbar() {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const dispatch = useAppDispatch();
+  const { user, isAuthenticated, loading: authLoading } = useAppSelector((state) => state.auth);
+
+  const handleLogout = () => {
+    dispatch(logoutUser());
+  };
 
   return (
     <header className="sticky top-4 z-50 w-full px-4 sm:px-6 lg:px-8">
@@ -39,7 +47,7 @@ export function Navbar() {
           </Link>
 
           <Link
-            href="/convert/heic-to-jpg"
+            href="/convert"
             className={`px-4 py-1.5 text-xs font-semibold rounded-full transition-all cursor-pointer ${
               pathname.startsWith('/convert')
                 ? 'bg-white text-slate-900 shadow-md font-bold'
@@ -48,28 +56,6 @@ export function Navbar() {
           >
             Image Converter
           </Link>
-
-          {/* <Link
-            href="/qr-generator"
-            className={`px-4 py-1.5 text-xs font-semibold rounded-full transition-all cursor-pointer ${
-              pathname === '/qr-generator'
-                ? 'bg-white text-slate-900 shadow-md font-bold'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
-            }`}
-          >
-            QR Generator
-          </Link> */}
-
-          {/* <Link
-            href="/url-shortener"
-            className={`px-4 py-1.5 text-xs font-semibold rounded-full transition-all cursor-pointer ${
-              pathname === '/url-shortener'
-                ? 'bg-white text-slate-900 shadow-md font-bold'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
-            }`}
-          >
-            URL Shortener
-          </Link> */}
 
           <Link
             href="/what-is-my-ip"
@@ -81,49 +67,52 @@ export function Navbar() {
           >
             What is My IP
           </Link>
-
-          {/* <Link
-            href="/profile"
-            className={`px-4 py-1.5 text-xs font-semibold rounded-full transition-all cursor-pointer ${
-              pathname === '/profile'
-                ? 'bg-white text-slate-900 shadow-md font-bold'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
-            }`}
-          >
-            My Profile
-          </Link> */}
-
-          {/* <Link
-            href="/pricing"
-            className={`px-4 py-1.5 text-xs font-semibold rounded-full transition-all ${
-              pathname === '/pricing'
-                ? 'bg-white text-slate-900 shadow-md font-bold'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
-            }`}
-          >
-            Pricing
-          </Link> */}
         </nav>
 
-        {/* Action Buttons & Mobile Trigger */}
+        {/* Action Buttons & Auth User State */}
         <div className="flex items-center gap-2 pr-1">
-          {/* <Link
-            href="/profile"
-            className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-100 hover:bg-zinc-200 border border-zinc-200/80 transition-all cursor-pointer"
-            title="User Profile Dashboard"
-          >
-            <div className="w-5 h-5 rounded-full bg-slate-900 text-white font-bold text-[10px] flex items-center justify-center">
-              AJ
+          {/* Auth Loading Skeleton: shown while session is being hydrated from cookie (prevents FOUC) */}
+          {authLoading ? (
+            <div className="flex items-center gap-2">
+              <div className="h-7 w-24 rounded-full bg-slate-200 animate-pulse" />
             </div>
-            <span className="hidden sm:inline-block text-xs font-bold text-slate-800">Profile</span>
-          </Link> */}
+          ) : isAuthenticated && user ? (
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200">
+                {user.picture ? (
+                  <img
+                    src={user.picture}
+                    alt={user.name}
+                    className="w-6 h-6 rounded-full border border-slate-300"
+                  />
+                ) : (
+                  <div className="w-6 h-6 rounded-full bg-slate-900 text-white font-bold text-[10px] flex items-center justify-center">
+                    {user.name ? user.name[0].toUpperCase() : 'U'}
+                  </div>
+                )}
+                <span className="hidden sm:inline-block text-xs font-bold text-slate-800 max-w-[100px] truncate">
+                  {user.name}
+                </span>
+              </div>
 
-          {/* <Link
-            href="/"
-            className="inline-flex items-center gap-2 px-4 py-2 text-xs font-bold text-white bg-black hover:bg-zinc-800 rounded-full transition-all shadow-md active:scale-95 cursor-pointer"
-          >
-            Launch Studio
-          </Link> */}
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition-all cursor-pointer border border-rose-200"
+                title="Sign Out"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline-block">Sign Out</span>
+              </button>
+            </div>
+          ) : (
+            <Link
+              href="/login"
+              className="inline-flex items-center gap-2 px-4 py-1.5 text-xs font-bold text-white bg-slate-900 hover:bg-black rounded-full transition-all shadow-md active:scale-95 cursor-pointer"
+            >
+              Sign In
+            </Link>
+          )}
 
           {/* Mobile Menu Trigger Button */}
           <button
@@ -152,7 +141,7 @@ export function Navbar() {
             </Link>
 
             <Link
-              href="/convert/heic-to-jpg"
+              href="/convert"
               onClick={() => setIsMobileMenuOpen(false)}
               className={`px-4 py-3 text-sm font-bold rounded-2xl transition-all cursor-pointer ${
                 pathname.startsWith('/convert') ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-700 hover:bg-zinc-100'

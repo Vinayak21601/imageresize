@@ -30,7 +30,7 @@ export default function WhatIsMyIpPage() {
         <main className="flex-1 w-full">
           
           {/* HERO SECTION WITH CLOUD BACKDROP (STRICTLY CLOSES AFTER THE HERO IP CARD!) */}
-          <div className="relative bg-sky-cloud-hero border-b border-zinc-200/60 overflow-hidden">
+          <div className="relative bg-sky-cloud-hero border-b border-zinc-200/60 overflow-hidden min-h-screen flex flex-col justify-between">
             <Navbar />
 
             <section className="pt-8 pb-6 px-4 sm:px-6 lg:px-8 text-center">

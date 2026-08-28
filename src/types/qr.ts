@@ -1,4 +1,4 @@
-export type QrContentType = 'url' | 'text' | 'wifi' | 'vcard' | 'whatsapp' | 'email' | 'upi' | 'instagram' | 'sms';
+export type QrContentType = 'url' | 'text' | 'wifi' | 'vcard' | 'whatsapp' | 'email' | 'upi' | 'instagram' | 'sms' | 'pdf' | 'image';
 
 export type QrDotStyle = 'square' | 'dots' | 'rounded' | 'extra-rounded' | 'classy' | 'classy-rounded';
 

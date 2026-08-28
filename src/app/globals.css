@@ -62,13 +62,16 @@ h1, h2, h3, .font-heading {
 .bg-sky-cloud-hero {
   background-image: url('/mobile-view-bg-image.webp');
   background-size: cover;
-  background-position: center;
+  background-position: center top;
   background-repeat: no-repeat;
 }
 
 @media (min-width: 768px) {
   .bg-sky-cloud-hero {
     background-image: url('/dekstop-view-bg-image.webp');
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
   }
 }
 
@@ -117,3 +120,5 @@ h1, h2, h3, .font-heading {
 .cropper-circle-mask .cropper-face {
   border-radius: 50% !important;
 }
+
+

@@ -1,241 +1,201 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import {
-  Link as LinkIcon,
+  Globe,
   FileText,
-  Wifi,
+  ImageIcon,
   UserCheck,
+  Video,
+  ChevronDown,
+  X,
+  Upload,
+  Download,
+  Copy,
+  Wifi,
   MessageSquare,
   Mail,
-  Palette,
-  Layers,
-  Image as ImageIcon,
-  Download,
-  RotateCcw,
   Sparkles,
-  Check,
-  ShieldCheck,
-  CreditCard,
-  Camera,
-  PhoneCall,
-  Copy,
-  CheckCircle2
+  RotateCw,
+  Info,
+  CheckCircle2,
+  Phone,
+  MapPin,
+  Bell,
+  ArrowRight
 } from 'lucide-react';
 import {
   QrOptions,
   QrContentType,
   QrDotStyle,
   QrEyeFrameStyle,
-  QrEyeBallStyle,
-  QrPresetTheme
+  QrEyeBallStyle
 } from '@/types/qr';
+import { useAppSelector } from '@/lib/redux/store';
+import { AuthModal } from '@/components/common/AuthModal';
 
-const PRESET_THEMES = [
-  {
-    id: 'instagram',
-    name: 'Instagram Gradient',
-    dotStyle: 'classy-rounded' as QrDotStyle,
-    eyeFrameStyle: 'rounded' as QrEyeFrameStyle,
-    eyeBallStyle: 'circle' as QrEyeBallStyle,
-    useGradient: true,
-    dotColor: '#833AB4',
-    gradientColor2: '#FD1D1D',
-    gradientRotation: 45,
-    bgColor: '#FFFFFF',
-    eyeFrameColor: '#E1306C',
-    eyeBallColor: '#F56040',
-  },
-  {
-    id: 'neon',
-    name: 'Neon Cyber',
-    dotStyle: 'dots' as QrDotStyle,
-    eyeFrameStyle: 'circle' as QrEyeFrameStyle,
-    eyeBallStyle: 'circle' as QrEyeBallStyle,
-    useGradient: true,
-    dotColor: '#00F2FE',
-    gradientColor2: '#4FACFE',
-    gradientRotation: 90,
-    bgColor: '#0F172A',
-    eyeFrameColor: '#00F2FE',
-    eyeBallColor: '#38BDF8',
-  },
-  {
-    id: 'emerald',
-    name: 'Emerald Business',
-    dotStyle: 'rounded' as QrDotStyle,
-    eyeFrameStyle: 'rounded' as QrEyeFrameStyle,
-    eyeBallStyle: 'circle' as QrEyeBallStyle,
-    useGradient: true,
-    dotColor: '#064E3B',
-    gradientColor2: '#10B981',
-    gradientRotation: 135,
-    bgColor: '#FFFFFF',
-    eyeFrameColor: '#047857',
-    eyeBallColor: '#059669',
-  },
-  {
-    id: 'sunset',
-    name: 'Sunset Glow',
-    dotStyle: 'extra-rounded' as QrDotStyle,
-    eyeFrameStyle: 'rounded' as QrEyeFrameStyle,
-    eyeBallStyle: 'circle' as QrEyeBallStyle,
-    useGradient: true,
-    dotColor: '#FF512F',
-    gradientColor2: '#DD2476',
-    gradientRotation: 45,
-    bgColor: '#FFFFFF',
-    eyeFrameColor: '#FF512F',
-    eyeBallColor: '#DD2476',
-  },
-  {
-    id: 'gold',
-    name: 'Gold Luxury',
-    dotStyle: 'classy' as QrDotStyle,
-    eyeFrameStyle: 'square' as QrEyeFrameStyle,
-    eyeBallStyle: 'square' as QrEyeBallStyle,
-    useGradient: true,
-    dotColor: '#F59E0B',
-    gradientColor2: '#D97706',
-    gradientRotation: 45,
-    bgColor: '#18181B',
-    eyeFrameColor: '#F59E0B',
-    eyeBallColor: '#FBBF24',
-  },
-  {
-    id: 'whatsapp',
-    name: 'WhatsApp Green',
-    dotStyle: 'rounded' as QrDotStyle,
-    eyeFrameStyle: 'rounded' as QrEyeFrameStyle,
-    eyeBallStyle: 'circle' as QrEyeBallStyle,
-    useGradient: true,
-    dotColor: '#075E54',
-    gradientColor2: '#25D366',
-    gradientRotation: 90,
-    bgColor: '#FFFFFF',
-    eyeFrameColor: '#128C7E',
-    eyeBallColor: '#25D366',
-  },
-  {
-    id: 'minimal-dark',
-    name: 'Minimal Dark',
-    dotStyle: 'square' as QrDotStyle,
-    eyeFrameStyle: 'square' as QrEyeFrameStyle,
-    eyeBallStyle: 'square' as QrEyeBallStyle,
-    useGradient: false,
-    dotColor: '#F8FAFC',
-    gradientColor2: '#E2E8F0',
-    gradientRotation: 0,
-    bgColor: '#09090B',
-    eyeFrameColor: '#F8FAFC',
-    eyeBallColor: '#E2E8F0',
-  },
+// Frame Options
+const FRAMES = [
+  { id: 'none', label: 'No Frame' },
+  { id: 'envelope', label: 'Envelope', badgeText: 'SCAN ME' },
+  { id: 'screen', label: 'Screen', badgeText: 'SCAN ME' },
+  { id: 'tray', label: 'Hand Tray', badgeText: 'ORDER HERE' },
+  { id: 'starburst', label: 'Starburst', badgeText: 'OFFER' },
+  { id: 'beer', label: 'Beer Mug', badgeText: 'DRINK ME' },
+  { id: 'scooter', label: 'Delivery', badgeText: 'DELIVERY' },
+  { id: 'coffee', label: 'Coffee Cup', badgeText: 'SCAN ME' },
+];
+
+// Preset Logos (Matching Screenshot 3)
+const LOGO_PRESETS = [
+  { id: 'none', label: 'No Logo', color: 'bg-slate-100 text-slate-400' },
+  { id: 'whatsapp', label: 'WhatsApp', color: 'bg-emerald-500 text-white', icon: Phone },
+  { id: 'link', label: 'Link', color: 'bg-purple-600 text-white', icon: Globe },
+  { id: 'location', label: 'Location', color: 'bg-rose-500 text-white', icon: MapPin },
+  { id: 'wifi', label: 'Wi-Fi', color: 'bg-teal-500 text-white', icon: Wifi },
+  { id: 'vcard', label: 'vCard', color: 'bg-blue-600 text-white', icon: UserCheck },
+  { id: 'email', label: 'Email', color: 'bg-amber-600 text-white', icon: Mail },
+  { id: 'scan', label: 'Scan', color: 'bg-fuchsia-600 text-white', icon: Sparkles },
+  { id: 'bell', label: 'Bell', color: 'bg-emerald-600 text-white', icon: Bell },
+];
+
+// Shape Styles (Matrix Dots)
+const SHAPE_STYLES = [
+  { id: 'square', name: 'Square' },
+  { id: 'dots', name: 'Dots' },
+  { id: 'rounded', name: 'Rounded' },
+  { id: 'extra-rounded', name: 'Smooth' },
+  { id: 'classy', name: 'Classy' },
+  { id: 'classy-rounded', name: 'Fancy' },
+];
+
+// Eye Border Styles (Outer Corner Frame)
+const EYE_BORDER_STYLES = [
+  { id: 'square', label: 'Square' },
+  { id: 'circle', label: 'Circle' },
+  { id: 'rounded', label: 'Rounded' },
+];
+
+// Eye Center Styles (Inner Eye Ball)
+const EYE_CENTER_STYLES = [
+  { id: 'square', label: 'Square Ball' },
+  { id: 'circle', label: 'Circle Ball' },
+];
+
+// Error Correction Levels
+const LEVEL_OPTIONS = [
+  { level: 'L', percent: '7%', desc: 'Low (~7% recovery)' },
+  { level: 'M', percent: '15%', desc: 'Medium (~15% recovery)' },
+  { level: 'Q', percent: '25%', desc: 'Quality (~25% recovery)' },
+  { level: 'H', percent: '30%', desc: 'High (~30% recovery)' },
 ];
 
 export function QrStudio() {
   const qrRef = useRef<HTMLDivElement>(null);
   const qrCodeInstanceRef = useRef<any>(null);
 
-  const [activeTab, setActiveTab] = useState<'content' | 'shapes' | 'colors' | 'logo'>('content');
-  const [copied, setCopied] = useState(false);
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
 
+  // Auth modal popup trap state
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [pendingFormat, setPendingFormat] = useState<'png' | 'svg' | 'jpeg' | 'webp'>('png');
+
+  // Sub-tabs in Section 2: Frame | Shape | Logo | Level
+  const [designTab, setDesignTab] = useState<'frame' | 'shape' | 'logo' | 'level'>('frame');
+  const [selectedFrame, setSelectedFrame] = useState<string>('none');
+  const [selectedLogoPreset, setSelectedLogoPreset] = useState<string>('none');
+
+  // Validation
+  const [showRequiredError, setShowRequiredError] = useState(false);
+
+  // Main QR Options (Empty URL by default as requested!)
   const [options, setOptions] = useState<QrOptions>({
     contentType: 'url',
-    url: 'https://cropmyimages.com',
-    text: 'Hello from CropMyImages!',
+    url: '', // Empty by default
+    text: '',
     wifi: {
-      ssid: 'MyHomeWiFi',
-      password: 'SecretPassword123',
+      ssid: '',
+      password: '',
       encryption: 'WPA',
       hidden: false,
     },
     vcard: {
-      firstName: 'Alex',
-      lastName: 'Morgan',
-      phone: '+1 555 019 2831',
-      email: 'alex@company.com',
-      company: 'Acme Design Corp',
-      jobTitle: 'Creative Director',
-      website: 'https://company.com',
+      firstName: '',
+      lastName: '',
+      phone: '',
+      email: '',
+      company: '',
+      jobTitle: '',
+      website: '',
     },
     whatsapp: {
-      phone: '15550192831',
-      message: 'Hi! I found your QR code and would like to get in touch.',
+      phone: '',
+      message: '',
     },
     email: {
-      to: 'hello@company.com',
-      subject: 'Inquiry from QR Code',
-      body: 'Hi, I would like to learn more about your services.',
+      to: '',
+      subject: '',
+      body: '',
     },
     upi: {
-      vpa: 'merchant@upi',
-      name: 'Acme Store',
-      amount: '499',
-      note: 'Payment for order #108',
+      vpa: '',
+      name: '',
+      amount: '',
+      note: '',
     },
     instagram: {
-      username: 'creator_studio',
+      username: '',
     },
     sms: {
-      phone: '15550192831',
-      message: 'Subscribe me to daily updates',
+      phone: '',
+      message: '',
     },
 
-    // Preset Theme
     presetTheme: undefined,
 
     // Styling
     dotStyle: 'rounded',
-    eyeFrameStyle: 'rounded',
-    eyeBallStyle: 'circle',
+    eyeFrameStyle: 'square',
+    eyeBallStyle: 'square',
 
     // Colors
-    useGradient: true,
-    dotColor: '#0F172A',
-    gradientColor2: '#0284C7',
-    gradientRotation: 45,
+    useGradient: false,
+    dotColor: '#000000',
+    gradientColor2: '#000000',
+    gradientRotation: 0,
     bgColor: '#FFFFFF',
-    eyeFrameColor: '#0F172A',
-    eyeBallColor: '#0284C7',
+    eyeFrameColor: '#000000',
+    eyeBallColor: '#000000',
 
     // Logo
     logoUrl: null,
-    logoSize: 0.35,
+    logoSize: 0.3,
     logoMargin: 4,
 
     // Dimensions
-    size: 400,
-    margin: 10,
-    errorCorrection: 'Q',
+    size: 240,
+    margin: 8,
+    errorCorrection: 'L',
   });
 
-  // Calculate encoded payload string
+  // Calculate encoded payload
   const getEncodedData = (): string => {
     switch (options.contentType) {
       case 'url':
-        return options.url || 'https://cropmyimages.com';
+        return options.url || 'https://www.myweb.com/';
       case 'text':
-        return options.text || 'Hello World';
+        return options.text || 'Sample Text';
       case 'wifi':
-        return `WIFI:S:${options.wifi.ssid};T:${options.wifi.encryption};P:${options.wifi.password};H:${options.wifi.hidden ? 'true' : 'false'};;`;
+        return `WIFI:S:${options.wifi.ssid || 'MyNetwork'};T:${options.wifi.encryption};P:${options.wifi.password};;`;
       case 'vcard':
-        return `BEGIN:VCARD\nVERSION:3.0\nN:${options.vcard.lastName};${options.vcard.firstName};;;\nFN:${options.vcard.firstName} ${options.vcard.lastName}\nORG:${options.vcard.company}\nTITLE:${options.vcard.jobTitle}\nTEL:${options.vcard.phone}\nEMAIL:${options.vcard.email}\nURL:${options.vcard.website}\nEND:VCARD`;
-      case 'whatsapp':
-        return `https://wa.me/${options.whatsapp.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(options.whatsapp.message)}`;
-      case 'email':
-        return `mailto:${options.email.to}?subject=${encodeURIComponent(options.email.subject)}&body=${encodeURIComponent(options.email.body)}`;
-      case 'upi':
-        return `upi://pay?pa=${encodeURIComponent(options.upi.vpa)}&pn=${encodeURIComponent(options.upi.name)}${options.upi.amount ? `&am=${options.upi.amount}` : ''}${options.upi.note ? `&tn=${encodeURIComponent(options.upi.note)}` : ''}`;
-      case 'instagram':
-        return `https://instagram.com/${options.instagram.username.replace('@', '')}`;
-      case 'sms':
-        return `SMSTO:${options.sms.phone}:${options.sms.message}`;
+        return `BEGIN:VCARD\nVERSION:3.0\nN:${options.vcard.lastName};${options.vcard.firstName};;;\nFN:${options.vcard.firstName} ${options.vcard.lastName}\nTEL:${options.vcard.phone}\nEMAIL:${options.vcard.email}\nEND:VCARD`;
       default:
-        return options.url;
+        return options.url || 'https://www.myweb.com/';
     }
   };
 
-  // Initialize and update QRCodeStyling instance
+  // Render QR Code via qr-code-styling
   useEffect(() => {
     let isMounted = true;
 
@@ -254,6 +214,8 @@ export function QrStudio() {
           image: options.logoUrl || undefined,
           margin: options.margin,
           qrOptions: {
+            typeNumber: 0,
+            mode: 'Byte',
             errorCorrectionLevel: options.errorCorrection,
           },
           imageOptions: {
@@ -264,17 +226,7 @@ export function QrStudio() {
           },
           dotsOptions: {
             type: options.dotStyle,
-            color: options.useGradient ? undefined : options.dotColor,
-            gradient: options.useGradient
-              ? {
-                  type: 'linear',
-                  rotation: (options.gradientRotation * Math.PI) / 180,
-                  colorStops: [
-                    { offset: 0, color: options.dotColor },
-                    { offset: 1, color: options.gradientColor2 },
-                  ],
-                }
-              : undefined,
+            color: options.dotColor,
           },
           backgroundOptions: {
             color: options.bgColor,
@@ -291,12 +243,13 @@ export function QrStudio() {
 
         if (!qrCodeInstanceRef.current) {
           qrCodeInstanceRef.current = new QRCodeStyling(qrConfig);
-          if (qrRef.current && isMounted) {
-            qrRef.current.innerHTML = '';
-            qrCodeInstanceRef.current.append(qrRef.current);
-          }
         } else {
           qrCodeInstanceRef.current.update(qrConfig);
+        }
+
+        if (isMounted && qrRef.current) {
+          qrRef.current.innerHTML = '';
+          qrCodeInstanceRef.current.append(qrRef.current);
         }
       } catch (err) {
         console.error('Failed to render QR Code:', err);
@@ -310,45 +263,34 @@ export function QrStudio() {
     };
   }, [options]);
 
-  const applyTheme = (theme: typeof PRESET_THEMES[0]) => {
-    setOptions((prev) => ({
-      ...prev,
-      presetTheme: theme.id as QrPresetTheme,
-      dotStyle: theme.dotStyle,
-      eyeFrameStyle: theme.eyeFrameStyle,
-      eyeBallStyle: theme.eyeBallStyle,
-      useGradient: theme.useGradient,
-      dotColor: theme.dotColor,
-      gradientColor2: theme.gradientColor2,
-      gradientRotation: theme.gradientRotation,
-      bgColor: theme.bgColor,
-      eyeFrameColor: theme.eyeFrameColor,
-      eyeBallColor: theme.eyeBallColor,
-    }));
-  };
+  const router = useRouter();
 
-  const handleDownload = (format: 'png' | 'svg' | 'jpeg' | 'webp') => {
-    if (qrCodeInstanceRef.current) {
-      qrCodeInstanceRef.current.download({
-        name: `qrcode-${options.contentType}-${Date.now()}`,
-        extension: format,
-      });
+  // Handle Create / Action button click (Redirection to Dashboard)
+  const handleActionClick = () => {
+    if (!options.url && options.contentType === 'url') {
+      setShowRequiredError(true);
+    }
+    if (!isAuthenticated) {
+      setIsAuthModalOpen(true);
+    } else {
+      router.push('/profile');
     }
   };
 
-  const handleCopyClipboard = async () => {
-    if (!qrCodeInstanceRef.current) return;
-    try {
-      const blob = await qrCodeInstanceRef.current.getRawData('png');
-      if (blob) {
-        await navigator.clipboard.write([
-          new ClipboardItem({ 'image/png': blob })
-        ]);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2500);
-      }
-    } catch (e) {
-      console.error('Copy to clipboard failed:', e);
+  // Invert colors handler
+  const handleInvertColors = (target: 'shape' | 'eyes') => {
+    if (target === 'shape') {
+      setOptions((prev) => ({
+        ...prev,
+        dotColor: prev.bgColor,
+        bgColor: prev.dotColor,
+      }));
+    } else {
+      setOptions((prev) => ({
+        ...prev,
+        eyeFrameColor: prev.eyeBallColor,
+        eyeBallColor: prev.eyeFrameColor,
+      }));
     }
   };
 
@@ -358,806 +300,718 @@ export function QrStudio() {
       const reader = new FileReader();
       reader.onload = (event) => {
         setOptions((prev) => ({ ...prev, logoUrl: event.target?.result as string }));
+        setSelectedLogoPreset('custom');
       };
       reader.readAsDataURL(file);
     }
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto space-y-6">
-      
-      {/* PRESET BRAND THEMES BAR */}
-      <div className="bg-white border border-zinc-200/80 rounded-3xl p-5 shadow-sm space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-indigo-600 animate-pulse" />
-            <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-900 font-sans">
-              Preset Brand Styling Themes
-            </h3>
-          </div>
-          <span className="text-[11px] text-slate-500 font-medium">One-click designer aesthetics</span>
-        </div>
+    <div className="w-full max-w-5xl mx-auto space-y-6 font-sans text-slate-900">
+      {/* AUTH MODAL POPUP (Shown ONLY when user is NOT logged in) */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        onSuccess={() => {
+          setIsAuthModalOpen(false);
+          router.push('/profile');
+        }}
+        title="Sign up to create & manage your QR code"
+        subtitle="Sign up with Google or your email to generate custom QR codes, edit target links dynamically, and inspect scan analytics in your dashboard."
+      />
 
-        <div className="flex flex-wrap gap-2.5">
-          {PRESET_THEMES.map((theme) => {
-            const isSelected = options.presetTheme === theme.id;
-            return (
-              <button
-                key={theme.id}
-                type="button"
-                onClick={() => applyTheme(theme)}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-2xl border text-xs font-bold transition-all cursor-pointer ${
-                  isSelected
-                    ? 'bg-slate-900 text-white border-slate-900 shadow-md scale-105'
-                    : 'bg-zinc-50 hover:bg-zinc-100 text-slate-800 border-zinc-200'
-                }`}
-              >
-                <span
-                  className="w-3.5 h-3.5 rounded-full border border-white/20 shadow-sm"
-                  style={{
-                    background: theme.useGradient
-                      ? `linear-gradient(45deg, ${theme.dotColor}, ${theme.gradientColor2})`
-                      : theme.dotColor,
-                  }}
-                />
-                <span>{theme.name}</span>
-                {isSelected && <Check className="w-3.5 h-3.5 text-emerald-400" />}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      {/* MAIN STUDIO OUTER CONTAINER */}
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_10px_30px_rgba(0,0,0,0.05)] overflow-hidden">
         
-        {/* LEFT COLUMN: CUSTOMIZATION PANELS */}
-        <div className="lg:col-span-7 bg-white border border-zinc-200/80 rounded-3xl p-6 sm:p-7 shadow-[0_10px_30px_rgba(0,0,0,0.03)] space-y-6">
-          
-          {/* TOP TAB CONTROL PILLS */}
-          <div className="grid grid-cols-4 gap-1.5 bg-zinc-100 p-1.5 rounded-full text-xs font-semibold">
+        {/* TOP CONTENT TYPE SELECTION TAB STRIP */}
+        <div className="bg-white border-b border-slate-100 p-3 sm:p-4 flex items-center justify-between gap-2 overflow-x-auto no-scrollbar">
+          <div className="flex items-center gap-2">
+            
+            {/* Website Tab */}
             <button
               type="button"
-              onClick={() => setActiveTab('content')}
-              className={`flex items-center justify-center gap-1.5 py-2.5 rounded-full transition-all cursor-pointer ${
-                activeTab === 'content' ? 'bg-slate-900 text-white shadow-md font-bold' : 'text-slate-700 hover:text-slate-900'
+              onClick={() => setOptions((prev) => ({ ...prev, contentType: 'url' }))}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+                options.contentType === 'url'
+                  ? 'bg-[#edf2fe] border-blue-200 text-[#2563eb] shadow-xs'
+                  : 'bg-white border-slate-200/80 text-slate-700 hover:bg-slate-50'
               }`}
             >
-              <LinkIcon className="w-3.5 h-3.5" />
-              <span>Content</span>
+              <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${options.contentType === 'url' ? 'bg-[#2563eb] text-white' : 'bg-slate-100 text-slate-600'}`}>
+                <Globe className="w-3.5 h-3.5" />
+              </div>
+              <span>Website</span>
             </button>
 
+            {/* Text Tab */}
             <button
               type="button"
-              onClick={() => setActiveTab('shapes')}
-              className={`flex items-center justify-center gap-1.5 py-2.5 rounded-full transition-all cursor-pointer ${
-                activeTab === 'shapes' ? 'bg-slate-900 text-white shadow-md font-bold' : 'text-slate-700 hover:text-slate-900'
+              onClick={() => setOptions((prev) => ({ ...prev, contentType: 'text' }))}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+                options.contentType === 'text'
+                  ? 'bg-[#edf2fe] border-blue-200 text-[#2563eb] shadow-xs'
+                  : 'bg-white border-slate-200/80 text-slate-700 hover:bg-slate-50'
               }`}
             >
-              <Layers className="w-3.5 h-3.5" />
-              <span>Shapes</span>
+              <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${options.contentType === 'text' ? 'bg-[#2563eb] text-white' : 'bg-slate-100 text-slate-600'}`}>
+                <FileText className="w-3.5 h-3.5" />
+              </div>
+              <span>Text</span>
             </button>
 
+            {/* PDF Tab */}
             <button
               type="button"
-              onClick={() => setActiveTab('colors')}
-              className={`flex items-center justify-center gap-1.5 py-2.5 rounded-full transition-all cursor-pointer ${
-                activeTab === 'colors' ? 'bg-slate-900 text-white shadow-md font-bold' : 'text-slate-700 hover:text-slate-900'
+              onClick={() => setOptions((prev) => ({ ...prev, contentType: 'pdf' }))}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+                options.contentType === 'pdf'
+                  ? 'bg-[#edf2fe] border-blue-200 text-[#2563eb] shadow-xs'
+                  : 'bg-white border-slate-200/80 text-slate-700 hover:bg-slate-50'
               }`}
             >
-              <Palette className="w-3.5 h-3.5" />
-              <span>Colors</span>
+              <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${options.contentType === 'pdf' ? 'bg-[#2563eb] text-white' : 'bg-slate-100 text-slate-600'}`}>
+                <FileText className="w-3.5 h-3.5" />
+              </div>
+              <span>PDF</span>
             </button>
 
+            {/* Images Tab */}
             <button
               type="button"
-              onClick={() => setActiveTab('logo')}
-              className={`flex items-center justify-center gap-1.5 py-2.5 rounded-full transition-all cursor-pointer ${
-                activeTab === 'logo' ? 'bg-slate-900 text-white shadow-md font-bold' : 'text-slate-700 hover:text-slate-900'
+              onClick={() => setOptions((prev) => ({ ...prev, contentType: 'image' }))}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+                options.contentType === 'image'
+                  ? 'bg-[#edf2fe] border-blue-200 text-[#2563eb] shadow-xs'
+                  : 'bg-white border-slate-200/80 text-slate-700 hover:bg-slate-50'
               }`}
             >
-              <ImageIcon className="w-3.5 h-3.5" />
-              <span>Logo</span>
+              <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${options.contentType === 'image' ? 'bg-[#2563eb] text-white' : 'bg-slate-100 text-slate-600'}`}>
+                <ImageIcon className="w-3.5 h-3.5" />
+              </div>
+              <span>Images</span>
+            </button>
+
+            {/* vCard Plus Tab */}
+            <button
+              type="button"
+              onClick={() => setOptions((prev) => ({ ...prev, contentType: 'vcard' }))}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+                options.contentType === 'vcard'
+                  ? 'bg-[#edf2fe] border-blue-200 text-[#2563eb] shadow-xs'
+                  : 'bg-white border-slate-200/80 text-slate-700 hover:bg-slate-50'
+              }`}
+            >
+              <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${options.contentType === 'vcard' ? 'bg-[#2563eb] text-white' : 'bg-slate-100 text-slate-600'}`}>
+                <UserCheck className="w-3.5 h-3.5" />
+              </div>
+              <span>vCard Plus</span>
+            </button>
+
+            {/* Video Tab */}
+            <button
+              type="button"
+              onClick={() => setOptions((prev) => ({ ...prev, contentType: 'url' }))}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border bg-white border-slate-200/80 text-slate-700 hover:bg-slate-50"
+            >
+              <div className="w-6 h-6 rounded-lg flex items-center justify-center bg-slate-100 text-slate-600">
+                <Video className="w-3.5 h-3.5" />
+              </div>
+              <span>Video</span>
             </button>
           </div>
 
-          {/* TAB 1: CONTENT TYPE SELECTION */}
-          {activeTab === 'content' && (
-            <div className="space-y-5 animate-in fade-in duration-150">
-              <div className="space-y-2">
-                <label className="text-[11px] font-extrabold text-slate-900 uppercase tracking-wider block font-sans">
-                  Select Content Type
-                </label>
-                <div className="grid grid-cols-3 sm:grid-cols-3 gap-2">
-                  {[
-                    { key: 'url', label: 'URL Link', icon: LinkIcon },
-                    { key: 'upi', label: 'UPI / GPay', icon: CreditCard },
-                    { key: 'instagram', label: 'Instagram', icon: Camera },
-                    { key: 'wifi', label: 'WiFi Network', icon: Wifi },
-                    { key: 'vcard', label: 'Contact Card', icon: UserCheck },
-                    { key: 'whatsapp', label: 'WhatsApp', icon: MessageSquare },
-                    { key: 'email', label: 'Email', icon: Mail },
-                    { key: 'sms', label: 'SMS Text', icon: PhoneCall },
-                    { key: 'text', label: 'Plain Text', icon: FileText },
-                  ].map((type) => {
-                    const Icon = type.icon;
-                    const isSelected = options.contentType === type.key;
-                    return (
-                      <button
-                        key={type.key}
-                        type="button"
-                        onClick={() => setOptions((prev) => ({ ...prev, contentType: type.key as QrContentType }))}
-                        className={`flex flex-col items-center gap-1.5 p-3 rounded-2xl border text-[11px] font-bold transition-all cursor-pointer ${
-                          isSelected
-                            ? 'bg-slate-900 text-white border-slate-900 shadow-md scale-105'
-                            : 'bg-zinc-50 hover:bg-zinc-100 text-slate-700 border-zinc-200'
-                        }`}
-                      >
-                        <Icon className={`w-4 h-4 ${isSelected ? 'text-white' : 'text-indigo-600'}`} />
-                        <span>{type.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
+          <button
+            type="button"
+            className="w-9 h-9 rounded-xl border border-slate-200 bg-white flex items-center justify-center text-slate-600 hover:bg-slate-50 cursor-pointer shrink-0"
+            title="More Options"
+          >
+            <ChevronDown className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* MAIN 2-PANEL LAYOUT */}
+        <div className="grid grid-cols-1 lg:grid-cols-12">
+          
+          {/* LEFT PANEL (2/3 width) */}
+          <div className="lg:col-span-8 p-6 sm:p-8 space-y-6">
+            
+            {/* ── STEP 1: COMPLETE THE CONTENT ── */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <span className="w-6 h-6 bg-slate-900 text-white rounded font-bold text-xs flex items-center justify-center shadow-xs">
+                  1
+                </span>
+                <h3 className="text-base font-extrabold text-slate-900 font-sans">
+                  Complete the content
+                </h3>
               </div>
 
-              {/* FORM INPUTS ACCORDING TO CONTENT TYPE */}
-              <div className="space-y-4 pt-2 border-t border-zinc-100">
+              <div className="pl-9 space-y-2">
+                <label className="text-xs font-bold text-slate-800 block">
+                  {options.contentType === 'url' && 'Enter your Website'}
+                  {options.contentType === 'text' && 'Enter your Plain Text'}
+                  {options.contentType === 'pdf' && 'Enter PDF Document URL'}
+                  {options.contentType === 'image' && 'Enter Image Gallery URL'}
+                  {options.contentType === 'vcard' && 'vCard Contact Details'}
+                </label>
+
                 {options.contentType === 'url' && (
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-900">Website URL / Link</label>
+                  <div className="space-y-1">
                     <input
-                      type="url"
+                      type="text"
                       value={options.url}
-                      onChange={(e) => setOptions((prev) => ({ ...prev, url: e.target.value }))}
-                      placeholder="https://example.com"
-                      className="w-full px-4 py-3 rounded-xl border border-zinc-200 text-xs text-slate-900 font-mono focus:outline-none focus:border-slate-900 bg-zinc-50/50"
+                      onChange={(e) => {
+                        setOptions((prev) => ({ ...prev, url: e.target.value }));
+                        if (e.target.value) setShowRequiredError(false);
+                      }}
+                      placeholder="E.g. https://www.myweb.com/"
+                      className={`w-full max-w-md px-4 py-3 bg-white border rounded-lg text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none transition-all font-sans ${
+                        showRequiredError && !options.url
+                          ? 'border-red-500 focus:border-red-600 bg-red-50/20'
+                          : 'border-blue-500 focus:ring-2 focus:ring-blue-100'
+                      }`}
                     />
-                  </div>
-                )}
-
-                {options.contentType === 'upi' && (
-                  <div className="space-y-3">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div className="space-y-1">
-                        <label className="text-xs font-bold text-slate-900">VPA Address (UPI ID)</label>
-                        <input
-                          type="text"
-                          value={options.upi.vpa}
-                          onChange={(e) => setOptions((prev) => ({ ...prev, upi: { ...prev.upi, vpa: e.target.value } }))}
-                          placeholder="merchant@upi"
-                          className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-200 text-xs text-slate-900 bg-zinc-50/50 font-mono"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-xs font-bold text-slate-900">Payee Name</label>
-                        <input
-                          type="text"
-                          value={options.upi.name}
-                          onChange={(e) => setOptions((prev) => ({ ...prev, upi: { ...prev.upi, name: e.target.value } }))}
-                          placeholder="Store Name"
-                          className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-200 text-xs text-slate-900 bg-zinc-50/50 font-sans"
-                        />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div className="space-y-1">
-                        <label className="text-xs font-bold text-slate-900">Amount (Optional)</label>
-                        <input
-                          type="number"
-                          value={options.upi.amount}
-                          onChange={(e) => setOptions((prev) => ({ ...prev, upi: { ...prev.upi, amount: e.target.value } }))}
-                          placeholder="499"
-                          className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-200 text-xs text-slate-900 bg-zinc-50/50 font-mono"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-xs font-bold text-slate-900">Transaction Note</label>
-                        <input
-                          type="text"
-                          value={options.upi.note}
-                          onChange={(e) => setOptions((prev) => ({ ...prev, upi: { ...prev.upi, note: e.target.value } }))}
-                          placeholder="Order #108"
-                          className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-200 text-xs text-slate-900 bg-zinc-50/50 font-sans"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {options.contentType === 'instagram' && (
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-900">Instagram Handle / Username</label>
-                    <div className="flex items-center">
-                      <span className="px-3.5 py-3 rounded-l-xl bg-zinc-100 border border-r-0 border-zinc-200 text-xs font-bold text-slate-600">@</span>
-                      <input
-                        type="text"
-                        value={options.instagram.username}
-                        onChange={(e) => setOptions((prev) => ({ ...prev, instagram: { username: e.target.value } }))}
-                        placeholder="yourname"
-                        className="w-full px-3.5 py-3 rounded-r-xl border border-zinc-200 text-xs text-slate-900 font-mono focus:outline-none focus:border-slate-900 bg-zinc-50/50"
-                      />
-                    </div>
+                    {showRequiredError && !options.url && (
+                      <p className="text-[11px] font-medium text-red-600 flex items-center gap-1 pt-0.5">
+                        <Info className="w-3 h-3" /> Required field
+                      </p>
+                    )}
                   </div>
                 )}
 
                 {options.contentType === 'text' && (
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-900">Plain Text / Note</label>
-                    <textarea
-                      rows={3}
-                      value={options.text}
-                      onChange={(e) => setOptions((prev) => ({ ...prev, text: e.target.value }))}
-                      placeholder="Type your message or notes here..."
-                      className="w-full px-4 py-3 rounded-xl border border-zinc-200 text-xs text-slate-900 font-sans focus:outline-none focus:border-slate-900 bg-zinc-50/50"
-                    />
-                  </div>
-                )}
-
-                {options.contentType === 'wifi' && (
-                  <div className="space-y-3">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div className="space-y-1">
-                        <label className="text-xs font-bold text-slate-900">Network SSID (Name)</label>
-                        <input
-                          type="text"
-                          value={options.wifi.ssid}
-                          onChange={(e) => setOptions((prev) => ({ ...prev, wifi: { ...prev.wifi, ssid: e.target.value } }))}
-                          className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-200 text-xs text-slate-900 bg-zinc-50/50 font-mono"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-xs font-bold text-slate-900">WiFi Password</label>
-                        <input
-                          type="text"
-                          value={options.wifi.password}
-                          onChange={(e) => setOptions((prev) => ({ ...prev, wifi: { ...prev.wifi, password: e.target.value } }))}
-                          className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-200 text-xs text-slate-900 bg-zinc-50/50 font-mono"
-                        />
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 text-xs">
-                      <label className="font-bold text-slate-900">Security Type:</label>
-                      {(['WPA', 'WEP', 'nopass'] as const).map((type) => (
-                        <label key={type} className="flex items-center gap-1 cursor-pointer font-medium">
-                          <input
-                            type="radio"
-                            name="encryption"
-                            checked={options.wifi.encryption === type}
-                            onChange={() => setOptions((prev) => ({ ...prev, wifi: { ...prev.wifi, encryption: type } }))}
-                            className="accent-slate-900"
-                          />
-                          <span>{type === 'nopass' ? 'Open (None)' : type}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {options.contentType === 'vcard' && (
-                  <div className="space-y-3">
-                    <div className="grid grid-cols-2 gap-3">
-                      <input
-                        type="text"
-                        placeholder="First Name"
-                        value={options.vcard.firstName}
-                        onChange={(e) => setOptions((prev) => ({ ...prev, vcard: { ...prev.vcard, firstName: e.target.value } }))}
-                        className="px-3 py-2 rounded-xl border border-zinc-200 text-xs text-slate-900 bg-zinc-50/50"
-                      />
-                      <input
-                        type="text"
-                        placeholder="Last Name"
-                        value={options.vcard.lastName}
-                        onChange={(e) => setOptions((prev) => ({ ...prev, vcard: { ...prev.vcard, lastName: e.target.value } }))}
-                        className="px-3 py-2 rounded-xl border border-zinc-200 text-xs text-slate-900 bg-zinc-50/50"
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <input
-                        type="text"
-                        placeholder="Phone Number"
-                        value={options.vcard.phone}
-                        onChange={(e) => setOptions((prev) => ({ ...prev, vcard: { ...prev.vcard, phone: e.target.value } }))}
-                        className="px-3 py-2 rounded-xl border border-zinc-200 text-xs text-slate-900 bg-zinc-50/50 font-mono"
-                      />
-                      <input
-                        type="email"
-                        placeholder="Email Address"
-                        value={options.vcard.email}
-                        onChange={(e) => setOptions((prev) => ({ ...prev, vcard: { ...prev.vcard, email: e.target.value } }))}
-                        className="px-3 py-2 rounded-xl border border-zinc-200 text-xs text-slate-900 bg-zinc-50/50 font-mono"
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <input
-                        type="text"
-                        placeholder="Company"
-                        value={options.vcard.company}
-                        onChange={(e) => setOptions((prev) => ({ ...prev, vcard: { ...prev.vcard, company: e.target.value } }))}
-                        className="px-3 py-2 rounded-xl border border-zinc-200 text-xs text-slate-900 bg-zinc-50/50"
-                      />
-                      <input
-                        type="text"
-                        placeholder="Job Title"
-                        value={options.vcard.jobTitle}
-                        onChange={(e) => setOptions((prev) => ({ ...prev, vcard: { ...prev.vcard, jobTitle: e.target.value } }))}
-                        className="px-3 py-2 rounded-xl border border-zinc-200 text-xs text-slate-900 bg-zinc-50/50"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {options.contentType === 'whatsapp' && (
-                  <div className="space-y-3">
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-slate-900">Phone Number (with Country Code)</label>
-                      <input
-                        type="text"
-                        value={options.whatsapp.phone}
-                        onChange={(e) => setOptions((prev) => ({ ...prev, whatsapp: { ...prev.whatsapp, phone: e.target.value } }))}
-                        placeholder="15550192831"
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-200 text-xs text-slate-900 bg-zinc-50/50 font-mono"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-slate-900">Pre-filled Message</label>
-                      <input
-                        type="text"
-                        value={options.whatsapp.message}
-                        onChange={(e) => setOptions((prev) => ({ ...prev, whatsapp: { ...prev.whatsapp, message: e.target.value } }))}
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-200 text-xs text-slate-900 bg-zinc-50/50 font-sans"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {options.contentType === 'email' && (
-                  <div className="space-y-3">
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-slate-900">Recipient Email</label>
-                      <input
-                        type="email"
-                        value={options.email.to}
-                        onChange={(e) => setOptions((prev) => ({ ...prev, email: { ...prev.email, to: e.target.value } }))}
-                        placeholder="hello@company.com"
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-200 text-xs text-slate-900 bg-zinc-50/50 font-mono"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-slate-900">Email Subject</label>
-                      <input
-                        type="text"
-                        value={options.email.subject}
-                        onChange={(e) => setOptions((prev) => ({ ...prev, email: { ...prev.email, subject: e.target.value } }))}
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-200 text-xs text-slate-900 bg-zinc-50/50 font-sans"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {options.contentType === 'sms' && (
-                  <div className="space-y-3">
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-slate-900">SMS Phone Number</label>
-                      <input
-                        type="text"
-                        value={options.sms.phone}
-                        onChange={(e) => setOptions((prev) => ({ ...prev, sms: { ...prev.sms, phone: e.target.value } }))}
-                        placeholder="15550192831"
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-200 text-xs text-slate-900 bg-zinc-50/50 font-mono"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold text-slate-900">SMS Text Body</label>
-                      <input
-                        type="text"
-                        value={options.sms.message}
-                        onChange={(e) => setOptions((prev) => ({ ...prev, sms: { ...prev.sms, message: e.target.value } }))}
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-200 text-xs text-slate-900 bg-zinc-50/50 font-sans"
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* TAB 2: DOT MATRIX & EYE SHAPES */}
-          {activeTab === 'shapes' && (
-            <div className="space-y-5 animate-in fade-in duration-150">
-              
-              {/* Dot Pattern Shapes */}
-              <div className="space-y-2">
-                <label className="text-[11px] font-extrabold text-slate-900 uppercase tracking-wider block font-sans">
-                  Matrix Dot Patterns
-                </label>
-                <div className="grid grid-cols-3 gap-2">
-                  {[
-                    { key: 'square', label: 'Classic Square' },
-                    { key: 'dots', label: 'Circular Dots' },
-                    { key: 'rounded', label: 'Rounded Matrix' },
-                    { key: 'extra-rounded', label: 'Extra Rounded' },
-                    { key: 'classy', label: 'Classy Curves' },
-                    { key: 'classy-rounded', label: 'Classy Smooth' },
-                  ].map((shape) => (
-                    <button
-                      key={shape.key}
-                      type="button"
-                      onClick={() => setOptions((prev) => ({ ...prev, dotStyle: shape.key as QrDotStyle, presetTheme: undefined }))}
-                      className={`p-2.5 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
-                        options.dotStyle === shape.key
-                          ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
-                          : 'bg-zinc-50 hover:bg-zinc-100 text-slate-700 border-zinc-200'
-                      }`}
-                    >
-                      {shape.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Corner Eye Frame Shapes */}
-              <div className="space-y-2 pt-3 border-t border-zinc-100">
-                <label className="text-[11px] font-extrabold text-slate-900 uppercase tracking-wider block font-sans">
-                  Corner Eye Frame Style
-                </label>
-                <div className="grid grid-cols-3 gap-2">
-                  {[
-                    { key: 'square', label: 'Square Frame' },
-                    { key: 'circle', label: 'Circle Frame' },
-                    { key: 'rounded', label: 'Rounded Frame' },
-                  ].map((eye) => (
-                    <button
-                      key={eye.key}
-                      type="button"
-                      onClick={() => setOptions((prev) => ({ ...prev, eyeFrameStyle: eye.key as QrEyeFrameStyle, presetTheme: undefined }))}
-                      className={`p-2.5 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
-                        options.eyeFrameStyle === eye.key
-                          ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
-                          : 'bg-zinc-50 hover:bg-zinc-100 text-slate-700 border-zinc-200'
-                      }`}
-                    >
-                      {eye.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Eye Ball Center Shapes */}
-              <div className="space-y-2 pt-3 border-t border-zinc-100">
-                <label className="text-[11px] font-extrabold text-slate-900 uppercase tracking-wider block font-sans">
-                  Corner Eye Ball Center
-                </label>
-                <div className="grid grid-cols-2 gap-2">
-                  {[
-                    { key: 'square', label: 'Square Ball' },
-                    { key: 'circle', label: 'Circle Ball' },
-                  ].map((ball) => (
-                    <button
-                      key={ball.key}
-                      type="button"
-                      onClick={() => setOptions((prev) => ({ ...prev, eyeBallStyle: ball.key as QrEyeBallStyle, presetTheme: undefined }))}
-                      className={`p-2.5 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
-                        options.eyeBallStyle === ball.key
-                          ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
-                          : 'bg-zinc-50 hover:bg-zinc-100 text-slate-700 border-zinc-200'
-                      }`}
-                    >
-                      {ball.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Quiet Zone Margin */}
-              <div className="space-y-1.5 pt-3 border-t border-zinc-100">
-                <div className="flex justify-between items-center text-xs font-bold text-slate-900">
-                  <label className="text-[11px] font-extrabold uppercase tracking-wider block font-sans">
-                    Quiet Zone Margin
-                  </label>
-                  <span className="font-mono text-[11px] font-bold text-slate-600">{options.margin}px</span>
-                </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="30"
-                  step="2"
-                  value={options.margin}
-                  onChange={(e) => setOptions((prev) => ({ ...prev, margin: parseInt(e.target.value, 10) }))}
-                  className="w-full h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-slate-900"
-                />
-              </div>
-
-            </div>
-          )}
-
-          {/* TAB 3: COLORS & GRADIENTS */}
-          {activeTab === 'colors' && (
-            <div className="space-y-5 animate-in fade-in duration-150">
-              
-              {/* Gradient Toggle */}
-              <div className="flex items-center justify-between p-3 rounded-2xl bg-zinc-50 border border-zinc-200">
-                <div>
-                  <div className="text-xs font-bold text-slate-900">2-Color Gradient Fill</div>
-                  <div className="text-[10px] text-slate-600 font-normal">Enable smooth linear color transitions for QR dots</div>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={options.useGradient}
-                  onChange={(e) => setOptions((prev) => ({ ...prev, useGradient: e.target.checked, presetTheme: undefined }))}
-                  className="w-5 h-5 accent-slate-900 cursor-pointer"
-                />
-              </div>
-
-              {/* Color Pickers */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-900">Primary Dot Color</label>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="color"
-                      value={options.dotColor}
-                      onChange={(e) => setOptions((prev) => ({ ...prev, dotColor: e.target.value, presetTheme: undefined }))}
-                      className="w-10 h-10 rounded-xl cursor-pointer border border-zinc-200 p-0.5"
-                    />
-                    <input
-                      type="text"
-                      value={options.dotColor}
-                      onChange={(e) => setOptions((prev) => ({ ...prev, dotColor: e.target.value, presetTheme: undefined }))}
-                      className="flex-1 px-3 py-2 rounded-xl border border-zinc-200 text-xs font-mono text-slate-900"
-                    />
-                  </div>
-                </div>
-
-                {options.useGradient && (
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-900">Gradient Secondary Color</label>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="color"
-                        value={options.gradientColor2}
-                        onChange={(e) => setOptions((prev) => ({ ...prev, gradientColor2: e.target.value, presetTheme: undefined }))}
-                        className="w-10 h-10 rounded-xl cursor-pointer border border-zinc-200 p-0.5"
-                      />
-                      <input
-                        type="text"
-                        value={options.gradientColor2}
-                        onChange={(e) => setOptions((prev) => ({ ...prev, gradientColor2: e.target.value, presetTheme: undefined }))}
-                        className="flex-1 px-3 py-2 rounded-xl border border-zinc-200 text-xs font-mono text-slate-900"
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Eye Colors */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-zinc-100">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-900">Eye Frame Color</label>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="color"
-                      value={options.eyeFrameColor}
-                      onChange={(e) => setOptions((prev) => ({ ...prev, eyeFrameColor: e.target.value, presetTheme: undefined }))}
-                      className="w-10 h-10 rounded-xl cursor-pointer border border-zinc-200 p-0.5"
-                    />
-                    <input
-                      type="text"
-                      value={options.eyeFrameColor}
-                      onChange={(e) => setOptions((prev) => ({ ...prev, eyeFrameColor: e.target.value, presetTheme: undefined }))}
-                      className="flex-1 px-3 py-2 rounded-xl border border-zinc-200 text-xs font-mono text-slate-900"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-900">Eye Ball Color</label>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="color"
-                      value={options.eyeBallColor}
-                      onChange={(e) => setOptions((prev) => ({ ...prev, eyeBallColor: e.target.value, presetTheme: undefined }))}
-                      className="w-10 h-10 rounded-xl cursor-pointer border border-zinc-200 p-0.5"
-                    />
-                    <input
-                      type="text"
-                      value={options.eyeBallColor}
-                      onChange={(e) => setOptions((prev) => ({ ...prev, eyeBallColor: e.target.value, presetTheme: undefined }))}
-                      className="flex-1 px-3 py-2 rounded-xl border border-zinc-200 text-xs font-mono text-slate-900"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Background Color */}
-              <div className="space-y-1.5 pt-3 border-t border-zinc-100">
-                <label className="text-xs font-bold text-slate-900">Background Canvas Color</label>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="color"
-                    value={options.bgColor}
-                    onChange={(e) => setOptions((prev) => ({ ...prev, bgColor: e.target.value, presetTheme: undefined }))}
-                    className="w-10 h-10 rounded-xl cursor-pointer border border-zinc-200 p-0.5"
+                  <textarea
+                    rows={3}
+                    value={options.text}
+                    onChange={(e) => setOptions((prev) => ({ ...prev, text: e.target.value }))}
+                    placeholder="E.g. Enter your text message here..."
+                    className="w-full max-w-md px-4 py-3 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 transition-all font-sans"
                   />
+                )}
+
+                {options.contentType === 'pdf' && (
                   <input
-                    type="text"
-                    value={options.bgColor}
-                    onChange={(e) => setOptions((prev) => ({ ...prev, bgColor: e.target.value, presetTheme: undefined }))}
-                    className="flex-1 px-3 py-2 rounded-xl border border-zinc-200 text-xs font-mono text-slate-900"
+                    type="url"
+                    value={options.url}
+                    onChange={(e) => setOptions((prev) => ({ ...prev, url: e.target.value }))}
+                    placeholder="E.g. https://example.com/document.pdf"
+                    className="w-full max-w-md px-4 py-3 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 placeholder:text-slate-400 font-sans"
                   />
-                </div>
+                )}
               </div>
-
             </div>
-          )}
 
-          {/* TAB 4: BRAND LOGO OVERLAY */}
-          {activeTab === 'logo' && (
-            <div className="space-y-5 animate-in fade-in duration-150">
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-900">Upload Custom Brand Logo</label>
-                <input
-                  type="file"
-                  accept="image/png, image/jpeg, image/svg+xml, image/webp"
-                  onChange={handleLogoUpload}
-                  className="w-full text-xs text-slate-600 file:mr-4 file:py-2.5 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-slate-900 file:text-white hover:file:bg-black cursor-pointer"
-                />
-                <p className="text-[11px] text-slate-500 font-normal">
-                  Upload your PNG or SVG logo to overlay in the center with smart background dot clipping.
-                </p>
+            {/* HORIZONTAL DIVIDER LINE */}
+            <div className="border-t border-slate-100 my-6" />
+
+            {/* ── STEP 2: DESIGN YOUR QR ── */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <span className="w-6 h-6 bg-slate-900 text-white rounded font-bold text-xs flex items-center justify-center shadow-xs">
+                  2
+                </span>
+                <h3 className="text-base font-extrabold text-slate-900 font-sans">
+                  Design your QR
+                </h3>
               </div>
 
-              {options.logoUrl && (
-                <div className="space-y-4 pt-3 border-t border-zinc-100">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-900">Current Logo Loaded</span>
+              <div className="pl-9 space-y-4">
+                
+                {/* Sub-tabs Bar: Frame | Shape | Logo | Level */}
+                <div className="flex items-center gap-2 border-b border-slate-100 pb-2">
+                  {[
+                    { id: 'frame', label: 'Frame' },
+                    { id: 'shape', label: 'Shape' },
+                    { id: 'logo', label: 'Logo' },
+                    { id: 'level', label: 'Level' },
+                  ].map((t) => {
+                    const isActive = designTab === t.id;
+                    return (
+                      <button
+                        key={t.id}
+                        type="button"
+                        onClick={() => setDesignTab(t.id as any)}
+                        className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                          isActive
+                            ? 'bg-[#edf2fe] text-[#2563eb]'
+                            : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                        }`}
+                      >
+                        {t.label}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* ────────────────────────────────────────────────────────── */}
+                {/* 1. FRAME TAB (MATCHING SCREENSHOT 1) */}
+                {/* ────────────────────────────────────────────────────────── */}
+                {designTab === 'frame' && (
+                  <div className="bg-[#fafbfc] border border-slate-200/80 rounded-xl p-4 flex items-center gap-3 overflow-x-auto no-scrollbar">
+                    
+                    {/* No Frame Button */}
                     <button
                       type="button"
-                      onClick={() => setOptions((prev) => ({ ...prev, logoUrl: null }))}
-                      className="text-xs text-rose-600 font-bold hover:underline cursor-pointer"
+                      onClick={() => setSelectedFrame('none')}
+                      className={`w-16 h-16 rounded-xl border-2 flex items-center justify-center shrink-0 transition-all cursor-pointer ${
+                        selectedFrame === 'none'
+                          ? 'bg-[#edf2fe] border-blue-500 text-blue-600 shadow-xs'
+                          : 'bg-white border-slate-200 text-slate-400 hover:border-slate-300'
+                      }`}
+                      title="No Frame"
                     >
-                      Remove Logo
+                      <div className="w-8 h-8 rounded-full border-2 border-current flex items-center justify-center relative">
+                        <div className="w-7 h-0.5 bg-current rotate-45 absolute" />
+                      </div>
                     </button>
-                  </div>
 
-                  <div className="space-y-1">
-                    <div className="flex justify-between text-xs font-semibold text-slate-800">
-                      <span>Logo Scale Size</span>
-                      <span className="font-mono text-[11px] font-bold">{Math.round(options.logoSize * 100)}%</span>
+                    {/* Frame 2: Envelope */}
+                    <button
+                      type="button"
+                      onClick={() => setSelectedFrame('envelope')}
+                      className={`w-16 h-16 rounded-xl border-2 flex flex-col items-center justify-center p-1.5 shrink-0 transition-all cursor-pointer ${
+                        selectedFrame === 'envelope'
+                          ? 'bg-[#edf2fe] border-blue-500 shadow-xs'
+                          : 'bg-white border-slate-200 hover:border-slate-300'
+                      }`}
+                      title="Envelope Frame"
+                    >
+                      <div className="w-10 h-10 border border-slate-800 rounded flex flex-col items-center justify-between p-1 bg-white">
+                        <div className="w-5 h-5 border border-slate-800 rounded-xs flex items-center justify-center text-[7px] font-mono">QR</div>
+                        <div className="w-full bg-slate-900 text-[5px] text-white font-mono font-bold text-center rounded-xs">SCAN ME</div>
+                      </div>
+                    </button>
+
+                    {/* Frame 3: Screen */}
+                    <button
+                      type="button"
+                      onClick={() => setSelectedFrame('screen')}
+                      className={`w-16 h-16 rounded-xl border-2 flex flex-col items-center justify-center p-1.5 shrink-0 transition-all cursor-pointer ${
+                        selectedFrame === 'screen'
+                          ? 'bg-[#edf2fe] border-blue-500 shadow-xs'
+                          : 'bg-white border-slate-200 hover:border-slate-300'
+                      }`}
+                      title="Screen Frame"
+                    >
+                      <div className="w-10 h-10 border border-slate-800 rounded flex flex-col items-center justify-between p-1 bg-white">
+                        <div className="w-5 h-5 border border-slate-800 rounded-xs flex items-center justify-center text-[7px] font-mono">QR</div>
+                        <div className="w-full bg-slate-900 text-[5px] text-white font-mono font-bold text-center rounded-xs">SCAN ME</div>
+                      </div>
+                    </button>
+
+                    {/* Frame 4: Tray */}
+                    <button
+                      type="button"
+                      onClick={() => setSelectedFrame('tray')}
+                      className={`w-16 h-16 rounded-xl border-2 flex flex-col items-center justify-center p-1.5 shrink-0 transition-all cursor-pointer ${
+                        selectedFrame === 'tray'
+                          ? 'bg-[#edf2fe] border-blue-500 shadow-xs'
+                          : 'bg-white border-slate-200 hover:border-slate-300'
+                      }`}
+                      title="Hand Tray Frame"
+                    >
+                      <div className="w-10 h-10 border border-slate-800 rounded flex flex-col items-center justify-between p-1 bg-white">
+                        <div className="w-5 h-5 border border-slate-800 rounded-xs flex items-center justify-center text-[7px] font-mono">QR</div>
+                        <div className="w-full bg-slate-900 text-[5px] text-white font-mono font-bold text-center rounded-xs">ORDER HERE</div>
+                      </div>
+                    </button>
+
+                    {/* Frame 5: Starburst */}
+                    <button
+                      type="button"
+                      onClick={() => setSelectedFrame('starburst')}
+                      className={`w-16 h-16 rounded-xl border-2 flex flex-col items-center justify-center p-1.5 shrink-0 transition-all cursor-pointer ${
+                        selectedFrame === 'starburst'
+                          ? 'bg-[#edf2fe] border-blue-500 shadow-xs'
+                          : 'bg-white border-slate-200 hover:border-slate-300'
+                      }`}
+                      title="Starburst Frame"
+                    >
+                      <div className="w-10 h-10 border border-slate-800 rounded flex flex-col items-center justify-between p-1 bg-white">
+                        <div className="w-5 h-5 border border-slate-800 rounded-xs flex items-center justify-center text-[7px] font-mono">QR</div>
+                        <div className="w-full bg-slate-900 text-[5px] text-white font-mono font-bold text-center rounded-xs">OFFER</div>
+                      </div>
+                    </button>
+
+                    {/* Frame 6: Beer */}
+                    <button
+                      type="button"
+                      onClick={() => setSelectedFrame('beer')}
+                      className={`w-16 h-16 rounded-xl border-2 flex flex-col items-center justify-center p-1.5 shrink-0 transition-all cursor-pointer ${
+                        selectedFrame === 'beer'
+                          ? 'bg-[#edf2fe] border-blue-500 shadow-xs'
+                          : 'bg-white border-slate-200 hover:border-slate-300'
+                      }`}
+                      title="Beer Mug Frame"
+                    >
+                      <div className="w-10 h-10 border border-slate-800 rounded flex flex-col items-center justify-between p-1 bg-white">
+                        <div className="w-5 h-5 border border-slate-800 rounded-xs flex items-center justify-center text-[7px] font-mono">QR</div>
+                        <div className="w-full bg-slate-900 text-[5px] text-white font-mono font-bold text-center rounded-xs">DRINK ME</div>
+                      </div>
+                    </button>
+
+                    {/* Frame 7: Scooter */}
+                    <button
+                      type="button"
+                      onClick={() => setSelectedFrame('scooter')}
+                      className={`w-16 h-16 rounded-xl border-2 flex flex-col items-center justify-center p-1.5 shrink-0 transition-all cursor-pointer ${
+                        selectedFrame === 'scooter'
+                          ? 'bg-[#edf2fe] border-blue-500 shadow-xs'
+                          : 'bg-white border-slate-200 hover:border-slate-300'
+                      }`}
+                      title="Delivery Frame"
+                    >
+                      <div className="w-10 h-10 border border-slate-800 rounded flex flex-col items-center justify-between p-1 bg-white">
+                        <div className="w-5 h-5 border border-slate-800 rounded-xs flex items-center justify-center text-[7px] font-mono">QR</div>
+                        <div className="w-full bg-slate-900 text-[5px] text-white font-mono font-bold text-center rounded-xs">DELIVERY</div>
+                      </div>
+                    </button>
+
+                    {/* Frame 8: Coffee */}
+                    <button
+                      type="button"
+                      onClick={() => setSelectedFrame('coffee')}
+                      className={`w-16 h-16 rounded-xl border-2 flex flex-col items-center justify-center p-1.5 shrink-0 transition-all cursor-pointer ${
+                        selectedFrame === 'coffee'
+                          ? 'bg-[#edf2fe] border-blue-500 shadow-xs'
+                          : 'bg-white border-slate-200 hover:border-slate-300'
+                      }`}
+                      title="Coffee Cup Frame"
+                    >
+                      <div className="w-10 h-10 border border-slate-800 rounded flex flex-col items-center justify-between p-1 bg-white">
+                        <div className="w-5 h-5 border border-slate-800 rounded-xs flex items-center justify-center text-[7px] font-mono">QR</div>
+                        <div className="w-full bg-slate-900 text-[5px] text-white font-mono font-bold text-center rounded-xs">SCAN ME</div>
+                      </div>
+                    </button>
+
+                  </div>
+                )}
+
+                {/* ────────────────────────────────────────────────────────── */}
+                {/* 2. SHAPE TAB (MATCHING SCREENSHOT 2) */}
+                {/* ────────────────────────────────────────────────────────── */}
+                {designTab === 'shape' && (
+                  <div className="space-y-4">
+                    
+                    {/* Top Card: Shape Style & Colors */}
+                    <div className="bg-[#fafbfc] border border-slate-200/80 rounded-2xl p-5 space-y-4">
+                      <h4 className="text-xs font-bold text-slate-800">Shape style</h4>
+
+                      {/* Horizontal list of dot pattern shapes */}
+                      <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
+                        {SHAPE_STYLES.map((st) => {
+                          const isSelected = options.dotStyle === st.id;
+                          return (
+                            <button
+                              key={st.id}
+                              type="button"
+                              onClick={() => setOptions((prev) => ({ ...prev, dotStyle: st.id as QrDotStyle }))}
+                              className={`w-14 h-14 rounded-xl border-2 flex items-center justify-center shrink-0 transition-all cursor-pointer ${
+                                isSelected
+                                  ? 'bg-[#edf2fe] border-blue-500 shadow-xs'
+                                  : 'bg-white border-slate-200 hover:border-slate-300'
+                              }`}
+                              title={st.name}
+                            >
+                              <div className="w-8 h-8 flex flex-wrap items-center justify-center gap-0.5 p-1 bg-slate-900 rounded-xs">
+                                <div className="w-2 h-2 bg-white rounded-xs" />
+                                <div className="w-2 h-2 bg-white rounded-xs" />
+                                <div className="w-2 h-2 bg-white rounded-xs" />
+                                <div className="w-2 h-2 bg-white rounded-xs" />
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      {/* Shape Color Pickers + Invert Button */}
+                      <div className="p-4 bg-slate-100/70 border border-slate-200/60 rounded-xl flex flex-wrap items-center justify-between gap-4">
+                        <div className="flex items-center gap-6">
+                          
+                          {/* Border / Dot Colour */}
+                          <div className="space-y-1">
+                            <span className="text-[11px] font-bold text-slate-700 block">Border colour</span>
+                            <div className="flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-mono">
+                              <span>{options.dotColor.toUpperCase()}</span>
+                              <input
+                                type="color"
+                                value={options.dotColor}
+                                onChange={(e) => setOptions((prev) => ({ ...prev, dotColor: e.target.value }))}
+                                className="w-4 h-4 rounded cursor-pointer border-none bg-transparent"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Background Colour */}
+                          <div className="space-y-1">
+                            <span className="text-[11px] font-bold text-slate-700 block">Background colour</span>
+                            <div className="flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-mono">
+                              <span>{options.bgColor.toUpperCase()}</span>
+                              <input
+                                type="color"
+                                value={options.bgColor}
+                                onChange={(e) => setOptions((prev) => ({ ...prev, bgColor: e.target.value }))}
+                                className="w-4 h-4 rounded cursor-pointer border-none bg-transparent"
+                              />
+                            </div>
+                          </div>
+
+                        </div>
+
+                        {/* Invert Button */}
+                        <button
+                          type="button"
+                          onClick={() => handleInvertColors('shape')}
+                          className="px-3.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-blue-600 hover:bg-blue-50 transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
+                        >
+                          <RotateCw className="w-3.5 h-3.5" />
+                          <span>Invert</span>
+                        </button>
+                      </div>
+
                     </div>
-                    <input
-                      type="range"
-                      min="0.1"
-                      max="0.4"
-                      step="0.05"
-                      value={options.logoSize}
-                      onChange={(e) => setOptions((prev) => ({ ...prev, logoSize: parseFloat(e.target.value) }))}
-                      className="w-full h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-black"
-                    />
+
+                    {/* Bottom Card: Border Style & Center Style (Corner Eyes) */}
+                    <div className="bg-[#fafbfc] border border-slate-200/80 rounded-2xl p-5 space-y-5">
+                      
+                      {/* Outer Eye Border Style */}
+                      <div className="space-y-2">
+                        <h4 className="text-xs font-bold text-slate-800">Border style</h4>
+                        <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
+                          {EYE_BORDER_STYLES.map((b) => {
+                            const isSelected = options.eyeFrameStyle === b.id;
+                            return (
+                              <button
+                                key={b.id}
+                                type="button"
+                                onClick={() => setOptions((prev) => ({ ...prev, eyeFrameStyle: b.id as QrEyeFrameStyle }))}
+                                className={`w-12 h-12 rounded-xl border-2 flex items-center justify-center shrink-0 transition-all cursor-pointer ${
+                                  isSelected
+                                    ? 'bg-[#edf2fe] border-blue-500 shadow-xs'
+                                    : 'bg-white border-slate-200 hover:border-slate-300'
+                                }`}
+                                title={b.label}
+                              >
+                                <div className="w-7 h-7 border-2 border-slate-900 rounded-xs flex items-center justify-center">
+                                  <div className="w-3 h-3 bg-slate-900 rounded-xs" />
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Inner Eye Center Style */}
+                      <div className="space-y-2">
+                        <h4 className="text-xs font-bold text-slate-800">Center style</h4>
+                        <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
+                          {EYE_CENTER_STYLES.map((c) => {
+                            const isSelected = options.eyeBallStyle === c.id;
+                            return (
+                              <button
+                                key={c.id}
+                                type="button"
+                                onClick={() => setOptions((prev) => ({ ...prev, eyeBallStyle: c.id as QrEyeBallStyle }))}
+                                className={`w-12 h-12 rounded-xl border-2 flex items-center justify-center shrink-0 transition-all cursor-pointer ${
+                                  isSelected
+                                    ? 'bg-[#edf2fe] border-blue-500 shadow-xs'
+                                    : 'bg-white border-slate-200 hover:border-slate-300'
+                                }`}
+                                title={c.label}
+                              >
+                                <div className={`w-5 h-5 bg-slate-900 ${c.id === 'circle' ? 'rounded-full' : 'rounded-xs'}`} />
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Corner Eyes Color Pickers */}
+                      <div className="p-4 bg-slate-100/70 border border-slate-200/60 rounded-xl flex flex-wrap items-center justify-between gap-4">
+                        <div className="flex items-center gap-6">
+                          
+                          <div className="space-y-1">
+                            <span className="text-[11px] font-bold text-slate-700 block">Border colour</span>
+                            <div className="flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-mono">
+                              <span>{options.eyeFrameColor.toUpperCase()}</span>
+                              <input
+                                type="color"
+                                value={options.eyeFrameColor}
+                                onChange={(e) => setOptions((prev) => ({ ...prev, eyeFrameColor: e.target.value }))}
+                                className="w-4 h-4 rounded cursor-pointer border-none bg-transparent"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="space-y-1">
+                            <span className="text-[11px] font-bold text-slate-700 block">Background colour</span>
+                            <div className="flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-mono">
+                              <span>{options.eyeBallColor.toUpperCase()}</span>
+                              <input
+                                type="color"
+                                value={options.eyeBallColor}
+                                onChange={(e) => setOptions((prev) => ({ ...prev, eyeBallColor: e.target.value }))}
+                                className="w-4 h-4 rounded cursor-pointer border-none bg-transparent"
+                              />
+                            </div>
+                          </div>
+
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => handleInvertColors('eyes')}
+                          className="px-3.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-blue-600 hover:bg-blue-50 transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
+                        >
+                          <RotateCw className="w-3.5 h-3.5" />
+                          <span>Invert</span>
+                        </button>
+                      </div>
+
+                    </div>
+
                   </div>
-                </div>
-              )}
+                )}
+
+                {/* ────────────────────────────────────────────────────────── */}
+                {/* 3. LOGO TAB (MATCHING SCREENSHOT 3) */}
+                {/* ────────────────────────────────────────────────────────── */}
+                {designTab === 'logo' && (
+                  <div className="bg-[#fafbfc] border border-slate-200/80 rounded-2xl p-5 space-y-4">
+                    <h4 className="text-xs font-bold text-slate-800">Select a logo</h4>
+
+                    {/* Presets Grid */}
+                    <div className="flex items-center gap-3 overflow-x-auto pb-2 no-scrollbar">
+                      {LOGO_PRESETS.map((logo) => {
+                        const IconComp = logo.icon;
+                        const isSelected = selectedLogoPreset === logo.id;
+                        return (
+                          <button
+                            key={logo.id}
+                            type="button"
+                            onClick={() => {
+                              setSelectedLogoPreset(logo.id);
+                              if (logo.id === 'none') {
+                                setOptions((prev) => ({ ...prev, logoUrl: null }));
+                              }
+                            }}
+                            className={`w-14 h-14 rounded-2xl border-2 flex items-center justify-center shrink-0 transition-all cursor-pointer ${
+                              isSelected
+                                ? 'bg-[#edf2fe] border-blue-500 shadow-xs'
+                                : 'bg-white border-slate-200 hover:border-slate-300'
+                            }`}
+                            title={logo.label}
+                          >
+                            {logo.id === 'none' ? (
+                              <div className="w-7 h-7 rounded-full border-2 border-slate-400 flex items-center justify-center relative text-slate-400">
+                                <div className="w-6 h-0.5 bg-current rotate-45 absolute" />
+                              </div>
+                            ) : (
+                              <div className={`w-10 h-10 rounded-full ${logo.color} flex items-center justify-center shadow-xs`}>
+                                {IconComp && <IconComp className="w-5 h-5" />}
+                              </div>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Drag & Drop Upload Dotted Box */}
+                    <div className="pt-2">
+                      <label className="border-2 border-dashed border-slate-300 hover:border-blue-500 bg-white hover:bg-blue-50/20 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-center gap-3 text-center cursor-pointer transition-all">
+                        <Upload className="w-5 h-5 text-slate-600" />
+                        <span className="text-xs font-semibold text-slate-700">
+                          Drag and drop or click to upload a logo <span className="text-slate-400 font-normal">(JPG, JPEG, or PNG / 2MB max)</span>
+                        </span>
+                        <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
+                      </label>
+                    </div>
+                  </div>
+                )}
+
+                {/* ────────────────────────────────────────────────────────── */}
+                {/* 4. LEVEL TAB (MATCHING SCREENSHOT 4) */}
+                {/* ────────────────────────────────────────────────────────── */}
+                {designTab === 'level' && (
+                  <div className="bg-[#fafbfc] border border-slate-200/80 rounded-2xl p-5 space-y-4">
+                    <h4 className="text-xs font-bold text-slate-800">Select a level</h4>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                      {LEVEL_OPTIONS.map((item) => {
+                        const isSelected = options.errorCorrection === item.level;
+                        return (
+                          <div
+                            key={item.level}
+                            onClick={() => setOptions((prev) => ({ ...prev, errorCorrection: item.level as any }))}
+                            className={`p-4 rounded-2xl border-2 flex flex-col items-center justify-between space-y-3 cursor-pointer transition-all ${
+                              isSelected
+                                ? 'bg-[#edf2fe] border-blue-500 shadow-md'
+                                : 'bg-white border-slate-200/80 hover:border-slate-300'
+                            }`}
+                          >
+                            {/* QR Matrix Visual Specimen */}
+                            <div className={`w-24 h-24 rounded-xl p-2 border flex items-center justify-center ${isSelected ? 'bg-blue-600 text-white border-blue-600' : 'bg-slate-900 text-white border-slate-900'}`}>
+                              <div className="w-full h-full border border-white/30 rounded flex items-center justify-center font-mono text-[9px] font-bold">
+                                {item.level}
+                              </div>
+                            </div>
+
+                            {/* Label & Percentage Badge */}
+                            <div className="flex items-center gap-2">
+                              <span className={`text-xs font-extrabold ${isSelected ? 'text-blue-600' : 'text-slate-900'}`}>
+                                Level {item.level}
+                              </span>
+                              <span className={`px-2 py-0.5 rounded-lg text-[10px] font-bold border ${isSelected ? 'bg-white border-blue-400 text-blue-700' : 'bg-slate-100 border-slate-200 text-slate-600'}`}>
+                                {item.percent}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+              </div>
             </div>
-          )}
 
-        </div>
+          </div>
 
-        {/* RIGHT COLUMN: LIVE STAGE PREVIEW & EXPORTS */}
-        <div className="lg:col-span-5 bg-white border border-zinc-200/80 rounded-3xl p-7 shadow-[0_10px_30px_rgba(0,0,0,0.03)] space-y-6 sticky top-24">
-          
-          <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <h3 className="text-base font-bold text-slate-900 font-sans tracking-tight">
-                Live QR Preview
+          {/* RIGHT PANEL (1/3 width) - STEP 3: DOWNLOAD YOUR QR */}
+          <div className="lg:col-span-4 bg-[#f8f9fa] border-l border-slate-100 p-6 sm:p-8 flex flex-col items-center justify-between text-center min-h-[420px]">
+            
+            {/* Header */}
+            <div className="flex items-center gap-3">
+              <span className="w-6 h-6 bg-slate-800 text-white rounded font-bold text-xs flex items-center justify-center shadow-xs">
+                3
+              </span>
+              <h3 className="text-base font-extrabold text-slate-900 font-sans">
+                Create your QR
               </h3>
             </div>
 
-            <button
-              type="button"
-              onClick={() => setOptions((prev) => ({
-                ...prev,
-                presetTheme: undefined,
-                dotStyle: 'rounded',
-                eyeFrameStyle: 'rounded',
-                eyeBallStyle: 'circle',
-                useGradient: true,
-                dotColor: '#0F172A',
-                gradientColor2: '#0284C7',
-                bgColor: '#FFFFFF',
-                eyeFrameColor: '#0F172A',
-                eyeBallColor: '#0284C7',
-                logoUrl: null,
-              }))}
-              className="flex items-center gap-1 text-[11px] font-bold text-slate-600 hover:text-slate-900 cursor-pointer transition-colors"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              Reset Design
-            </button>
-          </div>
+            {/* WHITE CARD WITH SHADOW CONTAINING REAL-TIME CANVAS */}
+            <div className="relative p-6 bg-white rounded-2xl border border-slate-100 shadow-[0_10px_25px_rgba(0,0,0,0.06)] flex items-center justify-center my-6 min-h-[220px] w-full max-w-[220px] mx-auto">
+              <div ref={qrRef} className="flex items-center justify-center max-w-full" />
+            </div>
 
-          {/* QR Code Render Target Container */}
-          <div className="w-full flex items-center justify-center p-4 sm:p-6 bg-zinc-50 border border-zinc-200/80 rounded-3xl shadow-inner min-h-[340px]">
-            <div 
-              ref={qrRef} 
-              className="w-full max-w-[340px] aspect-square rounded-2xl shadow-lg border border-zinc-200/60 p-3 bg-white flex items-center justify-center [&_svg]:w-full [&_svg]:h-full [&_svg]:max-w-full [&_svg]:object-contain [&_canvas]:w-full [&_canvas]:h-full [&_canvas]:object-contain" 
-            />
-          </div>
-
-          {/* Copy to Clipboard + Downloads */}
-          <div className="space-y-3">
-            <label className="text-[11px] font-extrabold text-slate-900 uppercase tracking-wider block font-sans">
-              High-Resolution Export
-            </label>
-
-            <button
-              type="button"
-              onClick={handleCopyClipboard}
-              className={`w-full py-3 px-4 rounded-2xl text-xs font-bold transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer ${
-                copied
-                  ? 'bg-emerald-600 text-white'
-                  : 'bg-indigo-600 hover:bg-indigo-700 text-white'
-              }`}
-            >
-              {copied ? (
-                <>
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>Copied Image to Clipboard!</span>
-                </>
-              ) : (
-                <>
-                  <Copy className="w-4 h-4" />
-                  <span>Copy Image to Clipboard</span>
-                </>
-              )}
-            </button>
-
-            <div className="grid grid-cols-2 gap-2.5">
+            {/* CREATE / GET STARTED ACTION BUTTON */}
+            <div className="w-full flex flex-col items-center justify-center space-y-2">
               <button
                 type="button"
-                onClick={() => handleDownload('png')}
-                className="py-3 px-4 rounded-2xl bg-slate-900 hover:bg-black text-white text-xs font-bold transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
+                onClick={handleActionClick}
+                className="bg-slate-900 hover:bg-black text-white font-extrabold px-6 py-3 rounded-full shadow-md text-xs flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-95 w-full max-w-[200px]"
               >
-                <Download className="w-4 h-4" />
-                <span>PNG (HD)</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleDownload('svg')}
-                className="py-3 px-4 rounded-2xl bg-zinc-100 hover:bg-zinc-200 border border-zinc-200 text-slate-900 text-xs font-bold transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <Download className="w-4 h-4 text-slate-700" />
-                <span>SVG (Vector)</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleDownload('webp')}
-                className="py-2.5 px-4 rounded-2xl bg-zinc-50 hover:bg-zinc-100 border border-zinc-200 text-slate-700 text-xs font-bold transition-all cursor-pointer text-center"
-              >
-                WEBP
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleDownload('jpeg')}
-                className="py-2.5 px-4 rounded-2xl bg-zinc-50 hover:bg-zinc-100 border border-zinc-200 text-slate-700 text-xs font-bold transition-all cursor-pointer text-center"
-              >
-                JPEG
+                <span>Create QR Code</span>
+                <ArrowRight className="w-4 h-4" />
               </button>
             </div>
-          </div>
 
-          <div className="pt-3 border-t border-zinc-100 text-center">
-            <span className="text-[11px] text-slate-500 font-mono font-medium">
-              100% In-Browser Rendering &bull; Zero Server Tracking
-            </span>
           </div>
 
         </div>
 
       </div>
-
     </div>
   );
 }

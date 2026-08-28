@@ -7,11 +7,59 @@ export interface ConversionPairInfo {
   description: string;
   badge: string;
   acceptedTypes: string[];
-  outputFormat: 'webp' | 'jpeg' | 'png' | 'avif';
-  category: 'image' | 'svg' | 'png' | 'jpg' | 'gif';
+  outputFormat: 'webp' | 'jpeg' | 'jpg' | 'png' | 'avif' | 'pdf' | string;
+  category: 'image' | 'svg' | 'png' | 'jpg' | 'gif' | 'pdf';
 }
 
 export const CONVERSION_PAIRS: Record<string, ConversionPairInfo> = {
+  'jpg-to-pdf': {
+    id: 'jpg-to-pdf',
+    fromFormat: 'JPG',
+    toFormat: 'PDF',
+    title: 'Convert JPG to PDF Online — Free & Instant Document Converter',
+    h1: 'Convert JPG to PDF Documents',
+    description: 'Transform JPG and JPEG photos into universal high-resolution PDF documents instantly with custom page sizing.',
+    badge: 'Document',
+    acceptedTypes: ['.jpg', '.jpeg', 'image/jpeg'],
+    outputFormat: 'pdf',
+    category: 'jpg',
+  },
+  'png-to-pdf': {
+    id: 'png-to-pdf',
+    fromFormat: 'PNG',
+    toFormat: 'PDF',
+    title: 'Convert PNG to PDF Online — High Quality Document Converter',
+    h1: 'Convert PNG to PDF Documents',
+    description: 'Convert PNG graphics and illustrations into print-ready PDF documents with crystal-clear vector rasterization.',
+    badge: 'Document',
+    acceptedTypes: ['.png', 'image/png'],
+    outputFormat: 'pdf',
+    category: 'png',
+  },
+  'webp-to-pdf': {
+    id: 'webp-to-pdf',
+    fromFormat: 'WebP',
+    toFormat: 'PDF',
+    title: 'Convert WebP to PDF Online — Fast & Free Document Converter',
+    h1: 'Convert WebP to PDF Documents',
+    description: 'Convert modern WebP images into universal PDF document files for printing, sharing, and archiving.',
+    badge: 'Document',
+    acceptedTypes: ['.webp', 'image/webp'],
+    outputFormat: 'pdf',
+    category: 'image',
+  },
+  'heic-to-pdf': {
+    id: 'heic-to-pdf',
+    fromFormat: 'HEIC',
+    toFormat: 'PDF',
+    title: 'Convert HEIC to PDF Online — Apple Photo to Document Converter',
+    h1: 'Convert HEIC to PDF Documents',
+    description: 'Convert iPhone and iPad HEIC camera photos directly into universal PDF files ready for printing and sharing.',
+    badge: 'Document',
+    acceptedTypes: ['.heic', '.heif', 'image/heic', 'image/heif'],
+    outputFormat: 'pdf',
+    category: 'image',
+  },
   'heic-to-jpg': {
     id: 'heic-to-jpg',
     fromFormat: 'HEIC',
@@ -21,7 +69,7 @@ export const CONVERSION_PAIRS: Record<string, ConversionPairInfo> = {
     description: 'Transform iPhone & iPad HEIC photos into universal JPG images instantly. 100% in-browser processing with zero quality loss.',
     badge: 'iOS Photo',
     acceptedTypes: ['.heic', '.heif', 'image/heic', 'image/heif'],
-    outputFormat: 'jpeg',
+    outputFormat: 'jpg',
     category: 'image',
   },
   'webp-to-png': {
@@ -45,8 +93,32 @@ export const CONVERSION_PAIRS: Record<string, ConversionPairInfo> = {
     description: 'Quickly change WebP web images into standard JPG photos compatible with all web browsers and photo viewers.',
     badge: 'Universal',
     acceptedTypes: ['.webp', 'image/webp'],
-    outputFormat: 'jpeg',
+    outputFormat: 'jpg',
     category: 'image',
+  },
+  'jpg-to-jpeg': {
+    id: 'jpg-to-jpeg',
+    fromFormat: 'JPG',
+    toFormat: 'JPEG',
+    title: 'Convert JPG to JPEG Online — Free & Instant Photo Converter',
+    h1: 'Convert JPG to JPEG Format',
+    description: 'Convert JPG images to official JPEG file format with optional custom dimensions and compression settings.',
+    badge: 'Universal',
+    acceptedTypes: ['.jpg', '.jpeg', 'image/jpeg'],
+    outputFormat: 'jpeg',
+    category: 'jpg',
+  },
+  'jpeg-to-jpg': {
+    id: 'jpeg-to-jpg',
+    fromFormat: 'JPEG',
+    toFormat: 'JPG',
+    title: 'Convert JPEG to JPG Online — Free & Instant Photo Converter',
+    h1: 'Convert JPEG to JPG Format',
+    description: 'Convert JPEG photos into standard JPG image format with lossless quality and custom sizing.',
+    badge: 'Universal',
+    acceptedTypes: ['.jpeg', '.jpg', 'image/jpeg'],
+    outputFormat: 'jpg',
+    category: 'jpg',
   },
   'png-to-jpg': {
     id: 'png-to-jpg',
@@ -57,7 +129,7 @@ export const CONVERSION_PAIRS: Record<string, ConversionPairInfo> = {
     description: 'Reduce image file sizes by converting transparent PNG graphics into lightweight JPG files with target size limits.',
     badge: 'Smaller File',
     acceptedTypes: ['.png', 'image/png'],
-    outputFormat: 'jpeg',
+    outputFormat: 'jpg',
     category: 'png',
   },
   'png-to-svg': {

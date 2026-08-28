@@ -118,12 +118,17 @@ export function CropCanvas({ imageSrc, aspectRatio, cropShape = 'rectangle', adj
           initialAspectRatio={cropShape === 'circle' ? 1 : (aspectRatio || NaN)}
           guides={cropShape !== 'circle'}
           viewMode={1}
-          minCropBoxHeight={10}
-          minCropBoxWidth={10}
+          dragMode="none"
+          toggleDragModeOnDblclick={false}
+          cropBoxMovable={true}
+          cropBoxResizable={true}
+          minCropBoxHeight={20}
+          minCropBoxWidth={20}
           background={true}
           responsive={true}
           autoCropArea={0.85}
           checkOrientation={false}
+          zoomOnWheel={false}
           cropend={handleCropEvent}
           ready={handleCropEvent}
           zoom={handleCropEvent}

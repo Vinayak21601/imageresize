@@ -120,11 +120,11 @@ export function ProfileStudio() {
 
           <div className="flex items-center gap-2.5 w-full sm:w-auto">
             <Link
-              href="/pricing"
+              href="/"
               className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-black text-white text-xs font-bold transition-all shadow-sm active:scale-95 cursor-pointer"
             >
-              <Sparkles className="w-3.5 h-3.5 text-zinc-300" />
-              <span>Manage PRO Plan</span>
+              <Crop className="w-3.5 h-3.5" />
+              <span>Launch Studio</span>
             </Link>
 
             <Link
@@ -296,17 +296,17 @@ export function ProfileStudio() {
                 <div className="p-3 rounded-2xl bg-zinc-100 text-slate-900 border border-zinc-200">
                   <QrCode className="w-6 h-6" />
                 </div>
-                <span className="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full bg-zinc-100 text-slate-800 border border-zinc-200">
-                  Marketing Tool
+                <span className="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-200">
+                  Coming Soon
                 </span>
               </div>
-              <h3 className="text-lg font-bold text-slate-900">QR Code Studio</h3>
+              <h3 className="text-lg font-bold text-slate-900">QR Code Studio <span className="text-xs font-normal text-amber-700">(Coming Soon)</span></h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Generate custom high-resolution QR codes for URLs, WiFi credentials, vCards, and vector SVG exports.
+                Design custom QR codes with dot pattern styles, gradient themes, custom corner eyes, and brand logo overlays.
               </p>
 
               <div className="pt-2 flex items-center justify-between text-xs text-slate-600 font-medium">
-                <span>18 Codes Saved</span>
+                <span>Vector Export</span>
                 <span className="text-slate-900 font-bold">PNG / SVG / WEBP</span>
               </div>
             </div>
@@ -315,7 +315,7 @@ export function ProfileStudio() {
               href="/qr-generator"
               className="mt-4 inline-flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-black text-white text-xs font-bold transition-all cursor-pointer"
             >
-              <span>Open QR Studio</span>
+              <span>Open QR Studio (Coming Soon)</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
@@ -327,11 +327,11 @@ export function ProfileStudio() {
                 <div className="p-3 rounded-2xl bg-zinc-100 text-slate-900 border border-zinc-200">
                   <Link2 className="w-6 h-6" />
                 </div>
-                <span className="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full bg-zinc-100 text-slate-800 border border-zinc-200">
-                  Analytics Tool
+                <span className="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-200">
+                  Coming Soon
                 </span>
               </div>
-              <h3 className="text-lg font-bold text-slate-900">URL Shortener &amp; Analytics</h3>
+              <h3 className="text-lg font-bold text-slate-900">URL Shortener &amp; Analytics <span className="text-xs font-normal text-amber-700">(Coming Soon)</span></h3>
               <p className="text-xs text-slate-600 leading-relaxed">
                 Create branded short links, track real-time click analytics, referrer channels, and QR code integration.
               </p>
@@ -346,7 +346,7 @@ export function ProfileStudio() {
               href="/url-shortener"
               className="mt-4 inline-flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-black text-white text-xs font-bold transition-all cursor-pointer"
             >
-              <span>Open Shortener</span>
+              <span>Open Shortener (Coming Soon)</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>

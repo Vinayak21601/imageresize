@@ -255,7 +255,7 @@ export default function Home() {
     <div className="min-h-screen flex flex-col bg-[#F8FAFC] text-slate-900 font-sans selection:bg-slate-900 selection:text-white">
       <main className="flex-1 w-full">
         {/* HERO + STUDIO SECTION WITH BACKGROUND IMAGE BACKDROP */}
-        <div className="relative bg-sky-cloud-hero border-b border-zinc-200/60 overflow-hidden">
+        <div className="relative bg-sky-cloud-hero border-b border-zinc-200/60 overflow-hidden min-h-screen flex flex-col justify-between">
           <Navbar />
 
           <section className="pt-8 pb-8 px-4 sm:px-6 lg:px-8">
@@ -464,7 +464,7 @@ export default function Home() {
 
                       <div className="relative rounded-xl overflow-hidden aspect-[4/3] bg-zinc-100 border border-zinc-200">
                         <img
-                          src="/user-sample.jpg"
+                          src="/user-sample.webp"
                           alt="Selected User Photo"
                           className="w-full h-full object-cover object-top"
                         />
@@ -529,7 +529,7 @@ export default function Home() {
                     <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
                       <div className="sm:col-span-5 relative rounded-xl overflow-hidden h-24 bg-zinc-100 border border-zinc-200">
                         <img
-                          src="/user-sample.jpg"
+                          src="/user-sample.webp"
                           alt="Resized Result Photo"
                           className="w-full h-full object-cover object-top"
                         />

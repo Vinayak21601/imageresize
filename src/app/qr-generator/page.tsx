@@ -16,6 +16,16 @@ import { Footer } from '@/components/common/Footer';
 import { QrStudio } from '@/components/qr/QrStudio';
 import { AdBanner } from '@/components/common/AdBanner';
 
+import { QrTrustBanner } from '@/components/qr/landing/QrTrustBanner';
+import { QrTypesCarousel } from '@/components/qr/landing/QrTypesCarousel';
+import { QrFeatureGrid } from '@/components/qr/landing/QrFeatureGrid';
+import { QrUseCasesGallery } from '@/components/qr/landing/QrUseCasesGallery';
+import { QrTemplatesGrid } from '@/components/qr/landing/QrTemplatesGrid';
+import { QrStepGuide } from '@/components/qr/landing/QrStepGuide';
+import { QrDashboardTeaser } from '@/components/qr/landing/QrDashboardTeaser';
+import { QrFaqSection } from '@/components/qr/landing/QrFaqSection';
+import { QrBottomCta } from '@/components/qr/landing/QrBottomCta';
+
 export default function QrGeneratorPage() {
   return (
     <div className="min-h-screen flex flex-col bg-[#F8FAFC] text-slate-900 font-sans selection:bg-slate-900 selection:text-white">
@@ -24,13 +34,13 @@ export default function QrGeneratorPage() {
         <div className="relative bg-sky-cloud-hero border-b border-zinc-200/60 overflow-hidden">
           <Navbar />
 
-          <section className="pt-8 pb-8 px-4 sm:px-6 lg:px-8 text-center">
+          <section className="pt-10 pb-8 px-4 sm:px-6 lg:px-8 text-center">
             <div className="max-w-4xl mx-auto space-y-4">
               
               {/* Badge */}
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/90 border border-zinc-200/80 text-xs font-semibold text-slate-800 shadow-sm backdrop-blur-md">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                Custom Business QR Generator &bull; Free &amp; Unlimited
+                Free Custom QR Code Generator &bull; Vector SVG &amp; PNG Export
               </div>
 
               {/* H1 Heading */}
@@ -41,7 +51,7 @@ export default function QrGeneratorPage() {
 
               {/* Subtitle */}
               <p className="text-base sm:text-lg text-slate-700 max-w-xl mx-auto font-normal leading-relaxed">
-                Generate custom QR codes for Website URLs, WiFi networks, vCard business contacts, and WhatsApp messages with custom gradients, shapes, and brand logo overlays.
+                Generate custom QR codes for Website URLs, WiFi networks, PDF menus, vCard business contacts, and WhatsApp messages with custom gradients, dot shapes, and brand logo overlays.
               </p>
             </div>
           </section>
@@ -58,56 +68,37 @@ export default function QrGeneratorPage() {
           </div>
         </div>
 
-        {/* FEATURE BREAKDOWN SECTION */}
-        <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-12">
-          
-          <div className="text-center space-y-3">
-            <h2 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight font-heading">
-              Built for business, print &amp; marketing.
-            </h2>
-            <p className="text-sm text-slate-700 max-w-lg mx-auto font-normal">
-              Everything you need to create scan-ready QR codes for packaging, flyers, digital business cards, and storefronts.
-            </p>
-          </div>
+        {/* TRUST & METRICS BANNER */}
+        <QrTrustBanner />
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-8 bg-white border border-zinc-200/80 rounded-3xl space-y-4 shadow-sm">
-              <div className="w-12 h-12 rounded-2xl bg-slate-900 text-white flex items-center justify-center font-black shadow-sm">
-                <Layers className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 font-sans">Custom Dot &amp; Eye Matrix</h3>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
-                Choose from 6 dot pattern shapes (rounded, classy, smooth, dots) and custom corner eye frame designs.
-              </p>
-            </div>
+        {/* INTERACTIVE QR CONTENT TYPES CAROUSEL & PREVIEW */}
+        <QrTypesCarousel />
 
-            <div className="p-8 bg-white border border-zinc-200/80 rounded-3xl space-y-4 shadow-sm">
-              <div className="w-12 h-12 rounded-2xl bg-slate-900 text-white flex items-center justify-center font-black shadow-sm">
-                <Palette className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 font-sans">2-Color Gradients</h3>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
-                Apply vibrant linear color gradients to match your corporate brand guidelines and social media aesthetics.
-              </p>
-            </div>
+        {/* ENTERPRISE FEATURE GRID */}
+        <QrFeatureGrid />
 
-            <div className="p-8 bg-white border border-zinc-200/80 rounded-3xl space-y-4 shadow-sm">
-              <div className="w-12 h-12 rounded-2xl bg-slate-900 text-white flex items-center justify-center font-black shadow-sm">
-                <Sparkles className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 font-sans">Brand Logo Overlay</h3>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
-                Upload your PNG or SVG brand logo to center inside the QR matrix with automatic background dot clipping.
-              </p>
-            </div>
-          </div>
+        {/* INDUSTRY PRINT USE CASES & PACKAGING */}
+        <QrUseCasesGallery />
 
-        </div>
+        {/* CALL-TO-ACTION FRAMES & TEMPLATES */}
+        <QrTemplatesGrid />
 
-        {/* IN-ARTICLE BANNER */}
-        <div className="max-w-5xl mx-auto px-4 my-4">
+        {/* 3-STEP PROCESS WALKTHROUGH */}
+        <QrStepGuide />
+
+        {/* DARK-MODE DASHBOARD TELEMETRY TEASER */}
+        <QrDashboardTeaser />
+
+        {/* IN-ARTICLE AD BANNER */}
+        <div className="max-w-5xl mx-auto px-4 my-8">
           <AdBanner slot="in-article-display" format="auto" label="Sponsored Content" />
         </div>
+
+        {/* ACCORDION FAQ SECTION */}
+        <QrFaqSection />
+
+        {/* FINAL CONVERSION CTA BANNER */}
+        <QrBottomCta />
       </main>
 
       <Footer />

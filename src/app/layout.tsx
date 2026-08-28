@@ -1,14 +1,16 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
 import { FeedbackWidget } from '@/components/common/FeedbackWidget';
+import { ReduxProvider } from '@/lib/redux/ReduxProvider';
 import './globals.css';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cropmyimages.com';
+const googleTagManagerId = 'GTM-WQD67L3X';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'CropMyImages — Free Image Resizer, Cropper & Format Converter',
+    default: 'CropMyImages - Free Image Resizer, Cropper & Format Converter',
     template: '%s | CropMyImages',
   },
   description:
@@ -102,6 +104,17 @@ export default function RootLayout({
         <link rel="icon" href="/logo.webp" type="image/webp" sizes="any" />
         <link rel="shortcut icon" href="/logo.webp" type="image/webp" />
         <link rel="apple-touch-icon" href="/logo.webp" />
+
+        {/* Google Tag Manager */}
+        <Script id="google-tag-manager" strategy="afterInteractive">
+          {`
+            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','${googleTagManagerId}');
+          `}
+        </Script>
         
         {/* JSON-LD Structured Data Schema */}
         <script
@@ -123,8 +136,19 @@ export default function RootLayout({
         className="bg-[#0B0E14] text-zinc-100 antialiased selection:bg-[#CCFF00] selection:text-black min-h-screen flex flex-col font-sans"
         suppressHydrationWarning
       >
-        {children}
-        <FeedbackWidget />
+        {/* Google Tag Manager (noscript) */}
+        <noscript>
+          <iframe
+            src={`https://www.googletagmanager.com/ns.html?id=${googleTagManagerId}`}
+            height="0"
+            width="0"
+            style={{ display: 'none', visibility: 'hidden' }}
+          />
+        </noscript>
+        <ReduxProvider>
+          {children}
+          <FeedbackWidget />
+        </ReduxProvider>
       </body>
     </html>
   );

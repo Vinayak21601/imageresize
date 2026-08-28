@@ -13,6 +13,7 @@ interface FormatSwitcherProps {
 export function FormatSwitcher({ currentPairId, onSelectPair }: FormatSwitcherProps) {
   const featuredPairs = [
     'heic-to-jpg',
+    'jpg-to-jpeg',
     'png-to-jpg',
     'webp-to-png',
     'jpg-to-webp',
