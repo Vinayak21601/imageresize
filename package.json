@@ -40,5 +40,15 @@
     "prisma": "^6.4.0",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "allowScripts": {
+    "@prisma/client@6.4.0": true,
+    "@prisma/engines@6.4.0": true,
+    "core-js@3.50.0": true,
+    "esbuild@0.28.1": true,
+    "prisma@6.4.0": true,
+    "protobufjs@7.6.5": true,
+    "sharp@0.34.5 || 0.35.3": true,
+    "unrs-resolver@1.12.2": true
   }
 }
