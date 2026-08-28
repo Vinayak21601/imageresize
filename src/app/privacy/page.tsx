@@ -375,7 +375,7 @@ export default function PrivacyPolicyPage() {
                 </div>
 
                 <p className="text-xs text-slate-500 font-mono pt-2">
-                  To exercise any of these rights, email your written request to <a href="mailto:privacy@cropmyimages.com" className="text-slate-900 font-semibold underline">privacy@cropmyimages.com</a>.
+                  To exercise any of these rights, email your written request to <a href="mailto:contact@cropmyimages.com" className="text-slate-900 font-semibold underline">contact@cropmyimages.com</a>.
                 </p>
               </section>
 
@@ -451,14 +451,14 @@ export default function PrivacyPolicyPage() {
                     <div>
                       <span className="text-zinc-400 text-xs font-mono uppercase">Grievance Email</span>
                       <p className="font-mono text-sky-400 font-semibold">
-                        <a href="mailto:grievance@cropmyimages.com" className="hover:underline">grievance@cropmyimages.com</a>
+                        <a href="mailto:contact@cropmyimages.com" className="hover:underline">contact@cropmyimages.com</a>
                       </p>
                     </div>
 
                     <div>
                       <span className="text-zinc-400 text-xs font-mono uppercase">Privacy Escalation</span>
                       <p className="font-mono text-sky-400 font-semibold">
-                        <a href="mailto:privacy@cropmyimages.com" className="hover:underline">privacy@cropmyimages.com</a>
+                        <a href="mailto:contact@cropmyimages.com" className="hover:underline">contact@cropmyimages.com</a>
                       </p>
                     </div>
                   </div>

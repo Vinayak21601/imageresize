@@ -274,7 +274,7 @@ export default function AcceptableUsePage() {
                 </ol>
 
                 <p className="text-xs text-slate-600 pt-2">
-                  Send notices to our Designated Copyright Agent at <a href="mailto:dmca@cropmyimages.com" className="text-slate-900 font-bold underline">dmca@cropmyimages.com</a>. Repeat infringers will have their accounts permanently terminated.
+                  Send notices to our Designated Copyright Agent at <a href="mailto:contact@cropmyimages.com" className="text-slate-900 font-bold underline">contact@cropmyimages.com</a>. Repeat infringers will have their accounts permanently terminated.
                 </p>
               </section>
 
@@ -290,7 +290,7 @@ export default function AcceptableUsePage() {
                 </div>
 
                 <p className="text-sm text-slate-700">
-                  We encourage security researchers to test our infrastructure responsibly. Security researchers must not destroy user data, disrupt services, or access private account details. Report security findings directly to <a href="mailto:security@cropmyimages.com" className="text-sky-600 font-semibold underline">security@cropmyimages.com</a>.
+                  We encourage security researchers to test our infrastructure responsibly. Security researchers must not destroy user data, disrupt services, or access private account details. Report security findings directly to <a href="mailto:contact@cropmyimages.com" className="text-sky-600 font-semibold underline">contact@cropmyimages.com</a>.
                 </p>
               </section>
 
@@ -347,7 +347,7 @@ export default function AcceptableUsePage() {
                     <div>
                       <span className="text-red-300 text-xs font-mono uppercase">Abuse Desk Email</span>
                       <p className="font-mono text-white font-bold text-base">
-                        <a href="mailto:abuse@cropmyimages.com" className="hover:underline">abuse@cropmyimages.com</a>
+                        <a href="mailto:contact@cropmyimages.com" className="hover:underline">contact@cropmyimages.com</a>
                       </p>
                     </div>
 

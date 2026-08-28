@@ -299,7 +299,7 @@ export default function RefundsPage() {
                     <div>
                       <span className="text-zinc-400 text-xs font-mono uppercase">Billing Desk Email</span>
                       <p className="font-mono text-sky-400 font-bold text-base">
-                        <a href="mailto:billing@cropmyimages.com" className="hover:underline">billing@cropmyimages.com</a>
+                        <a href="mailto:contact@cropmyimages.com" className="hover:underline">contact@cropmyimages.com</a>
                       </p>
                     </div>
 

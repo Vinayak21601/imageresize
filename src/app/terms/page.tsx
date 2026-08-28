@@ -155,7 +155,7 @@ export default function TermsOfServicePage() {
                 <ul className="space-y-2 text-xs sm:text-sm text-slate-700 list-disc list-inside">
                   <li><strong>Account Accuracy:</strong> You agree to provide accurate, complete, and updated registration details.</li>
                   <li><strong>Credential Security:</strong> You are solely responsible for safeguarding your login credentials and for all activities under your account.</li>
-                  <li><strong>Unauthorized Access:</strong> You must notify us immediately at <a href="mailto:security@cropmyimages.com" className="text-sky-600 font-semibold underline">security@cropmyimages.com</a> upon detecting any account breach.</li>
+                  <li><strong>Unauthorized Access:</strong> You must notify us immediately at <a href="mailto:contact@cropmyimages.com" className="text-sky-600 font-semibold underline">contact@cropmyimages.com</a> upon detecting any account breach.</li>
                 </ul>
               </section>
 
@@ -297,7 +297,7 @@ export default function TermsOfServicePage() {
                   </p>
                   
                   <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-emerald-950 font-normal leading-relaxed">
-                    <strong>14-Day Money-Back Guarantee:</strong> We offer a hassle-free 14-day money-back guarantee on all first-time paid subscriptions. If you are unsatisfied, contact <a href="mailto:support@cropmyimages.com" className="font-bold underline">support@cropmyimages.com</a> within 14 days of purchase for a full refund.
+                    <strong>14-Day Money-Back Guarantee:</strong> We offer a hassle-free 14-day money-back guarantee on all first-time paid subscriptions. If you are unsatisfied, contact <a href="mailto:contact@cropmyimages.com" className="font-bold underline">contact@cropmyimages.com</a> within 14 days of purchase for a full refund.
                   </div>
                 </div>
               </section>
@@ -433,14 +433,14 @@ export default function TermsOfServicePage() {
                     <div>
                       <span className="text-zinc-400 text-xs font-mono uppercase">Legal Counsel Desk</span>
                       <p className="font-mono text-sky-400 font-semibold">
-                        <a href="mailto:legal@cropmyimages.com" className="hover:underline">legal@cropmyimages.com</a>
+                        <a href="mailto:contact@cropmyimages.com" className="hover:underline">contact@cropmyimages.com</a>
                       </p>
                     </div>
 
                     <div>
                       <span className="text-zinc-400 text-xs font-mono uppercase">Customer Support</span>
                       <p className="font-mono text-sky-400 font-semibold">
-                        <a href="mailto:support@cropmyimages.com" className="hover:underline">support@cropmyimages.com</a>
+                        <a href="mailto:contact@cropmyimages.com" className="hover:underline">contact@cropmyimages.com</a>
                       </p>
                     </div>
                   </div>

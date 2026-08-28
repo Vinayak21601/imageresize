@@ -331,14 +331,14 @@ export default function CookiePolicyPage() {
                     <div>
                       <span className="text-zinc-400 text-xs font-mono uppercase">Privacy Desk</span>
                       <p className="font-mono text-sky-400 font-bold text-base">
-                        <a href="mailto:privacy@cropmyimages.com" className="hover:underline">privacy@cropmyimages.com</a>
+                        <a href="mailto:contact@cropmyimages.com" className="hover:underline">contact@cropmyimages.com</a>
                       </p>
                     </div>
 
                     <div>
                       <span className="text-zinc-400 text-xs font-mono uppercase">Grievance Officer</span>
                       <p className="font-mono text-sky-400 font-bold text-base">
-                        <a href="mailto:grievance@cropmyimages.com" className="hover:underline">grievance@cropmyimages.com</a>
+                        <a href="mailto:contact@cropmyimages.com" className="hover:underline">contact@cropmyimages.com</a>
                       </p>
                     </div>
                   </div>

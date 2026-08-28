@@ -216,7 +216,7 @@ export default function ReportAbusePage() {
 
               <div className="text-center pt-2">
                 <p className="text-xs text-slate-500">
-                  Prefer direct email? Send reports to <a href="mailto:abuse@cropmyimages.com" className="text-slate-900 font-bold underline">abuse@cropmyimages.com</a>.
+                  Prefer direct email? Send reports to <a href="mailto:contact@cropmyimages.com" className="text-slate-900 font-bold underline">contact@cropmyimages.com</a>.
                 </p>
               </div>
             </form>
@@ -229,7 +229,7 @@ export default function ReportAbusePage() {
                 <FileText className="w-4 h-4 text-sky-600" /> Copyright &amp; DMCA Agent
               </div>
               <p className="text-slate-600 font-normal text-xs leading-relaxed">
-                For formal DMCA takedown notices, send written notice under penalty of perjury to <a href="mailto:dmca@cropmyimages.com" className="text-slate-900 font-bold underline">dmca@cropmyimages.com</a>.
+                For formal DMCA takedown notices, send written notice under penalty of perjury to <a href="mailto:contact@cropmyimages.com" className="text-slate-900 font-bold underline">contact@cropmyimages.com</a>.
               </p>
             </div>
 
@@ -238,7 +238,7 @@ export default function ReportAbusePage() {
                 <Lock className="w-4 h-4 text-purple-600" /> Security Operations Center
               </div>
               <p className="text-slate-600 font-normal text-xs leading-relaxed">
-                For security vulnerability reports or DDoS incidents, email <a href="mailto:security@cropmyimages.com" className="text-slate-900 font-bold underline">security@cropmyimages.com</a>.
+                For security vulnerability reports or DDoS incidents, email <a href="mailto:contact@cropmyimages.com" className="text-slate-900 font-bold underline">contact@cropmyimages.com</a>.
               </p>
             </div>
           </div>

@@ -64,7 +64,7 @@ export default function ContactPage() {
                 <p className="text-xs text-slate-500 font-normal mt-0.5">Account &amp; tool help</p>
               </div>
               <p className="font-mono text-xs font-bold text-sky-600">
-                <a href="mailto:support@cropmyimages.com" className="hover:underline">support@cropmyimages.com</a>
+                <a href="mailto:contact@cropmyimages.com" className="hover:underline">contact@cropmyimages.com</a>
               </p>
               <div className="text-[11px] text-slate-500 font-mono">Response: &lt; 12 Hours</div>
             </div>
@@ -78,7 +78,7 @@ export default function ContactPage() {
                 <p className="text-xs text-slate-500 font-normal mt-0.5">Invoices &amp; subscription refunds</p>
               </div>
               <p className="font-mono text-xs font-bold text-emerald-600">
-                <a href="mailto:billing@cropmyimages.com" className="hover:underline">billing@cropmyimages.com</a>
+                <a href="mailto:contact@cropmyimages.com" className="hover:underline">contact@cropmyimages.com</a>
               </p>
               <div className="text-[11px] text-slate-500 font-mono">Response: &lt; 24 Hours</div>
             </div>
@@ -92,7 +92,7 @@ export default function ContactPage() {
                 <p className="text-xs text-slate-500 font-normal mt-0.5">Malware &amp; phishing takedowns</p>
               </div>
               <p className="font-mono text-xs font-bold text-red-600">
-                <a href="mailto:abuse@cropmyimages.com" className="hover:underline">abuse@cropmyimages.com</a>
+                <a href="mailto:contact@cropmyimages.com" className="hover:underline">contact@cropmyimages.com</a>
               </p>
               <div className="text-[11px] text-slate-500 font-mono">Response: 2 to 6 Hours</div>
             </div>
@@ -106,7 +106,7 @@ export default function ContactPage() {
                 <p className="text-xs text-slate-500 font-normal mt-0.5">Notices &amp; copyright</p>
               </div>
               <p className="font-mono text-xs font-bold text-purple-600">
-                <a href="mailto:legal@cropmyimages.com" className="hover:underline">legal@cropmyimages.com</a>
+                <a href="mailto:contact@cropmyimages.com" className="hover:underline">contact@cropmyimages.com</a>
               </p>
               <div className="text-[11px] text-slate-500 font-mono">Response: &lt; 48 Hours</div>
             </div>
@@ -245,14 +245,14 @@ export default function ContactPage() {
                     <div>
                       <span className="text-zinc-400 text-[11px] font-mono uppercase">Grievance Email</span>
                       <p className="font-mono text-sky-400 font-bold">
-                        <a href="mailto:grievance@cropmyimages.com" className="hover:underline">grievance@cropmyimages.com</a>
+                        <a href="mailto:contact@cropmyimages.com" className="hover:underline">contact@cropmyimages.com</a>
                       </p>
                     </div>
 
                     <div>
                       <span className="text-zinc-400 text-[11px] font-mono uppercase">Privacy Escalation</span>
                       <p className="font-mono text-sky-400 font-bold">
-                        <a href="mailto:privacy@cropmyimages.com" className="hover:underline">privacy@cropmyimages.com</a>
+                        <a href="mailto:contact@cropmyimages.com" className="hover:underline">contact@cropmyimages.com</a>
                       </p>
                     </div>
                   </div>
