@@ -162,10 +162,12 @@ export function UrlStudio() {
               <div className="relative">
                 <Globe className="w-4 h-4 text-zinc-400 absolute left-4 top-1/2 -translate-y-1/2" />
                 <input
+                  id="url-destination-input"
                   type="text"
                   value={longUrl}
                   onChange={(e) => setLongUrl(e.target.value)}
                   placeholder="https://yourdomain.com/long-page-slug-or-campaign-link"
+                  aria-label="Destination URL to shorten"
                   className="w-full pl-11 pr-4 py-3.5 rounded-2xl border border-zinc-200 text-xs sm:text-sm text-slate-900 font-mono bg-zinc-50/50 focus:outline-none focus:border-slate-900 focus:bg-white transition-all"
                 />
               </div>
@@ -179,10 +181,12 @@ export function UrlStudio() {
                 <div className="flex items-center rounded-2xl border border-zinc-200 bg-zinc-50/50 overflow-hidden focus-within:border-slate-900 focus-within:bg-white transition-all">
                   <span className="pl-3.5 text-xs text-zinc-400 font-mono select-none">/s/</span>
                   <input
+                    id="url-custom-alias-input"
                     type="text"
                     value={customAlias}
                     onChange={(e) => setCustomAlias(e.target.value)}
                     placeholder="my-custom-link"
+                    aria-label="Custom short URL alias"
                     className="w-full pr-3 py-3 text-xs text-slate-900 font-mono bg-transparent focus:outline-none"
                   />
                 </div>

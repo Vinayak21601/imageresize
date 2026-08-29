@@ -46,6 +46,7 @@ export async function POST(req: NextRequest) {
       quality: settings.quality || 85,
       targetSizeKb: settings.targetSizeKb,
       cropShape: settings.cropShape,
+      cornerRadius: settings.cornerRadius,
       adjustments: settings.adjustments,
     });
 

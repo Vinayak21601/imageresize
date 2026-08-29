@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useCallback, useState } from 'react';
-import { Upload } from 'lucide-react';
+import { Upload, ImagePlus, ArrowRight, Sparkles, FileImage } from 'lucide-react';
 import { ImageMetadata } from '@/types/image';
 
 interface FileUploadProps {
@@ -75,33 +75,62 @@ export function FileUpload({ onImageSelected }: FileUploadProps) {
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
-      className={`relative flex flex-col items-center justify-center w-full min-h-[380px] p-8 rounded-3xl border-2 border-dashed transition-all cursor-pointer group shadow-[0_10px_30px_rgba(0,0,0,0.03)] ${isDragging
-          ? 'border-slate-900 bg-sky-50/50 scale-[1.01] shadow-xl'
-          : 'border-zinc-200 bg-white hover:border-slate-800 hover:shadow-lg'
-        }`}
+      className={`relative flex flex-col items-center justify-between w-full min-h-[350px] p-5 sm:p-7 rounded-3xl sm:rounded-[2rem] border border-white/60 bg-gradient-to-b from-[#D4E8FA] via-[#B8D9F8] to-[#4B8DF8] transition-all cursor-pointer group overflow-hidden shadow-xl backdrop-blur-xl ${
+        isDragging
+          ? 'scale-[1.01] ring-4 ring-[#2A65FF]/40'
+          : 'hover:shadow-[0_20px_45px_rgba(75,141,248,0.35)] hover:scale-[1.003]'
+      }`}
     >
       <input
+        id="image-file-upload-input"
         type="file"
         accept="image/png, image/jpeg, image/webp, image/avif, image/gif, image/svg+xml"
         onChange={handleFileInput}
-        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+        aria-label="Upload image file for cropping and resizing"
+        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
       />
 
-      <div className="flex flex-col items-center text-center max-w-md pointer-events-none">
-        <div className="w-16 h-16 rounded-full bg-black text-white flex items-center justify-center mb-5 shadow-md group-hover:scale-105 transition-transform">
-          <Upload className="w-8 h-8 text-white" />
+      {/* TOP GLOWING CENTRAL BLUE ICON WITH AURA */}
+      <div className="relative flex flex-col items-center justify-center my-2 pointer-events-none">
+        {/* Animated outer aura ring */}
+        <div className="absolute w-28 h-28 rounded-full bg-[#2A65FF]/30 blur-xl animate-pulse pointer-events-none" />
+        
+        {/* Compact 3D Blue Icon Container */}
+        <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-[#1E50F2] via-[#2A65FF] to-[#3B82F6] flex items-center justify-center shadow-[0_10px_25px_rgba(30,80,242,0.4)] group-hover:scale-105 transition-transform duration-300">
+          <Upload className="w-7 h-7 text-white stroke-[2.5]" />
         </div>
+      </div>
 
-        <h3 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight mb-2 font-sans">
-          Drop your image here or <span className="text-black font-extrabold underline underline-offset-4">browse</span>
-        </h3>
+      {/* MIDDLE FLOATING WHITE CARD WITH COMPACT FONTS */}
+      <div className="w-full max-w-lg bg-white backdrop-blur-md border border-white/80 rounded-2xl p-4 sm:p-5 shadow-md space-y-2 pointer-events-none transition-all group-hover:bg-[#EBECEF]/95 group-hover:-translate-y-0.5">
+        <div className="flex items-start gap-3">
+          <div className="w-9 h-9 rounded-xl bg-[#DCE6FA] text-[#1E50F2] flex items-center justify-center shrink-0 shadow-2xs">
+            <FileImage className="w-4.5 h-4.5 text-[#1E50F2]" />
+          </div>
+          <div className="flex-1 space-y-1 min-w-0">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm sm:text-base font-bold text-slate-900 tracking-tight font-sans">
+                Drop your image here, or <span className="text-[#1E50F2] font-black underline underline-offset-2">Browse</span>
+              </h3>
+            </div>
+            <p className="text-[11px] sm:text-xs text-slate-600 font-medium leading-relaxed">
+              High-precision cropping studio. Supports PNG, JPG, WEBP, AVIF &amp; GIF up to 10MB.
+            </p>
+            <div className="pt-1 flex items-center text-xs font-bold text-[#1E50F2] gap-1">
+              <span>Select File from Device</span>
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </div>
+        </div>
+      </div>
 
-        <p className="text-xs sm:text-sm text-slate-600 mb-4 leading-relaxed font-normal">
-          High-precision cropping &amp; resizing studio. Supports PNG, JPG, WEBP, AVIF.
-        </p>
-
-        <div className="text-xs text-zinc-400 font-medium tracking-wide">
-          Max file size: <span className="text-slate-900 font-bold">10 MB</span> per image.
+      {/* BOTTOM FLOATING TRANSLUCENT ACTION PILL BAR */}
+      <div className="w-full max-w-lg bg-white/20 border border-white/40 backdrop-blur-md rounded-xl px-4 py-2.5 text-white flex items-center justify-between mt-3 shadow-inner text-xs font-medium pointer-events-none">
+        <span className="text-white/95 text-xs font-medium drop-shadow-2xs truncate pr-2">
+          Ready to upload your photo? Click anywhere to start
+        </span>
+        <div className="w-7 h-7 rounded-lg bg-[#1E50F2] text-white shadow-sm flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+          <ImagePlus className="w-3.5 h-3.5" />
         </div>
       </div>
     </div>

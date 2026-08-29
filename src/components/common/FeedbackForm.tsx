@@ -177,11 +177,13 @@ export function FeedbackForm() {
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Your Full Name</label>
                 <input
+                  id="feedback-name-input"
                   type="text"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g. Alex Johnson"
+                  aria-label="Your full name"
                   className="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-xl bg-zinc-50 border border-zinc-200/80 text-xs text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-slate-900 transition"
                 />
               </div>
@@ -190,11 +192,13 @@ export function FeedbackForm() {
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Your Email Address</label>
                 <input
+                  id="feedback-email-input"
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="e.g. alex@example.com"
+                  aria-label="Your email address"
                   className="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-xl bg-zinc-50 border border-zinc-200/80 text-xs text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-slate-900 transition"
                 />
               </div>
@@ -207,8 +211,10 @@ export function FeedbackForm() {
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">Improvement Category</label>
                 <select
+                  id="feedback-category-select"
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
+                  aria-label="Feedback improvement category"
                   className="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-xl bg-zinc-50 border border-zinc-200/80 text-xs text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-slate-900 transition cursor-pointer"
                 >
                   <option value="Feature Request">Feature Request / New Tool Idea</option>
@@ -247,11 +253,13 @@ export function FeedbackForm() {
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-800 uppercase tracking-wider">What Improvements Would You Like to See?</label>
               <textarea
+                id="feedback-message-textarea"
                 required
                 rows={4}
                 value={feedback}
                 onChange={(e) => setFeedback(e.target.value)}
                 placeholder="Tell us what tools or improvements you want us to build next..."
+                aria-label="Feedback message describing improvements you want to see"
                 className="w-full p-3.5 sm:p-4 rounded-xl bg-zinc-50 border border-zinc-200/80 text-xs text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-slate-900 transition leading-relaxed resize-none"
               />
             </div>

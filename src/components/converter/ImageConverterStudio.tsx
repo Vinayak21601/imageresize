@@ -24,7 +24,9 @@ import {
   Crop,
   Settings2,
   HardDrive,
-  Gauge
+  Gauge,
+  ChevronDown,
+  ImagePlus
 } from 'lucide-react';
 
 export type OutputFormat = 'jpg' | 'jpeg' | 'png' | 'webp' | 'avif' | 'gif' | 'bmp' | 'tiff' | 'pdf';
@@ -93,6 +95,7 @@ export interface UploadedImage {
   previewUrl: string;
   targetFormat: OutputFormat;
   quality: number;
+  targetSizeKb?: number | null;
   status: 'idle' | 'converting' | 'completed' | 'error';
   convertedBlob?: Blob;
   convertedUrl?: string;
@@ -161,12 +164,44 @@ export function ImageConverterStudio({
   const [targetSizeValue, setTargetSizeValue] = useState<number | ''>('');
   const [targetSizeUnit, setTargetSizeUnit] = useState<'KB' | 'MB'>('KB');
 
+  // Custom Dropdown Popover State
+  const [openFormatMenuId, setOpenFormatMenuId] = useState<string | null>(null);
+  const [openSizeMenuId, setOpenSizeMenuId] = useState<string | null>(null);
+  const [cardUnit, setCardUnit] = useState<'KB' | 'MB'>('KB');
+
+  useEffect(() => {
+    const handleGlobalClick = () => {
+      setOpenFormatMenuId(null);
+      setOpenSizeMenuId(null);
+    };
+    window.addEventListener('click', handleGlobalClick);
+    return () => window.removeEventListener('click', handleGlobalClick);
+  }, []);
+
   // Synchronize target format when defaultTargetFormat changes from URL prop
   useEffect(() => {
     if (defaultTargetFormat) {
       setGlobalTargetFormat(defaultTargetFormat);
+      setImages((prev) =>
+        prev.map((item) =>
+          item.status === 'completed'
+            ? item
+            : { ...item, targetFormat: defaultTargetFormat }
+        )
+      );
     }
   }, [defaultTargetFormat]);
+
+  const handleGlobalTargetFormatChange = (newFmt: OutputFormat) => {
+    setGlobalTargetFormat(newFmt);
+    setImages((prev) =>
+      prev.map((item) =>
+        item.status === 'completed'
+          ? item
+          : { ...item, targetFormat: newFmt }
+      )
+    );
+  };
 
   const processFiles = useCallback((files: FileList | File[]) => {
     const newItems: UploadedImage[] = [];
@@ -200,12 +235,12 @@ export function ImageConverterStudio({
           prev.map((i) =>
             i.id === id
               ? {
-                  ...i,
-                  originalWidth: img.naturalWidth,
-                  originalHeight: img.naturalHeight,
-                  customWidth: sizeMode === 'custom' && typeof customWidth === 'number' ? customWidth : undefined,
-                  customHeight: sizeMode === 'custom' && typeof customHeight === 'number' ? customHeight : undefined,
-                }
+                ...i,
+                originalWidth: img.naturalWidth,
+                originalHeight: img.naturalHeight,
+                customWidth: sizeMode === 'custom' && typeof customWidth === 'number' ? customWidth : undefined,
+                customHeight: sizeMode === 'custom' && typeof customHeight === 'number' ? customHeight : undefined,
+              }
               : i
           )
         );
@@ -332,11 +367,13 @@ export function ImageConverterStudio({
 
     // Determine target size in KB
     const effectiveTargetKb =
-      targetSizeEnabled && typeof targetSizeValue === 'number' && targetSizeValue > 0
-        ? targetSizeUnit === 'MB'
-          ? targetSizeValue * 1024
-          : targetSizeValue
-        : undefined;
+      item.targetSizeKb !== undefined && item.targetSizeKb !== null
+        ? item.targetSizeKb
+        : targetSizeEnabled && typeof targetSizeValue === 'number' && targetSizeValue > 0
+          ? targetSizeUnit === 'MB'
+            ? targetSizeValue * 1024
+            : targetSizeValue
+          : undefined;
 
     // 1. High-Fidelity PDF Conversion with jsPDF
     if (targetFmt === 'pdf') {
@@ -423,7 +460,7 @@ export function ImageConverterStudio({
         ctx!.drawImage(img, 0, 0, outW, outH);
 
         const mime = (targetFmt === 'jpeg' || targetFmt === 'jpg') ? 'image/jpeg' : targetFmt === 'png' ? 'image/png' : 'image/webp';
-        
+
         let blob = await new Promise<Blob | null>((resolve) =>
           canvas.toBlob((b) => resolve(b), mime, q / 100)
         );
@@ -544,13 +581,13 @@ export function ImageConverterStudio({
     setIsConvertingAll(true);
 
     setImages((prev) =>
-      prev.map((i) => (i.status !== 'completed' ? { ...i, status: 'converting', targetFormat: globalTargetFormat } : i))
+      prev.map((i) => (i.status !== 'completed' ? { ...i, status: 'converting' } : i))
     );
 
     const updated = await Promise.all(
       images.map(async (item) => {
-        if (item.status === 'completed' && item.targetFormat === globalTargetFormat) return item;
-        return await convertSingleImage(item, globalTargetFormat, quality);
+        if (item.status === 'completed') return item;
+        return await convertSingleImage(item, item.targetFormat, quality);
       })
     );
 
@@ -581,15 +618,23 @@ export function ImageConverterStudio({
   const completedCount = images.filter((i) => i.status === 'completed').length;
   const hasItems = images.length > 0;
 
+  const uncompletedItems = images.filter((i) => i.status !== 'completed');
+  const activeQueueItems = uncompletedItems.length > 0 ? uncompletedItems : images;
+  const targetFormatsInQueue = Array.from(new Set(activeQueueItems.map((i) => i.targetFormat)));
+  const isUniformTargetFormat = targetFormatsInQueue.length === 1;
+  const activeFormatName = isUniformTargetFormat && targetFormatsInQueue[0] ? targetFormatsInQueue[0].toUpperCase() : null;
+
+  const convertAllButtonText = isConvertingAll
+    ? 'Converting Images...'
+    : activeFormatName
+      ? `Convert All to ${activeFormatName}`
+      : `Convert All (${images.length} Files)`;
+
   return (
     <div className="w-full max-w-7xl mx-auto space-y-8 font-sans">
-      
+
       {/* 1. HERO HEADER */}
       <div className="text-center space-y-3">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/90 border border-zinc-200/80 text-xs font-bold text-slate-800 shadow-sm backdrop-blur-md">
-          <Zap className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-          <span>Universal Format Converter • Custom Size &amp; KB/MB Target Compression</span>
-        </div>
 
         <h1 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight leading-tight">
           {title || 'Convert Images to Any Format'}
@@ -602,14 +647,14 @@ export function ImageConverterStudio({
 
       {/* 2. TARGET FORMAT & SETTINGS PANEL */}
       <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
-        
+
         {/* ROW 1: FORMAT SELECTION HEADER */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-zinc-100">
           <div>
-            <h2 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+            <div className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2 font-sans font-body !font-sans">
               <Layers className="w-5 h-5 text-slate-800" />
               <span>1. Choose Target Output Format</span>
-            </h2>
+            </div>
             <p className="text-xs text-slate-500 font-medium">
               Select the file format you want your images converted into.
             </p>
@@ -621,11 +666,13 @@ export function ImageConverterStudio({
             <div className="flex items-center gap-2 flex-1">
               <span className="text-xs font-bold text-slate-700 whitespace-nowrap">Quality: {quality}%</span>
               <input
+                id="converter-quality-slider"
                 type="range"
                 min="50"
                 max="100"
                 value={quality}
                 onChange={(e) => setQuality(Number(e.target.value))}
+                aria-label="Image conversion quality slider"
                 className="w-24 sm:w-32 h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-slate-900"
               />
             </div>
@@ -640,25 +687,22 @@ export function ImageConverterStudio({
               <button
                 key={opt.id}
                 type="button"
-                onClick={() => setGlobalTargetFormat(opt.id)}
-                className={`p-3 rounded-2xl border text-left transition-all relative group cursor-pointer flex flex-col justify-between ${
-                  isSelected
-                    ? 'bg-slate-900 text-white border-slate-900 shadow-md ring-2 ring-slate-900/20'
-                    : 'bg-zinc-50 hover:bg-white text-slate-900 border-zinc-200/80 hover:border-slate-300'
-                }`}
+                onClick={() => handleGlobalTargetFormatChange(opt.id)}
+                className={`p-3 rounded-2xl border text-left transition-all relative group cursor-pointer flex flex-col justify-between ${isSelected
+                  ? 'bg-slate-900 text-white border-slate-900 shadow-md ring-2 ring-slate-900/20'
+                  : 'bg-zinc-50 hover:bg-white text-slate-900 border-zinc-200/80 hover:border-slate-300'
+                  }`}
               >
                 <div>
                   <div className="flex items-center justify-between gap-1 mb-1">
                     <span className="font-bold text-xs sm:text-sm">{opt.label}</span>
-                    <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded-full uppercase ${
-                      isSelected ? 'bg-white/20 text-white' : 'bg-zinc-200 text-slate-700'
-                    }`}>
+                    <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded-full uppercase ${isSelected ? 'bg-white/20 text-white' : 'bg-zinc-200 text-slate-700'
+                      }`}>
                       {opt.ext}
                     </span>
                   </div>
-                  <p className={`text-[10px] line-clamp-2 leading-snug font-normal ${
-                    isSelected ? 'text-slate-300' : 'text-slate-500'
-                  }`}>
+                  <p className={`text-[10px] line-clamp-2 leading-snug font-normal ${isSelected ? 'text-slate-300' : 'text-slate-500'
+                    }`}>
                     {opt.description}
                   </p>
                 </div>
@@ -678,10 +722,10 @@ export function ImageConverterStudio({
         <div className="pt-4 border-t border-zinc-100 space-y-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div>
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <div className="text-sm font-bold text-slate-900 flex items-center gap-2 font-sans font-body !font-sans">
                 <Scaling className="w-4 h-4 text-slate-700" />
                 <span>2. Custom Output Dimensions (Optional)</span>
-              </h3>
+              </div>
               <p className="text-xs text-slate-500 font-medium">
                 Keep original image resolution or resize to custom width &amp; height.
               </p>
@@ -692,27 +736,24 @@ export function ImageConverterStudio({
               <button
                 type="button"
                 onClick={() => { setSizeMode('original'); setCustomWidth(''); setCustomHeight(''); }}
-                className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
-                  sizeMode === 'original' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
-                }`}
+                className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${sizeMode === 'original' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                  }`}
               >
                 Original Size
               </button>
               <button
                 type="button"
                 onClick={() => setSizeMode('custom')}
-                className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
-                  sizeMode === 'custom' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
-                }`}
+                className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${sizeMode === 'custom' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                  }`}
               >
                 Custom Dimensions
               </button>
               <button
                 type="button"
                 onClick={() => setSizeMode('scale')}
-                className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
-                  sizeMode === 'scale' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
-                }`}
+                className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${sizeMode === 'scale' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                  }`}
               >
                 Scale Percentage
               </button>
@@ -723,16 +764,18 @@ export function ImageConverterStudio({
           {sizeMode === 'custom' && (
             <div className="p-4 sm:p-5 rounded-2xl bg-zinc-50 border border-zinc-200/80 space-y-4 animate-in fade-in duration-150">
               <div className="flex flex-wrap items-center gap-4">
-                
+
                 {/* WIDTH INPUT */}
                 <div className="space-y-1">
                   <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Width (px)</label>
                   <div className="relative">
                     <input
+                      id="converter-custom-width-input"
                       type="number"
                       placeholder="e.g. 1920"
                       value={customWidth}
                       onChange={(e) => handleWidthChange(e.target.value)}
+                      aria-label="Custom output width in pixels"
                       className="w-32 px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 transition"
                     />
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-slate-400 font-mono">px</span>
@@ -744,11 +787,10 @@ export function ImageConverterStudio({
                   <button
                     type="button"
                     onClick={() => setLockAspectRatio((prev) => !prev)}
-                    className={`p-2.5 rounded-xl border transition-all cursor-pointer flex items-center gap-1.5 text-xs font-bold ${
-                      lockAspectRatio
-                        ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
-                        : 'bg-white text-slate-600 border-zinc-200 hover:text-slate-900'
-                    }`}
+                    className={`p-2.5 rounded-xl border transition-all cursor-pointer flex items-center gap-1.5 text-xs font-bold ${lockAspectRatio
+                      ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
+                      : 'bg-white text-slate-600 border-zinc-200 hover:text-slate-900'
+                      }`}
                     title={lockAspectRatio ? 'Aspect ratio locked' : 'Aspect ratio unlocked'}
                   >
                     {lockAspectRatio ? <Lock className="w-3.5 h-3.5" /> : <Unlock className="w-3.5 h-3.5" />}
@@ -761,10 +803,12 @@ export function ImageConverterStudio({
                   <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Height (px)</label>
                   <div className="relative">
                     <input
+                      id="converter-custom-height-input"
                       type="number"
                       placeholder="e.g. 1080"
                       value={customHeight}
                       onChange={(e) => handleHeightChange(e.target.value)}
+                      aria-label="Custom output height in pixels"
                       className="w-32 px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 transition"
                     />
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-slate-400 font-mono">px</span>
@@ -780,11 +824,10 @@ export function ImageConverterStudio({
                         key={preset.label}
                         type="button"
                         onClick={() => applyPreset(preset)}
-                        className={`px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border transition-all cursor-pointer ${
-                          customWidth === preset.width && customHeight === preset.height
-                            ? 'bg-slate-900 text-white border-slate-900'
-                            : 'bg-white text-slate-700 border-zinc-200 hover:bg-zinc-100'
-                        }`}
+                        className={`px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border transition-all cursor-pointer ${customWidth === preset.width && customHeight === preset.height
+                          ? 'bg-slate-900 text-white border-slate-900'
+                          : 'bg-white text-slate-700 border-zinc-200 hover:bg-zinc-100'
+                          }`}
                       >
                         {preset.label}
                       </button>
@@ -808,12 +851,14 @@ export function ImageConverterStudio({
               <div className="flex items-center gap-3">
                 <span className="text-xs font-bold text-slate-500 font-mono">25%</span>
                 <input
+                  id="converter-scale-slider"
                   type="range"
                   min="25"
                   max="200"
                   step="5"
                   value={scalePercent}
                   onChange={(e) => setScalePercent(Number(e.target.value))}
+                  aria-label="Image scale percentage slider"
                   className="flex-1 h-2 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-slate-900"
                 />
                 <span className="text-xs font-bold text-slate-500 font-mono">200%</span>
@@ -824,9 +869,8 @@ export function ImageConverterStudio({
                     key={pct}
                     type="button"
                     onClick={() => setScalePercent(pct)}
-                    className={`px-3 py-1 rounded-lg text-xs font-bold border transition-colors cursor-pointer ${
-                      scalePercent === pct ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-700 border-zinc-200 hover:bg-zinc-100'
-                    }`}
+                    className={`px-3 py-1 rounded-lg text-xs font-bold border transition-colors cursor-pointer ${scalePercent === pct ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-700 border-zinc-200 hover:bg-zinc-100'
+                      }`}
                   >
                     {pct}%
                   </button>
@@ -841,10 +885,10 @@ export function ImageConverterStudio({
         <div className="pt-4 border-t border-zinc-100 space-y-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div>
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <div className="text-sm font-bold text-slate-900 flex items-center gap-2 font-sans font-body !font-sans">
                 <Gauge className="w-4 h-4 text-slate-700" />
                 <span>3. Target Output File Size in KB / MB (Optional)</span>
-              </h3>
+              </div>
               <p className="text-xs text-slate-500 font-medium">
                 Compress the output image to stay strictly under a specific KB or MB limit (e.g. for portals, forms, email limits).
               </p>
@@ -857,11 +901,10 @@ export function ImageConverterStudio({
                   setTargetSizeEnabled(!targetSizeEnabled);
                   if (!targetSizeEnabled && !targetSizeValue) setTargetSizeValue(200);
                 }}
-                className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                  targetSizeEnabled
-                    ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
-                    : 'bg-zinc-100 hover:bg-zinc-200 text-slate-700 border-zinc-200'
-                }`}
+                className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${targetSizeEnabled
+                  ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
+                  : 'bg-zinc-100 hover:bg-zinc-200 text-slate-700 border-zinc-200'
+                  }`}
               >
                 <HardDrive className="w-3.5 h-3.5" />
                 <span>{targetSizeEnabled ? 'Limit Active' : 'Set KB/MB Limit'}</span>
@@ -873,7 +916,7 @@ export function ImageConverterStudio({
           {targetSizeEnabled && (
             <div className="p-4 sm:p-5 rounded-2xl bg-zinc-50 border border-zinc-200/80 space-y-4 animate-in fade-in duration-150">
               <div className="flex flex-wrap items-center gap-4">
-                
+
                 {/* VALUE INPUT + UNIT TOGGLE */}
                 <div className="space-y-1">
                   <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">
@@ -881,12 +924,14 @@ export function ImageConverterStudio({
                   </label>
                   <div className="flex items-center gap-1.5">
                     <input
+                      id="converter-target-size-input"
                       type="number"
                       step={targetSizeUnit === 'MB' ? '0.1' : '1'}
                       min="1"
                       placeholder={targetSizeUnit === 'MB' ? 'e.g. 1.5' : 'e.g. 200'}
                       value={targetSizeValue}
                       onChange={(e) => setTargetSizeValue(e.target.value === '' ? '' : parseFloat(e.target.value))}
+                      aria-label="Target maximum output file size"
                       className="w-32 px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 transition"
                     />
 
@@ -895,18 +940,16 @@ export function ImageConverterStudio({
                       <button
                         type="button"
                         onClick={() => setTargetSizeUnit('KB')}
-                        className={`px-2.5 py-1.5 rounded-lg text-xs font-black transition-all cursor-pointer ${
-                          targetSizeUnit === 'KB' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-700 hover:text-black'
-                        }`}
+                        className={`px-2.5 py-1.5 rounded-lg text-xs font-black transition-all cursor-pointer ${targetSizeUnit === 'KB' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-700 hover:text-black'
+                          }`}
                       >
                         KB
                       </button>
                       <button
                         type="button"
                         onClick={() => setTargetSizeUnit('MB')}
-                        className={`px-2.5 py-1.5 rounded-lg text-xs font-black transition-all cursor-pointer ${
-                          targetSizeUnit === 'MB' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-700 hover:text-black'
-                        }`}
+                        className={`px-2.5 py-1.5 rounded-lg text-xs font-black transition-all cursor-pointer ${targetSizeUnit === 'MB' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-700 hover:text-black'
+                          }`}
                       >
                         MB
                       </button>
@@ -923,11 +966,10 @@ export function ImageConverterStudio({
                         key={preset.label}
                         type="button"
                         onClick={() => applyTargetSizePreset(preset)}
-                        className={`px-3 py-1.5 rounded-lg text-[11px] font-bold border transition-all cursor-pointer ${
-                          targetSizeValue === preset.val && targetSizeUnit === preset.unit
-                            ? 'bg-slate-900 text-white border-slate-900'
-                            : 'bg-white text-slate-700 border-zinc-200 hover:bg-zinc-100'
-                        }`}
+                        className={`px-3 py-1.5 rounded-lg text-[11px] font-bold border transition-all cursor-pointer ${targetSizeValue === preset.val && targetSizeUnit === preset.unit
+                          ? 'bg-slate-900 text-white border-slate-900'
+                          : 'bg-white text-slate-700 border-zinc-200 hover:bg-zinc-100'
+                          }`}
                       >
                         {preset.label}
                       </button>
@@ -960,67 +1002,97 @@ export function ImageConverterStudio({
         onDragLeave={() => setIsDragOver(false)}
         onDrop={handleDrop}
         onClick={() => fileInputRef.current?.click()}
-        className={`bg-white border-2 border-dashed rounded-3xl p-8 sm:p-14 text-center transition-all cursor-pointer group shadow-sm ${
+        className={`relative flex flex-col items-center justify-between w-full min-h-[350px] p-5 sm:p-7 rounded-3xl sm:rounded-[2rem] border border-white/60 bg-gradient-to-b from-[#D4E8FA] via-[#B8D9F8] to-[#4B8DF8] transition-all cursor-pointer group overflow-hidden shadow-xl backdrop-blur-xl ${
           isDragOver
-            ? 'border-slate-900 bg-slate-50 scale-[0.99]'
-            : 'border-zinc-300 hover:border-slate-800 hover:bg-zinc-50/60'
+            ? 'scale-[1.01] ring-4 ring-[#2A65FF]/40'
+            : 'hover:shadow-[0_20px_45px_rgba(75,141,248,0.35)] hover:scale-[1.003]'
         }`}
       >
         <input
+          id="converter-file-upload-input"
           ref={fileInputRef}
           type="file"
           multiple
           accept="image/*,.heic,.heif,.avif,.tiff,.bmp,.svg"
           onChange={handleFileChange}
+          aria-label="Upload image files for format conversion"
           className="hidden"
         />
 
-        <div className="max-w-md mx-auto space-y-4">
-          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-zinc-100 group-hover:bg-slate-900 group-hover:text-white text-slate-800 flex items-center justify-center mx-auto transition-all shadow-inner">
-            <Upload className="w-8 h-8 sm:w-10 sm:h-10 transition-transform group-hover:-translate-y-1" />
+        {/* TOP GLOWING CENTRAL BLUE ICON WITH AURA */}
+        <div className="relative flex flex-col items-center justify-center my-2 pointer-events-none">
+          {/* Animated outer aura ring */}
+          <div className="absolute w-28 h-28 rounded-full bg-[#2A65FF]/30 blur-xl animate-pulse pointer-events-none" />
+          
+          {/* Compact 3D Blue Icon Container */}
+          <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-[#1E50F2] via-[#2A65FF] to-[#3B82F6] flex items-center justify-center shadow-[0_10px_25px_rgba(30,80,242,0.4)] group-hover:scale-105 transition-transform duration-300">
+            <Upload className="w-7 h-7 text-white stroke-[2.5]" />
           </div>
+        </div>
 
-          <div className="space-y-1.5">
-            <h3 className="text-lg sm:text-2xl font-black text-slate-900">
-              Drag &amp; drop images here, or <span className="underline decoration-slate-400">browse files</span>
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-500 font-medium">
-              Supported input formats: PNG, JPG, JPEG, WEBP, HEIC, HEIF, AVIF, GIF, BMP, TIFF, SVG
-            </p>
-          </div>
+        {/* MIDDLE FLOATING WHITE CARD WITH COMPACT FONTS */}
+        <div className="w-full max-w-lg bg-white backdrop-blur-md border border-white/80 rounded-2xl p-4 sm:p-5 shadow-md space-y-2 pointer-events-none transition-all group-hover:-translate-y-0.5">
+          <div className="flex items-start gap-3">
+            <div className="w-9 h-9 rounded-xl  text-[#1E50F2] flex items-center justify-center shrink-0 shadow-2xs">
+              <FileImage className="w-4.5 h-4.5 text-[#1E50F2]" />
+            </div>
+            <div className="flex-1 space-y-1 min-w-0">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm sm:text-base font-bold text-slate-900 tracking-tight font-sans">
+                  Drop your image here, or <span className="text-[#1E50F2] font-black underline underline-offset-2">Browse</span>
+                </h3>
+              </div>
+              <p className="text-[11px] sm:text-xs text-slate-600 font-medium leading-relaxed">
+                Universal image converter studio. Supports PNG, JPG, WEBP, HEIC, AVIF &amp; GIF up to 50MB.
+              </p>
+              
+              <div className="pt-1.5 flex flex-wrap items-center gap-1 text-[10px] sm:text-[11px] font-bold text-slate-700">
+                <span className="px-2 py-0.5 bg-white/80 rounded-full border border-zinc-200/80 shadow-2xs">Auto Format Detection</span>
+                <span className="px-2 py-0.5 bg-white/80 rounded-full border border-zinc-200/80 shadow-2xs">Target Size in KB &bull; MB</span>
+                <span className="px-2 py-0.5 bg-white/80 rounded-full border border-zinc-200/80 shadow-2xs">Custom Dimensions</span>
+                <span className="px-2 py-0.5 bg-white/80 rounded-full border border-zinc-200/80 shadow-2xs">100% Privacy</span>
+              </div>
 
-          <div className="pt-2 flex flex-wrap items-center justify-center gap-2 text-[11px] font-bold text-slate-600">
-            <span className="px-3 py-1 bg-zinc-100 rounded-full border border-zinc-200">Auto Format Detection</span>
-            <span className="px-3 py-1 bg-zinc-100 rounded-full border border-zinc-200">Target Size in KB &bull; MB</span>
-            <span className="px-3 py-1 bg-zinc-100 rounded-full border border-zinc-200">Custom Dimensions</span>
-            <span className="px-3 py-1 bg-zinc-100 rounded-full border border-zinc-200">100% Client Privacy</span>
-          </div>
-
-          {/* UPLOAD SUCCESS BADGE */}
-          {images.length > 0 && (
-            <div className="pt-2">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold shadow-xs animate-in fade-in zoom-in-95 duration-200">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                <span>{images.length} Image{images.length > 1 ? 's' : ''} Ready Below</span>
-                <span className="text-[11px] font-normal text-emerald-700 underline ml-1">Jump to Conversion &darr;</span>
+              <div className="pt-1 flex items-center text-xs font-bold text-[#1E50F2] gap-1">
+                <span>Select Files from Device</span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </div>
             </div>
-          )}
+          </div>
+        </div>
+
+        {/* UPLOAD SUCCESS BADGE */}
+        {images.length > 0 && (
+          <div className="pt-2 pointer-events-none">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-900 text-xs font-extrabold shadow-sm animate-in fade-in zoom-in-95 duration-200 backdrop-blur-md">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
+              <span>{images.length} Image{images.length > 1 ? 's' : ''} Ready Below</span>
+            </div>
+          </div>
+        )}
+
+        {/* BOTTOM FLOATING TRANSLUCENT ACTION PILL BAR */}
+        <div className="w-full max-w-lg bg-white/20 border border-white/40 backdrop-blur-md rounded-xl px-4 py-2.5 text-white flex items-center justify-between mt-3 shadow-inner text-xs font-medium pointer-events-none">
+          <span className="text-white/95 text-xs font-medium drop-shadow-2xs truncate pr-2">
+            Ready to convert your photos? Click anywhere to start
+          </span>
+          <div className="w-7 h-7 rounded-lg bg-[#1E50F2] text-white shadow-sm flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+            <ImagePlus className="w-3.5 h-3.5" />
+          </div>
         </div>
       </div>
 
-      {/* 4. CONVERSION QUEUE & RESULT CARDS */}
       {hasItems && (
         <div ref={queueRef} id="conversion-queue" className="space-y-4 scroll-mt-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
-          
+
           {/* Action Bar */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-3xl bg-white border border-zinc-200/80 shadow-sm">
             <div>
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                <h3 className="text-base sm:text-lg font-black text-slate-900">
+                <div className="text-base sm:text-lg font-black text-slate-900 font-sans font-body !font-sans">
                   Uploaded Queue ({images.length} Image{images.length > 1 ? 's' : ''})
-                </h3>
+                </div>
               </div>
               <p className="text-xs text-slate-500 font-medium mt-0.5">
                 Target conversion: <span className="font-bold text-slate-900 uppercase">{globalTargetFormat}</span>
@@ -1052,7 +1124,7 @@ export function ImageConverterStudio({
                 className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-black text-white text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer disabled:opacity-50"
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${isConvertingAll ? 'animate-spin' : ''}`} />
-                <span>{isConvertingAll ? 'Converting Images...' : `Convert All to ${globalTargetFormat.toUpperCase()}`}</span>
+                <span>{convertAllButtonText}</span>
               </button>
 
               {completedCount > 0 && (
@@ -1082,16 +1154,15 @@ export function ImageConverterStudio({
               return (
                 <div
                   key={item.id}
-                  className={`bg-white border rounded-3xl p-5 sm:p-6 transition-all shadow-sm ${
-                    hasConverted
-                      ? 'border-emerald-200 bg-emerald-50/15 ring-1 ring-emerald-500/10'
-                      : isConverting
+                  className={`bg-white border rounded-3xl p-5 sm:p-6 transition-all shadow-sm ${hasConverted
+                    ? 'border-emerald-200 bg-emerald-50/15 ring-1 ring-emerald-500/10'
+                    : isConverting
                       ? 'border-sky-200 bg-sky-50/15 ring-1 ring-sky-500/10'
                       : 'border-zinc-200 hover:border-zinc-300'
-                  }`}
+                    }`}
                 >
                   <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-5">
-                    
+
                     {/* LEFT SECTION: THUMBNAIL + FILE DETAILS */}
                     <div className="flex items-start sm:items-center gap-4 min-w-0 flex-1">
                       {/* Image Thumbnail */}
@@ -1105,11 +1176,12 @@ export function ImageConverterStudio({
 
                       {/* File Name + Metadata */}
                       <div className="space-y-1.5 min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <h4 className="font-bold text-slate-900 text-sm sm:text-base truncate max-w-xs sm:max-w-md" title={item.name}>
-                            {item.name}
-                          </h4>
+                        <h4 className="font-bold text-slate-900 text-sm sm:text-base truncate max-w-xs sm:max-w-md" title={item.name}>
+                          {item.name}
+                        </h4>
 
+                        {/* BADGES ROW (DETECTED FORMAT + STATUS) */}
+                        <div className="flex flex-wrap items-center gap-2">
                           {/* FORMAT BADGE */}
                           <span className="px-2 py-0.5 rounded-md bg-slate-900 text-white font-mono font-bold text-[10px] uppercase shadow-xs">
                             Detected: {item.originalFormat}
@@ -1170,8 +1242,8 @@ export function ImageConverterStudio({
                       </div>
                     </div>
 
-                    {/* MIDDLE SECTION: CONVERSION ROUTE VISUAL */}
-                    <div className="flex items-center gap-3 bg-zinc-50 border border-zinc-200/80 px-4 py-2.5 rounded-2xl shrink-0 self-stretch sm:self-auto justify-center">
+                    {/* MIDDLE SECTION: CONVERSION ROUTE & SIZE CONTROL */}
+                    <div className="flex flex-wrap items-center gap-3 bg-zinc-50 border border-zinc-200/80 px-4 py-2.5 rounded-2xl shrink-0 self-stretch sm:self-auto justify-center">
                       <div className="text-center">
                         <span className="block text-[9px] uppercase font-bold text-slate-400">From</span>
                         <span className="font-mono font-bold text-xs text-slate-800 uppercase">{item.originalFormat}</span>
@@ -1181,9 +1253,206 @@ export function ImageConverterStudio({
                         <ArrowRight className="w-3.5 h-3.5 text-slate-600" />
                       </div>
 
-                      <div className="text-center">
-                        <span className="block text-[9px] uppercase font-bold text-slate-400">To</span>
-                        <span className="font-mono font-black text-xs text-slate-900 uppercase">{item.targetFormat}</span>
+                      <div className="flex flex-col items-center relative">
+                        <span className="block text-[9px] uppercase font-bold text-slate-400 mb-0.5">To</span>
+
+                        {/* Custom Format Selector Pill Button */}
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setOpenSizeMenuId(null);
+                            setOpenFormatMenuId(openFormatMenuId === item.id ? null : item.id);
+                          }}
+                          className="flex items-center gap-1.5 bg-white hover:bg-slate-900 hover:text-white border border-zinc-200/80 hover:border-slate-900 rounded-xl px-2.5 py-1 font-mono font-black text-xs text-slate-900 uppercase transition-all shadow-xs cursor-pointer group"
+                          title="Click to select target format for this image"
+                        >
+                          <span>{item.targetFormat.toUpperCase()}</span>
+                          <ChevronDown className={`w-3.5 h-3.5 text-slate-500 group-hover:text-white transition-transform ${openFormatMenuId === item.id ? 'rotate-180' : ''}`} />
+                        </button>
+
+                        {/* Custom Floating Format Popover Menu */}
+                        {openFormatMenuId === item.id && (
+                          <div
+                            className="absolute top-full mt-1.5 right-0 sm:right-auto sm:left-1/2 sm:-translate-x-1/2 w-32 bg-white border border-zinc-200/90 rounded-2xl shadow-2xl p-1.5 z-50 animate-in fade-in zoom-in-95 duration-150 font-mono text-xs"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <div className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider px-2 py-1 border-b border-zinc-100 mb-1">
+                              Target Format
+                            </div>
+                            <div className="space-y-0.5 max-h-48 overflow-y-auto pr-0.5">
+                              {FORMAT_OPTIONS.map((f) => {
+                                const isSelected = item.targetFormat === f.id;
+                                return (
+                                  <button
+                                    key={f.id}
+                                    type="button"
+                                    onClick={() => {
+                                      const newFmt = f.id as OutputFormat;
+                                      setImages((prev) =>
+                                        prev.map((i) =>
+                                          i.id === item.id
+                                            ? {
+                                              ...i,
+                                              targetFormat: newFmt,
+                                              status: i.status === 'completed' ? 'idle' : i.status,
+                                            }
+                                            : i
+                                        )
+                                      );
+                                      setOpenFormatMenuId(null);
+                                    }}
+                                    className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl font-bold uppercase text-xs transition-all cursor-pointer ${isSelected
+                                      ? 'bg-slate-900 text-white shadow-xs'
+                                      : 'text-slate-700 hover:bg-zinc-100 hover:text-slate-900'
+                                      }`}
+                                  >
+                                    <span>{f.ext.toUpperCase()}</span>
+                                    {isSelected && <Check className="w-3.5 h-3.5 text-emerald-400" />}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="h-5 w-px bg-zinc-200 mx-0.5 hidden sm:block" />
+
+                      {/* Per-Card Target Output File Size Control */}
+                      <div className="flex flex-col items-center relative">
+                        <span className="block text-[9px] uppercase font-bold text-slate-400 mb-0.5">Max File Size</span>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setOpenFormatMenuId(null);
+                            setOpenSizeMenuId(openSizeMenuId === item.id ? null : item.id);
+                          }}
+                          className={`flex items-center gap-1 px-2.5 py-1 rounded-xl border text-xs font-mono font-bold transition-all cursor-pointer group ${item.targetSizeKb
+                            ? 'bg-emerald-50 text-emerald-800 border-emerald-300 shadow-xs'
+                            : 'bg-white hover:bg-slate-900 hover:text-white border-zinc-200/80 text-slate-700'
+                            }`}
+                          title="Set target max file size limit (KB / MB) for this image"
+                        >
+                          <Gauge className="w-3.5 h-3.5 text-slate-500 group-hover:text-white" />
+                          <span>
+                            {item.targetSizeKb
+                              ? item.targetSizeKb >= 1024
+                                ? `< ${(item.targetSizeKb / 1024).toFixed(1)} MB`
+                                : `< ${item.targetSizeKb} KB`
+                              : 'No Limit'}
+                          </span>
+                          <ChevronDown className={`w-3 h-3 text-slate-500 group-hover:text-white transition-transform ${openSizeMenuId === item.id ? 'rotate-180' : ''}`} />
+                        </button>
+
+                        {/* Target Size Popover Menu */}
+                        {openSizeMenuId === item.id && (
+                          <div
+                            className="absolute top-full mt-1.5 right-0 sm:right-auto sm:left-1/2 sm:-translate-x-1/2 w-60 bg-white border border-zinc-200/90 rounded-2xl shadow-2xl p-2.5 z-50 animate-in fade-in zoom-in-95 duration-150 font-sans text-xs space-y-2.5"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <div className="flex items-center justify-between border-b border-zinc-100 pb-1.5">
+                              <span className="text-[10px] font-bold text-slate-900 uppercase tracking-wider">Target Max Size</span>
+                              {item.targetSizeKb ? (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setImages((prev) =>
+                                      prev.map((i) => (i.id === item.id ? { ...i, targetSizeKb: null, status: i.status === 'completed' ? 'idle' : i.status } : i))
+                                    );
+                                    setOpenSizeMenuId(null);
+                                  }}
+                                  className="text-[10px] text-rose-600 font-bold hover:underline cursor-pointer"
+                                >
+                                  Clear Limit
+                                </button>
+                              ) : null}
+                            </div>
+
+                            <div className="space-y-1">
+                              <span className="text-[9px] font-bold text-zinc-400 uppercase">Select Target KB / MB Cap</span>
+                              <div className="grid grid-cols-3 gap-1">
+                                {[50, 100, 200, 500, 1024, 2048, 5120].map((kb) => {
+                                  const label = kb >= 1024 ? `< ${kb / 1024} MB` : `< ${kb} KB`;
+                                  const isSel = item.targetSizeKb === kb;
+                                  return (
+                                    <button
+                                      key={kb}
+                                      type="button"
+                                      onClick={() => {
+                                        setImages((prev) =>
+                                          prev.map((i) => (i.id === item.id ? { ...i, targetSizeKb: kb, status: i.status === 'completed' ? 'idle' : i.status } : i))
+                                        );
+                                        setOpenSizeMenuId(null);
+                                      }}
+                                      className={`py-1 px-1.5 text-[10px] font-mono font-bold rounded-lg border transition-all cursor-pointer ${isSel
+                                        ? 'bg-slate-900 text-white border-slate-900'
+                                        : 'bg-zinc-50 text-slate-700 border-zinc-200 hover:bg-zinc-100'
+                                        }`}
+                                    >
+                                      {label}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            </div>
+
+                            {/* CUSTOM SIZE INPUT FIELD */}
+                            <div className="space-y-1 pt-1.5 border-t border-zinc-100">
+                              <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider block">Custom Limit (Type Value)</span>
+                              <div className="flex items-center gap-1.5">
+                                <input
+                                  type="number"
+                                  min="1"
+                                  placeholder={cardUnit === 'MB' ? 'e.g. 1.5' : 'e.g. 150'}
+                                  value={
+                                    item.targetSizeKb
+                                      ? cardUnit === 'MB'
+                                        ? (item.targetSizeKb / 1024).toString()
+                                        : item.targetSizeKb.toString()
+                                      : ''
+                                  }
+                                  onChange={(e) => {
+                                    const valStr = e.target.value;
+                                    if (valStr === '') {
+                                      setImages((prev) =>
+                                        prev.map((i) => (i.id === item.id ? { ...i, targetSizeKb: null, status: i.status === 'completed' ? 'idle' : i.status } : i))
+                                      );
+                                      return;
+                                    }
+                                    const parsed = parseFloat(valStr);
+                                    if (isNaN(parsed) || parsed <= 0) return;
+                                    const kbVal = cardUnit === 'MB' ? Math.round(parsed * 1024) : Math.round(parsed);
+                                    setImages((prev) =>
+                                      prev.map((i) => (i.id === item.id ? { ...i, targetSizeKb: kbVal, status: i.status === 'completed' ? 'idle' : i.status } : i))
+                                    );
+                                  }}
+                                  className="w-full px-2.5 py-1 bg-zinc-50 border border-zinc-200 rounded-xl text-xs font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                                />
+
+                                <div className="inline-flex p-0.5 bg-zinc-200 rounded-lg shrink-0">
+                                  <button
+                                    type="button"
+                                    onClick={() => setCardUnit('KB')}
+                                    className={`px-2 py-0.5 rounded-md text-[10px] font-black font-mono transition-all ${cardUnit === 'KB' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-600 hover:text-black'
+                                      }`}
+                                  >
+                                    KB
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => setCardUnit('MB')}
+                                    className={`px-2 py-0.5 rounded-md text-[10px] font-black font-mono transition-all ${cardUnit === 'MB' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-600 hover:text-black'
+                                      }`}
+                                  >
+                                    MB
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
 
@@ -1210,13 +1479,13 @@ export function ImageConverterStudio({
                             setImages((prev) =>
                               prev.map((i) => (i.id === item.id ? { ...i, status: 'converting' } : i))
                             );
-                            const res = await convertSingleImage(item, globalTargetFormat, quality);
+                            const res = await convertSingleImage(item, item.targetFormat, quality);
                             setImages((prev) => prev.map((i) => (i.id === item.id ? res : i)));
                           }}
                           className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-2xl bg-slate-900 hover:bg-black text-white text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer"
                         >
                           <RefreshCw className="w-3.5 h-3.5" />
-                          <span>Convert to {globalTargetFormat.toUpperCase()}</span>
+                          <span>Convert to {item.targetFormat.toUpperCase()}</span>
                         </button>
                       )}
 

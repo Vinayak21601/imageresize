@@ -36,6 +36,7 @@ export interface ResizeSettings {
   quality: number; // 1 - 100
   targetSizeKb: number | null; // Optional target compressed file size in KB
   cropShape?: 'rectangle' | 'circle';
+  cornerRadius?: number; // Corner radius in pixels (0 for sharp corners)
   adjustments?: ImageAdjustments;
 }
 

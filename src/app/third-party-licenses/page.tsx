@@ -187,10 +187,12 @@ export default function ThirdPartyLicensesPage() {
           <div className="relative max-w-md mx-auto">
             <Search className="w-4 h-4 text-zinc-400 absolute left-4 top-1/2 -translate-y-1/2" />
             <input
+              id="licenses-search-input"
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search package (e.g. sharp, cropper, MIT, Apache)..."
+              aria-label="Search third-party licenses and packages"
               className="w-full bg-white border border-zinc-200 focus:border-slate-900 rounded-full pl-11 pr-4 py-3 text-xs text-slate-900 placeholder-zinc-400 focus:outline-none transition-colors shadow-sm"
             />
             {query && (

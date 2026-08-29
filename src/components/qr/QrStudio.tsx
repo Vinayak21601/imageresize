@@ -458,6 +458,7 @@ export function QrStudio() {
                 {options.contentType === 'url' && (
                   <div className="space-y-1">
                     <input
+                      id="qr-url-input"
                       type="text"
                       value={options.url}
                       onChange={(e) => {
@@ -465,6 +466,7 @@ export function QrStudio() {
                         if (e.target.value) setShowRequiredError(false);
                       }}
                       placeholder="E.g. https://www.myweb.com/"
+                      aria-label="URL to encode in QR code"
                       className={`w-full max-w-md px-4 py-3 bg-white border rounded-lg text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none transition-all font-sans ${
                         showRequiredError && !options.url
                           ? 'border-red-500 focus:border-red-600 bg-red-50/20'
@@ -481,20 +483,24 @@ export function QrStudio() {
 
                 {options.contentType === 'text' && (
                   <textarea
+                    id="qr-text-input"
                     rows={3}
                     value={options.text}
                     onChange={(e) => setOptions((prev) => ({ ...prev, text: e.target.value }))}
                     placeholder="E.g. Enter your text message here..."
+                    aria-label="Text content to encode in QR code"
                     className="w-full max-w-md px-4 py-3 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 transition-all font-sans"
                   />
                 )}
 
                 {options.contentType === 'pdf' && (
                   <input
+                    id="qr-pdf-url-input"
                     type="url"
                     value={options.url}
                     onChange={(e) => setOptions((prev) => ({ ...prev, url: e.target.value }))}
                     placeholder="E.g. https://example.com/document.pdf"
+                    aria-label="PDF document URL to encode in QR code"
                     className="w-full max-w-md px-4 py-3 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 placeholder:text-slate-400 font-sans"
                   />
                 )}
@@ -734,9 +740,11 @@ export function QrStudio() {
                             <div className="flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-mono">
                               <span>{options.dotColor.toUpperCase()}</span>
                               <input
+                                id="qr-shape-dot-color"
                                 type="color"
                                 value={options.dotColor}
                                 onChange={(e) => setOptions((prev) => ({ ...prev, dotColor: e.target.value }))}
+                                aria-label="QR code border dot colour picker"
                                 className="w-4 h-4 rounded cursor-pointer border-none bg-transparent"
                               />
                             </div>
@@ -748,9 +756,11 @@ export function QrStudio() {
                             <div className="flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-mono">
                               <span>{options.bgColor.toUpperCase()}</span>
                               <input
+                                id="qr-shape-bg-color"
                                 type="color"
                                 value={options.bgColor}
                                 onChange={(e) => setOptions((prev) => ({ ...prev, bgColor: e.target.value }))}
+                                aria-label="QR code background colour picker"
                                 className="w-4 h-4 rounded cursor-pointer border-none bg-transparent"
                               />
                             </div>
@@ -835,9 +845,11 @@ export function QrStudio() {
                             <div className="flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-mono">
                               <span>{options.eyeFrameColor.toUpperCase()}</span>
                               <input
+                                id="qr-eye-frame-color"
                                 type="color"
                                 value={options.eyeFrameColor}
                                 onChange={(e) => setOptions((prev) => ({ ...prev, eyeFrameColor: e.target.value }))}
+                                aria-label="QR code eye frame colour picker"
                                 className="w-4 h-4 rounded cursor-pointer border-none bg-transparent"
                               />
                             </div>
@@ -848,9 +860,11 @@ export function QrStudio() {
                             <div className="flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-mono">
                               <span>{options.eyeBallColor.toUpperCase()}</span>
                               <input
+                                id="qr-eye-ball-color"
                                 type="color"
                                 value={options.eyeBallColor}
                                 onChange={(e) => setOptions((prev) => ({ ...prev, eyeBallColor: e.target.value }))}
+                                aria-label="QR code eye ball colour picker"
                                 className="w-4 h-4 rounded cursor-pointer border-none bg-transparent"
                               />
                             </div>
@@ -923,7 +937,7 @@ export function QrStudio() {
                         <span className="text-xs font-semibold text-slate-700">
                           Drag and drop or click to upload a logo <span className="text-slate-400 font-normal">(JPG, JPEG, or PNG / 2MB max)</span>
                         </span>
-                        <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
+                        <input id="qr-logo-upload-input" type="file" accept="image/*" onChange={handleLogoUpload} aria-label="Upload logo image for QR code" className="hidden" />
                       </label>
                     </div>
                   </div>

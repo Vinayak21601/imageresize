@@ -147,10 +147,12 @@ export default function ContactPage() {
                   <div className="space-y-1.5">
                     <label className="block font-bold text-slate-900 font-mono uppercase text-xs">Full Name *</label>
                     <input
+                      id="contact-name-input"
                       type="text"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Your full name"
+                      aria-label="Your full name"
                       className="w-full p-3 bg-zinc-50 border border-zinc-200 rounded-2xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-slate-900 transition-colors"
                       required
                     />
@@ -159,10 +161,12 @@ export default function ContactPage() {
                   <div className="space-y-1.5">
                     <label className="block font-bold text-slate-900 font-mono uppercase text-xs">Email Address *</label>
                     <input
+                      id="contact-email-input"
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="you@domain.com"
+                      aria-label="Your email address"
                       className="w-full p-3 bg-zinc-50 border border-zinc-200 rounded-2xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-slate-900 transition-colors"
                       required
                     />
@@ -171,8 +175,10 @@ export default function ContactPage() {
                   <div className="space-y-1.5">
                     <label className="block font-bold text-slate-900 font-mono uppercase text-xs">Inquiry Type *</label>
                     <select
+                      id="contact-subject-select"
                       value={subject}
                       onChange={(e) => setSubject(e.target.value)}
+                      aria-label="Inquiry type selection"
                       className="w-full p-3 bg-zinc-50 border border-zinc-200 rounded-2xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-slate-900 transition-colors"
                     >
                       <option value="general">General Inquiry &amp; Feedback</option>
@@ -185,10 +191,12 @@ export default function ContactPage() {
                   <div className="space-y-1.5">
                     <label className="block font-bold text-slate-900 font-mono uppercase text-xs">Message *</label>
                     <textarea
+                      id="contact-message-textarea"
                       rows={4}
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       placeholder="How can we help you today?"
+                      aria-label="Your message"
                       className="w-full p-3 bg-zinc-50 border border-zinc-200 rounded-2xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-slate-900 transition-colors"
                       required
                     />

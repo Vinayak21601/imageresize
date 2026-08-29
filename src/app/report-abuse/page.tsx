@@ -140,8 +140,10 @@ export default function ReportAbusePage() {
                   1. Report Category <span className="text-red-500">*</span>
                 </label>
                 <select
+                  id="abuse-category-select"
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
+                  aria-label="Abuse report category"
                   className="w-full p-3 bg-zinc-50 border border-zinc-200 rounded-2xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-slate-900 transition-colors"
                   required
                 >
@@ -159,10 +161,12 @@ export default function ReportAbusePage() {
                   2. Suspect Short Link or Target URL <span className="text-red-500">*</span>
                 </label>
                 <input
+                  id="abuse-target-url-input"
                   type="url"
                   value={targetUrl}
                   onChange={(e) => setTargetUrl(e.target.value)}
                   placeholder="e.g. https://cropmyimages.com/s/xyz123 or target scam domain"
+                  aria-label="Suspect short link or target URL to report"
                   className="w-full p-3 bg-zinc-50 border border-zinc-200 rounded-2xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-slate-900 transition-colors placeholder-zinc-400"
                   required
                 />
@@ -174,10 +178,12 @@ export default function ReportAbusePage() {
                   3. Your Email Address <span className="text-red-500">*</span>
                 </label>
                 <input
+                  id="abuse-reporter-email-input"
                   type="email"
                   value={reporterEmail}
                   onChange={(e) => setReporterEmail(e.target.value)}
                   placeholder="For ticket status updates &amp; verification"
+                  aria-label="Your email address for abuse report updates"
                   className="w-full p-3 bg-zinc-50 border border-zinc-200 rounded-2xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-slate-900 transition-colors placeholder-zinc-400"
                   required
                 />
@@ -189,10 +195,12 @@ export default function ReportAbusePage() {
                   4. Description of Violation &amp; Evidence <span className="text-red-500">*</span>
                 </label>
                 <textarea
+                  id="abuse-description-textarea"
                   rows={4}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Provide context, deceptive landing page details, or evidence of copyright infringement..."
+                  aria-label="Description of the violation and evidence"
                   className="w-full p-3 bg-zinc-50 border border-zinc-200 rounded-2xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-slate-900 transition-colors placeholder-zinc-400"
                   required
                 />

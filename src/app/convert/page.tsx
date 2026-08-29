@@ -39,7 +39,7 @@ export default function UniversalConverterPage() {
               <ImageConverterStudio
                 defaultTargetFormat="jpeg"
                 title="Convert Images to Any Format"
-                subtitle="Drag & drop or select images from your computer or phone. Your format will be auto-detected — then choose your target format and download instantly."
+                subtitle="Drag & drop or select images from your computer or phone. Your format will be auto-detected, then choose your target format and download instantly."
               />
             </div>
           </div>

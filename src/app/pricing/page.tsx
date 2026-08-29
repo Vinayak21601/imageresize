@@ -515,10 +515,12 @@ export default function PricingPage() {
         <div className="relative max-w-md mx-auto">
           <Search className="w-4 h-4 text-zinc-400 absolute left-4 top-1/2 -translate-y-1/2" />
           <input
+            id="pricing-faq-search-input"
             type="text"
             value={faqQuery}
             onChange={(e) => setFaqQuery(e.target.value)}
             placeholder="Search questions (e.g. security, refund, quota)..."
+            aria-label="Search frequently asked questions"
             className="w-full bg-white border border-zinc-200 focus:border-black rounded-full pl-11 pr-4 py-3 text-xs text-slate-900 placeholder-zinc-400 focus:outline-none transition-colors shadow-sm"
           />
           {faqQuery && (

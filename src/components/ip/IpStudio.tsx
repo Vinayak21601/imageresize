@@ -718,10 +718,12 @@ export function IpDetailsDashboard() {
           <div className="relative flex-1">
             <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" />
             <input
+              id="ip-lookup-search-input"
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="e.g. 8.8.8.8, 1.1.1.1 or github.com"
+              aria-label="IP address or domain to lookup"
               className="w-full pl-12 pr-4 py-3.5 text-sm rounded-2xl bg-zinc-50 border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white text-slate-900 font-mono transition-all"
             />
           </div>

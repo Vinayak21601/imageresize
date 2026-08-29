@@ -18,7 +18,8 @@ import {
   Square,
   Circle,
   Sun,
-  RotateCcw
+  RotateCcw,
+  CheckCircle2
 } from 'lucide-react';
 import { ResizeSettings, UnitType, OutputFormat, ImageMetadata, CropData } from '@/types/image';
 import { SOCIAL_PRESETS } from '@/lib/presets';
@@ -79,6 +80,9 @@ interface CropSidebarProps {
   onSmartCrop?: () => Promise<void>;
   isRemovingBg?: boolean;
   isSmartCropping?: boolean;
+  smartCropProgress?: number;
+  smartCropSuccess?: boolean;
+  onDismissSmartCropSuccess?: () => void;
 }
 
 export function CropSidebar({
@@ -92,6 +96,9 @@ export function CropSidebar({
   onSmartCrop,
   isRemovingBg = false,
   isSmartCropping = false,
+  smartCropProgress = 0,
+  smartCropSuccess = false,
+  onDismissSmartCropSuccess,
 }: CropSidebarProps) {
   const [activeTab, setActiveTab] = useState<'ratio' | 'size' | 'percentage' | 'adjust' | 'preset'>('ratio');
   const [showAiInfo, setShowAiInfo] = useState(false);
@@ -255,7 +262,7 @@ export function CropSidebar({
             {isSmartCropping ? (
               <>
                 <div className="w-3.5 h-3.5 border-2 border-slate-900 border-t-transparent rounded-full animate-spin" />
-                <span className="text-[11px]">Analyzing...</span>
+                <span className="text-[11px]">Analyzing {smartCropProgress ? `${smartCropProgress}%` : '...'}</span>
               </>
             ) : (
               <>
@@ -265,6 +272,42 @@ export function CropSidebar({
             )}
           </button>
         </div>
+
+        {/* PROGRESS BAR WHILE SMART CROPPING */}
+        {isSmartCropping && (
+          <div className="space-y-1 pt-1 animate-in fade-in duration-200">
+            <div className="flex justify-between text-[10px] font-bold text-slate-700 font-mono">
+              <span>AI Subject Detection</span>
+              <span>{smartCropProgress}%</span>
+            </div>
+            <div className="w-full bg-zinc-200 h-1.5 rounded-full overflow-hidden">
+              <div 
+                className="bg-[#0284C7] h-full transition-all duration-300 ease-out" 
+                style={{ width: `${smartCropProgress}%` }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* SUCCESS NOTIFICATION BANNER */}
+        {smartCropSuccess && !isSmartCropping && (
+          <div className="flex items-center justify-between p-2.5 bg-emerald-50 border border-emerald-200 text-emerald-900 rounded-xl text-xs font-medium animate-in fade-in slide-in-from-top-1 duration-200 shadow-sm">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span className="font-semibold text-[11px]">AI Smart Focus Applied!</span>
+            </div>
+            {onDismissSmartCropSuccess && (
+              <button 
+                type="button" 
+                onClick={onDismissSmartCropSuccess} 
+                className="text-emerald-700 hover:text-emerald-950 font-bold text-xs px-1 cursor-pointer"
+                title="Dismiss"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+        )}
 
         {/* PROCESSING & ACCURACY NOTICE */}
         <div className="flex items-start gap-1.5 pt-0.5 text-[10.5px] text-slate-500 font-normal leading-tight">
@@ -368,6 +411,55 @@ export function CropSidebar({
             </div>
           </div>
 
+          {/* Corner Radius Slider (Crop by Radius) */}
+          <div className="space-y-2 pb-3 border-b border-zinc-200/80">
+            <div className="flex items-center justify-between">
+              <label htmlFor="cropper-corner-radius-slider" className="text-[11px] font-extrabold text-slate-900 uppercase tracking-wider block font-sans">
+                Corner Radius (px)
+              </label>
+              <span className="text-xs font-mono font-bold text-slate-900 bg-zinc-100 px-2 py-0.5 rounded-md border border-zinc-200">
+                {settings.cropShape === 'circle' ? 'Full Circle' : `${settings.cornerRadius || 0}px`}
+              </span>
+            </div>
+
+            <input
+              id="cropper-corner-radius-slider"
+              type="range"
+              min="0"
+              max="100"
+              step="2"
+              value={settings.cropShape === 'circle' ? 100 : (settings.cornerRadius || 0)}
+              disabled={settings.cropShape === 'circle'}
+              onChange={(e) => onUpdateSettings({ cornerRadius: Number(e.target.value) })}
+              aria-label="Corner radius slider in pixels"
+              className="w-full h-2 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-slate-900 disabled:opacity-50"
+            />
+
+            {/* Quick Radius Preset Pills */}
+            <div className="flex flex-wrap gap-1.5 pt-1">
+              {[
+                { label: '0px (Sharp)', value: 0 },
+                { label: '16px (Soft)', value: 16 },
+                { label: '32px (Medium)', value: 32 },
+                { label: '64px (Large)', value: 64 },
+              ].map((preset) => (
+                <button
+                  key={preset.label}
+                  type="button"
+                  disabled={settings.cropShape === 'circle'}
+                  onClick={() => onUpdateSettings({ cornerRadius: preset.value })}
+                  className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all cursor-pointer border ${
+                    settings.cropShape !== 'circle' && (settings.cornerRadius || 0) === preset.value
+                      ? 'bg-slate-900 text-white border-slate-900 shadow-2xs'
+                      : 'bg-white text-slate-700 border-zinc-200 hover:bg-zinc-100'
+                  } disabled:opacity-50`}
+                >
+                  {preset.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="space-y-2">
             <label className="text-[11px] font-extrabold text-slate-900 uppercase tracking-wider block font-sans">
               Aspect Ratio Presets
@@ -429,9 +521,11 @@ export function CropSidebar({
                 Width ({settings.unit})
               </label>
               <input
+                id="crop-width-input"
                 type="number"
                 value={widthInput}
                 onChange={(e) => handleWidthChange(e.target.value)}
+                aria-label="Crop width value"
                 className="w-full px-3.5 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-sm text-slate-900 focus:outline-none focus:border-black font-mono font-bold"
               />
             </div>
@@ -441,9 +535,11 @@ export function CropSidebar({
                 Height ({settings.unit})
               </label>
               <input
+                id="crop-height-input"
                 type="number"
                 value={heightInput}
                 onChange={(e) => handleHeightChange(e.target.value)}
+                aria-label="Crop height value"
                 className="w-full px-3.5 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-sm text-slate-900 focus:outline-none focus:border-black font-mono font-bold"
               />
             </div>
@@ -468,8 +564,10 @@ export function CropSidebar({
               <div className="flex items-center gap-1.5 text-xs text-zinc-500 font-bold">
                 <span>DPI:</span>
                 <select
+                  id="crop-dpi-select"
                   value={settings.dpi}
                   onChange={(e) => onUpdateSettings({ dpi: parseInt(e.target.value) })}
+                  aria-label="DPI resolution setting"
                   className="bg-zinc-50 border border-zinc-200 rounded-lg px-2 py-1 text-xs text-slate-900"
                 >
                   <option value={96}>96 DPI (Web)</option>
@@ -492,11 +590,13 @@ export function CropSidebar({
           </div>
 
           <input
+            id="crop-scale-percentage-slider"
             type="range"
             min={1}
             max={300}
             value={settings.percentage}
             onChange={(e) => handlePercentageChange(parseInt(e.target.value))}
+            aria-label="Scale percentage slider"
             className="w-full h-2.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-black"
           />
 
@@ -626,6 +726,7 @@ export function CropSidebar({
                 <span className="font-mono text-[11px] font-bold">{settings.adjustments?.brightness ?? 100}%</span>
               </div>
               <input
+                id="crop-brightness-slider"
                 type="range"
                 min="0"
                 max="200"
@@ -639,6 +740,7 @@ export function CropSidebar({
                     blur: settings.adjustments?.blur ?? 0,
                   }
                 })}
+                aria-label="Brightness adjustment slider"
                 className="w-full h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-black"
               />
             </div>
@@ -650,6 +752,7 @@ export function CropSidebar({
                 <span className="font-mono text-[11px] font-bold">{settings.adjustments?.contrast ?? 100}%</span>
               </div>
               <input
+                id="crop-contrast-slider"
                 type="range"
                 min="0"
                 max="200"
@@ -663,6 +766,7 @@ export function CropSidebar({
                     blur: settings.adjustments?.blur ?? 0,
                   }
                 })}
+                aria-label="Contrast adjustment slider"
                 className="w-full h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-black"
               />
             </div>
@@ -674,6 +778,7 @@ export function CropSidebar({
                 <span className="font-mono text-[11px] font-bold">{settings.adjustments?.saturation ?? 100}%</span>
               </div>
               <input
+                id="crop-saturation-slider"
                 type="range"
                 min="0"
                 max="200"
@@ -687,6 +792,7 @@ export function CropSidebar({
                     blur: settings.adjustments?.blur ?? 0,
                   }
                 })}
+                aria-label="Saturation adjustment slider"
                 className="w-full h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-black"
               />
             </div>
@@ -698,6 +804,7 @@ export function CropSidebar({
                 <span className="font-mono text-[11px] font-bold">{settings.adjustments?.grayscale ?? 0}%</span>
               </div>
               <input
+                id="crop-grayscale-slider"
                 type="range"
                 min="0"
                 max="100"
@@ -711,6 +818,7 @@ export function CropSidebar({
                     blur: settings.adjustments?.blur ?? 0,
                   }
                 })}
+                aria-label="Grayscale adjustment slider"
                 className="w-full h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-black"
               />
             </div>
@@ -782,11 +890,13 @@ export function CropSidebar({
               </span>
             </div>
             <input
+              id="crop-quality-slider"
               type="range"
               min={10}
               max={100}
               value={settings.quality}
               onChange={(e) => onUpdateSettings({ quality: parseInt(e.target.value) })}
+              aria-label="Image export quality slider"
               className="w-full h-2 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-black"
             />
           </div>
@@ -802,6 +912,7 @@ export function CropSidebar({
             <span className="text-[10px] text-zinc-400 font-mono">Optional</span>
           </div>
           <input
+            id="crop-target-size-input"
             type="number"
             min={1}
             placeholder="e.g. 15 (for <15 KB target)"
@@ -811,6 +922,7 @@ export function CropSidebar({
                 targetSizeKb: e.target.value ? Math.max(1, parseInt(e.target.value)) : null,
               })
             }
+            aria-label="Target maximum file size in kilobytes"
             className="w-full px-3.5 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-black font-mono placeholder:text-zinc-400 font-bold"
           />
 

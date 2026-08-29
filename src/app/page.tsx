@@ -48,6 +48,7 @@ export default function Home() {
     quality: 85,
     targetSizeKb: null,
     cropShape: 'rectangle',
+    cornerRadius: 0,
     adjustments: {
       brightness: 100,
       contrast: 100,
@@ -60,6 +61,8 @@ export default function Home() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isRemovingBg, setIsRemovingBg] = useState(false);
   const [isSmartCropping, setIsSmartCropping] = useState(false);
+  const [smartCropProgress, setSmartCropProgress] = useState<number>(0);
+  const [smartCropSuccess, setSmartCropSuccess] = useState<boolean>(false);
   const cropperInstanceRef = useRef<any>(null);
 
   const [result, setResult] = useState<{
@@ -218,9 +221,12 @@ export default function Home() {
 
   const handleSmartCrop = async () => {
     if (!metadata || !cropperInstanceRef.current) return;
+    setSmartCropSuccess(false);
     setIsSmartCropping(true);
+    setSmartCropProgress(15);
     try {
       const smartcrop = (await import('smartcrop')).default;
+      setSmartCropProgress(40);
       const img = new Image();
       img.crossOrigin = 'anonymous';
       img.src = metadata.previewUrl;
@@ -228,12 +234,15 @@ export default function Home() {
         img.onload = res;
         img.onerror = rej;
       });
+      setSmartCropProgress(65);
 
       const currentRatio = settings.aspectRatio || (cropData.width / cropData.height) || metadata.aspectRatio;
       const calcW = 800;
       const calcH = Math.round(800 / currentRatio);
 
       const result = await smartcrop.crop(img, { width: calcW, height: calcH });
+      setSmartCropProgress(90);
+
       if (result && result.topCrop) {
         const c = result.topCrop;
         cropperInstanceRef.current.setData({
@@ -243,11 +252,17 @@ export default function Home() {
           height: c.height,
         });
       }
+      setSmartCropProgress(100);
+      setSmartCropSuccess(true);
+      setTimeout(() => {
+        setSmartCropSuccess(false);
+      }, 4000);
     } catch (err: any) {
       console.error('Smart crop failed:', err);
       alert('Smart Focus detection error: ' + (err.message || 'Failed to analyze subject'));
     } finally {
       setIsSmartCropping(false);
+      setSmartCropProgress(0);
     }
   };
 
@@ -316,9 +331,9 @@ export default function Home() {
                     </button>
 
                     <div>
-                      <h2 className="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2 font-sans">
+                      <div className="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2 font-sans font-body !font-sans">
                         {metadata?.name}
-                      </h2>
+                      </div>
                       <p className="text-xs text-zinc-500 font-mono">
                         Original: {metadata?.width} x {metadata?.height} px ({(metadata?.size! / 1024).toFixed(1)} KB)
                       </p>
@@ -342,9 +357,11 @@ export default function Home() {
                       imageSrc={metadata?.previewUrl || ''}
                       aspectRatio={settings.aspectRatio}
                       cropShape={settings.cropShape}
+                      cornerRadius={settings.cornerRadius}
                       adjustments={settings.adjustments}
                       onCropChange={setCropData}
                       onCropperReady={(c) => { cropperInstanceRef.current = c; }}
+                      onChangeImage={handleResetImage}
                     />
                   </div>
 
@@ -360,6 +377,9 @@ export default function Home() {
                       onSmartCrop={handleSmartCrop}
                       isRemovingBg={isRemovingBg}
                       isSmartCropping={isSmartCropping}
+                      smartCropProgress={smartCropProgress}
+                      smartCropSuccess={smartCropSuccess}
+                      onDismissSmartCropSuccess={() => setSmartCropSuccess(false)}
                     />
                   </div>
                 </div>

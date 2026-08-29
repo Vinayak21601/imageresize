@@ -18,6 +18,7 @@ export interface ProcessImageOptions {
   quality?: number; // 1 - 100
   targetSizeKb?: number | null;
   cropShape?: 'rectangle' | 'circle';
+  cornerRadius?: number;
   adjustments?: ImageAdjustments;
 }
 
@@ -74,7 +75,7 @@ export async function processImageWithSharp(
     }
   }
 
-  // 3.5 Circular Avatar Mask
+  // 3.5 Circular or Rounded Corner Mask
   if (options.cropShape === 'circle') {
     const intermediateBuffer = await pipeline.png().toBuffer();
     const meta = await sharp(intermediateBuffer).metadata();
@@ -85,6 +86,16 @@ export async function processImageWithSharp(
       `<svg width="${w}" height="${h}"><circle cx="${w / 2}" cy="${h / 2}" r="${r}" fill="#000"/></svg>`
     );
     pipeline = sharp(intermediateBuffer).composite([{ input: circleSvg, blend: 'dest-in' }]);
+  } else if (options.cornerRadius && options.cornerRadius > 0) {
+    const intermediateBuffer = await pipeline.png().toBuffer();
+    const meta = await sharp(intermediateBuffer).metadata();
+    const w = meta.width || 500;
+    const h = meta.height || 500;
+    const rx = Math.min(options.cornerRadius, Math.min(w, h) / 2);
+    const roundRectSvg = Buffer.from(
+      `<svg width="${w}" height="${h}"><rect x="0" y="0" width="${w}" height="${h}" rx="${rx}" ry="${rx}" fill="#000"/></svg>`
+    );
+    pipeline = sharp(intermediateBuffer).composite([{ input: roundRectSvg, blend: 'dest-in' }]);
   }
 
   // 3.8 Image Adjustments (Brightness, Contrast, Saturation, Grayscale, Blur)

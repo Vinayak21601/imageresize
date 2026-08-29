@@ -2,7 +2,7 @@
 
 import React, { useRef, useEffect } from 'react';
 import Cropper from 'react-cropper';
-import { RotateCcw, RotateCw, FlipHorizontal, FlipVertical, ZoomIn, ZoomOut, RefreshCw } from 'lucide-react';
+import { RotateCcw, RotateCw, FlipHorizontal, FlipVertical, ZoomIn, ZoomOut, RefreshCw, ImagePlus } from 'lucide-react';
 import { CropData, ImageAdjustments } from '@/types/image';
 
 export interface ReactCropperElement extends HTMLImageElement {
@@ -13,12 +13,14 @@ interface CropCanvasProps {
   imageSrc: string;
   aspectRatio: number | null;
   cropShape?: 'rectangle' | 'circle';
+  cornerRadius?: number;
   adjustments?: ImageAdjustments;
   onCropChange: (data: CropData) => void;
   onCropperReady?: (cropper: Cropper) => void;
+  onChangeImage?: () => void;
 }
 
-export function CropCanvas({ imageSrc, aspectRatio, cropShape = 'rectangle', adjustments, onCropChange, onCropperReady }: CropCanvasProps) {
+export function CropCanvas({ imageSrc, aspectRatio, cropShape = 'rectangle', cornerRadius = 0, adjustments, onCropChange, onCropperReady, onChangeImage }: CropCanvasProps) {
   const cropperRef = useRef<ReactCropperElement>(null);
 
   const filterStyle = adjustments ? {
@@ -107,6 +109,15 @@ export function CropCanvas({ imageSrc, aspectRatio, cropShape = 'rectangle', adj
         `}</style>
       )}
 
+      {/* Targeted CSS for Live Corner Radius */}
+      {cornerRadius > 0 && cropShape !== 'circle' && (
+        <style>{`
+          .cropper-view-box, .cropper-face {
+            border-radius: ${Math.min(cornerRadius, 50)}px !important;
+          }
+        `}</style>
+      )}
+
       {/* Canvas Workspace Stage */}
       <div 
         className={`relative w-full h-[540px] rounded-2xl overflow-hidden bg-slate-950 flex items-center justify-center border border-zinc-200/80 shadow-inner ${cropShape === 'circle' ? 'cropper-circle-mask' : ''}`}
@@ -179,6 +190,21 @@ export function CropCanvas({ imageSrc, aspectRatio, cropShape = 'rectangle', adj
             <FlipVertical className="w-3.5 h-3.5" />
             Flip V
           </button>
+
+          {onChangeImage && (
+            <>
+              <div className="h-4 w-px bg-zinc-200 mx-1 hidden sm:block" />
+              <button
+                type="button"
+                onClick={onChangeImage}
+                title="Upload or select a different image"
+                className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-slate-900 bg-white hover:bg-slate-900 hover:text-white border border-zinc-200/80 rounded-xl transition-all shadow-sm active:scale-95 cursor-pointer group"
+              >
+                <ImagePlus className="w-3.5 h-3.5 text-[#0284C7] group-hover:text-white transition-colors" />
+                Change Image
+              </button>
+            </>
+          )}
         </div>
 
         <div className="flex items-center gap-1.5">

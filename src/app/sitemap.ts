@@ -26,6 +26,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/convert/png-to-svg',
     '/convert/svg-to-png',
     '/convert/jpg-to-png',
+    '/blog/how-to-resize-image-without-losing-quality',
   ];
 
   return routes.map((route) => ({
