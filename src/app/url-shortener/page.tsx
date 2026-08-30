@@ -45,14 +45,24 @@ export default function UrlShortenerPage() {
               </p>
 
               {/* Explicit In-Progress Notice Banner */}
-              <div className="max-w-2xl mx-auto p-4 bg-amber-50 border border-amber-200/90 rounded-2xl text-xs text-amber-950 font-medium space-y-1 shadow-xs">
-                <div className="font-bold flex items-center justify-center gap-1.5 text-amber-900">
-                  <span className="px-2 py-0.5 rounded-full bg-amber-200 text-amber-900 font-mono text-[10px] uppercase font-extrabold">Notice</span>
-                  Feature Currently In Progress
+              <div className="max-w-xl mx-auto p-4 bg-gradient-to-r from-blue-50 to-sky-50 border border-blue-200/90 rounded-2xl text-xs text-slate-800 space-y-1.5 shadow-2xs">
+                <div className="font-bold flex items-center justify-center gap-1.5 text-[#1E50F2]">
+                  <Sparkles className="w-4 h-4 text-[#1E50F2]" />
+                  Smart URL Shortener Coming Soon
                 </div>
-                <p className="text-amber-900/90 font-normal">
-                  The URL Shortener tool is currently under active development and does not have full functionality yet. Custom domains, click analytics tracking, and backend redirection are currently being completed.
+                <p className="text-slate-600 font-normal">
+                  Want custom domains, click telemetry analytics, and lower early bird rates? Sign up now!
                 </p>
+                <div className="pt-1">
+                  <Link
+                    id="url-early-access-link-btn"
+                    href="/url-shortener/coming-soon"
+                    className="inline-flex items-center gap-1 text-xs font-bold text-[#1E50F2] hover:underline"
+                  >
+                    <span>Sign Up for Early Access &amp; Discount</span>
+                    <Sparkles className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
               </div>
             </div>
           </section>

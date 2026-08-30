@@ -9,8 +9,8 @@ export function Footer() {
     <footer className="w-full border-t border-zinc-200/80 bg-white text-zinc-600 font-sans pt-12 pb-8">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-12">
         
-        {/* TOP SECTION: 5-COLUMN STRUCTURED GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-10 pb-10 border-b border-zinc-100">
+        {/* TOP SECTION: 4-COLUMN STRUCTURED LINK GRID */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10 pb-8 border-b border-zinc-100">
           
           {/* Col 1: Brand & Privacy Guarantee */}
           <div className="lg:col-span-2 space-y-4">
@@ -28,20 +28,9 @@ export function Footer() {
             <p className="text-xs sm:text-sm text-zinc-500 leading-relaxed max-w-sm font-normal">
               High-precision web image engine for precision cropping, format conversion, unit resizing (px, in, cm, mm), and target file size compression.
             </p>
-
-            <div className="pt-2 flex flex-wrap items-center gap-2 text-[11px] font-bold text-slate-700">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 shadow-xs">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                <span>100% In-Browser Privacy</span>
-              </div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-100 text-zinc-700 border border-zinc-200 shadow-xs">
-                <Lock className="w-3 h-3 text-zinc-500" />
-                <span>DPDP Act 2023 Compliant</span>
-              </div>
-            </div>
           </div>
 
-          {/* Col 2: Image Tools */}
+          {/* Col 2: Image Tools & Utilities */}
           <div className="space-y-3">
             <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 font-sans">
               Image Tools
@@ -50,7 +39,7 @@ export function Footer() {
               <li>
                 <Link href="/" className="hover:text-slate-900 transition-colors flex items-center justify-between group">
                   <span>Image Cropper</span>
-                  <span className="text-[10px] text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">Popular</span>
+                  <span className="text-[10px] text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded font-bold">Popular</span>
                 </Link>
               </li>
               <li>
@@ -58,35 +47,6 @@ export function Footer() {
                   Image Converter
                 </Link>
               </li>
-              <li>
-                <Link href="/convert/heic-to-jpg" className="hover:text-slate-900 transition-colors">
-                  HEIC to JPG
-                </Link>
-              </li>
-              <li>
-                <Link href="/convert/jpg-to-pdf" className="hover:text-slate-900 transition-colors">
-                  JPG to PDF
-                </Link>
-              </li>
-              <li>
-                <Link href="/convert/png-to-jpg" className="hover:text-slate-900 transition-colors">
-                  PNG to JPG
-                </Link>
-              </li>
-              <li>
-                <Link href="/convert/jpg-to-webp" className="hover:text-slate-900 transition-colors">
-                  JPG to WebP
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Col 3: Network & Utilities */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 font-sans">
-              Network &amp; Utilities
-            </h4>
-            <ul className="space-y-2 text-xs font-medium text-slate-600">
               <li>
                 <Link href="/what-is-my-ip" className="hover:text-slate-900 transition-colors">
                   What Is My IP
@@ -104,15 +64,10 @@ export function Footer() {
                   <span className="px-1.5 py-0.2 bg-amber-100 text-amber-900 text-[9px] rounded font-bold font-mono">Coming Soon</span>
                 </Link>
               </li>
-              <li>
-                <Link href="/contact" className="hover:text-slate-900 transition-colors">
-                  Contact &amp; Feedback
-                </Link>
-              </li>
             </ul>
           </div>
 
-          {/* Col 4: Legal & Policies */}
+          {/* Col 3: Legal & Trust */}
           <div className="space-y-3">
             <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 font-sans">
               Legal &amp; Trust
@@ -144,13 +99,62 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/report-abuse" className="hover:text-slate-900 transition-colors">
-                  Report Abuse
+                <Link href="/contact" className="hover:text-slate-900 transition-colors">
+                  Contact &amp; Support
                 </Link>
               </li>
             </ul>
           </div>
 
+        </div>
+
+        {/* DEDICATED NEW ROW: RECENT GUIDES & ARTICLES (HORIZONTAL CARDS GRID) */}
+        <div className="space-y-4 pt-2">
+          <div className="flex items-center justify-between">
+            <h4 className="text-xs font-black uppercase tracking-wider text-slate-900 font-sans flex items-center gap-2">
+              <span>Latest Guides &amp; Articles</span>
+            </h4>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* Blog Card 1 (Horizontal Layout) */}
+            <Link
+              id="footer-featured-blog-card"
+              href="/blog/how-to-resize-image-without-losing-quality"
+              className="group flex items-center gap-3.5 bg-slate-50 hover:bg-slate-100/90 border border-slate-200/80 rounded-2xl p-3 transition-all shadow-2xs hover:shadow-md"
+              title="Read: How to Resize an Image Without Losing Quality"
+            >
+              {/* Horizontal Left Thumbnail Image */}
+              <div className="w-28 sm:w-36 h-20 sm:h-24 shrink-0 overflow-hidden rounded-xl bg-slate-200">
+                <img
+                  src="/blogimages/proportionalscalling.webp"
+                  alt="How to Resize an Image Without Losing Quality"
+                  width={144}
+                  height={96}
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+
+              {/* Right Text Details */}
+              <div className="flex-1 min-w-0 space-y-1">
+                <div className="text-[10px] font-bold text-[#1E50F2] uppercase tracking-wider">
+                  Image Processing Guide
+                </div>
+                <h5 className="text-xs sm:text-sm font-bold text-slate-900 leading-snug group-hover:text-[#1E50F2] transition-colors line-clamp-2">
+                  How to Resize an Image Without Losing Quality
+                </h5>
+                <p className="text-[11px] text-slate-500 font-normal line-clamp-1 leading-relaxed">
+                  Master aspect ratios, pixel density, and WebP formats.
+                </p>
+                <div className="pt-0.5 flex items-center text-[11px] font-bold text-[#1E50F2] group-hover:translate-x-0.5 transition-transform">
+                  <span>Read Guide</span>
+                  <ArrowUpRight className="w-3.5 h-3.5 ml-0.5" />
+                </div>
+              </div>
+            </Link>
+          </div>
         </div>
 
         {/* BOTTOM SECTION: CENTERED COPYRIGHT & MADE WITH LOVE */}

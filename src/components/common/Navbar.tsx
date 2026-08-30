@@ -33,14 +33,14 @@ export function Navbar() {
           </span>
         </Link>
 
-        {/* Floating Pill Nav Items */}
-        <nav className="hidden md:flex items-center gap-1 bg-slate-100/90 p-1 rounded-full border border-slate-200/80 shadow-inner">
+        {/* Floating Nav Items */}
+        <nav className="hidden md:flex items-center gap-1.5">
           <Link
             href="/"
-            className={`px-4 py-1.5 text-xs font-semibold rounded-full transition-all cursor-pointer ${
+            className={`px-4 py-1.5 text-xs rounded-full transition-all cursor-pointer ${
               pathname === '/'
-                ? 'bg-white text-slate-900 shadow-md font-bold'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+                ? 'bg-slate-900 text-white font-bold shadow-sm'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-semibold'
             }`}
           >
             Image Cropper
@@ -48,10 +48,10 @@ export function Navbar() {
 
           <Link
             href="/convert"
-            className={`px-4 py-1.5 text-xs font-semibold rounded-full transition-all cursor-pointer ${
+            className={`px-4 py-1.5 text-xs rounded-full transition-all cursor-pointer ${
               pathname.startsWith('/convert')
-                ? 'bg-white text-slate-900 shadow-md font-bold'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+                ? 'bg-slate-900 text-white font-bold shadow-sm'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-semibold'
             }`}
           >
             Image Converter
@@ -59,10 +59,10 @@ export function Navbar() {
 
           <Link
             href="/what-is-my-ip"
-            className={`px-4 py-1.5 text-xs font-semibold rounded-full transition-all cursor-pointer ${
+            className={`px-4 py-1.5 text-xs rounded-full transition-all cursor-pointer ${
               pathname === '/what-is-my-ip'
-                ? 'bg-white text-slate-900 shadow-md font-bold'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+                ? 'bg-slate-900 text-white font-bold shadow-sm'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-semibold'
             }`}
           >
             What is My IP

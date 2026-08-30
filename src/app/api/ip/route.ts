@@ -31,6 +31,21 @@ export interface IpResponseData {
   message?: string;
 }
 
+/**
+ * Normalize an IPv6 address by stripping the ::ffff: prefix (IPv4-mapped IPv6)
+ * and converting IPv6 loopback ::1 to 127.0.0.1.
+ */
+function normalizeIp(ip: string): string {
+  if (!ip) return ip;
+  const trimmed = ip.trim();
+  // IPv6 loopback → IPv4 loopback
+  if (trimmed === '::1') return '127.0.0.1';
+  // IPv4-mapped IPv6 (e.g. ::ffff:192.168.1.1) → IPv4
+  const ffffMatch = trimmed.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/i);
+  if (ffffMatch) return ffffMatch[1];
+  return trimmed;
+}
+
 function getCountryFlag(code?: string): string {
   if (!code || code.length !== 2) return '🌐';
   const codePoints = code
@@ -69,14 +84,26 @@ export async function GET(request: NextRequest) {
     const cfConnectingIp = request.headers.get('cf-connecting-ip');
     const clientIpHeader = request.headers.get('x-client-ip');
 
-    let clientIp = (
+    let rawClientIp = (
       cfConnectingIp ||
       forwardedFor?.split(',')[0] ||
       realIp ||
       clientIpHeader ||
-      '127.0.0.1'
+      ''
     ).trim();
 
+    // If no proxy headers provided a real IP, try to read the socket remote address
+    // This is needed because on localhost, browsers prefer IPv6 (::1) over IPv4
+    if (!rawClientIp) {
+      const anyReq = request as any;
+      const socketAddr = anyReq?.socket?.remoteAddress || anyReq?.headers?.host || '';
+      rawClientIp = socketAddr;
+    }
+
+    const clientIp = normalizeIp(rawClientIp || '127.0.0.1');
+
+    // For localhost/private IPs without a custom query, leave targetQuery empty
+    // so the external service resolves the server's own public IP
     const targetQuery = customQuery || (isPrivateIp(clientIp) ? '' : clientIp);
 
     // Call ipwho.is service
@@ -137,12 +164,14 @@ export async function GET(request: NextRequest) {
     };
 
     // Asynchronously log check event to backend admin logger
+    // Use the resolved public IP for logging when client IP is private/loopback
+    const logClientIp = isPrivateIp(clientIp) && !customQuery ? (response.ip || clientIp) : clientIp;
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
     fetch(`${backendUrl}/api/admin/ip-logs`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        clientIp: clientIp,
+        clientIp: logClientIp,
         targetIp: response.ip,
         type: response.type,
         country: response.country,

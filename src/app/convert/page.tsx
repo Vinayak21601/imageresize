@@ -6,18 +6,20 @@ import { ImageConverterStudio } from '@/components/converter/ImageConverterStudi
 import { AdBanner } from '@/components/common/AdBanner';
 
 export const metadata: Metadata = {
-  title: 'Free Image Converter Online — Convert PNG, JPG, WEBP, HEIC, AVIF',
+  title: 'Free Image Converter & Compressor Online — Convert & Compress PNG, JPG, WEBP, HEIC, AVIF',
   description:
-    'Free, ultra-fast online image converter. Easily convert PNG, JPG, JPEG, WEBP, HEIC, AVIF, GIF, BMP, TIFF, and PDF with automatic format detection and 100% privacy.',
+    'Free, ultra-fast online image converter and compressor tool. Easily convert and compress PNG, JPG, JPEG, WEBP, HEIC, AVIF, GIF, BMP, TIFF, and PDF with custom KB/MB file size targets and 100% privacy.',
   keywords: [
     'image converter',
-    'convert image',
+    'image compressor',
+    'compress image online',
+    'convert and compress image',
     'heic to jpg',
     'png to jpg',
     'jpg to png',
     'png to webp',
     'webp to png',
-    'image format converter',
+    'compress image in kb',
     'online image converter free',
   ],
 };
@@ -38,8 +40,8 @@ export default function UniversalConverterPage() {
             <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
               <ImageConverterStudio
                 defaultTargetFormat="jpeg"
-                title="Convert Images to Any Format"
-                subtitle="Drag & drop or select images from your computer or phone. Your format will be auto-detected, then choose your target format and download instantly."
+                title="The best free website to convert &amp; compress images online."
+                subtitle="CropMyImages is the best free online resource to convert and compress images to any format. Convert and compress PNG, JPG, HEIC, WEBP, AVIF, GIF, BMP, and PDF files with custom quality controls, target KB/MB file size compression, and zero quality loss."
               />
             </div>
           </div>

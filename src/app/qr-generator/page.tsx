@@ -53,6 +53,27 @@ export default function QrGeneratorPage() {
               <p className="text-base sm:text-lg text-slate-700 max-w-xl mx-auto font-normal leading-relaxed">
                 Generate custom QR codes for Website URLs, WiFi networks, PDF menus, vCard business contacts, and WhatsApp messages with custom gradients, dot shapes, and brand logo overlays.
               </p>
+
+              {/* Early Access Coming Soon Banner */}
+              <div className="max-w-xl mx-auto p-4 bg-gradient-to-r from-blue-50 to-sky-50 border border-blue-200/90 rounded-2xl text-xs text-slate-800 space-y-1.5 shadow-2xs">
+                <div className="font-bold flex items-center justify-center gap-1.5 text-[#1E50F2]">
+                  <Sparkles className="w-4 h-4 text-[#1E50F2]" />
+                  QR Generator 2.0 Coming Soon
+                </div>
+                <p className="text-slate-600 font-normal">
+                  Want dynamic scan analytics, logo embeddings, and lower pricing? Sign up for early access!
+                </p>
+                <div className="pt-1">
+                  <Link
+                    id="qr-early-access-link-btn"
+                    href="/qr-generator/coming-soon"
+                    className="inline-flex items-center gap-1 text-xs font-bold text-[#1E50F2] hover:underline"
+                  >
+                    <span>Sign Up for Early Access &amp; Discount</span>
+                    <Sparkles className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              </div>
             </div>
           </section>
 

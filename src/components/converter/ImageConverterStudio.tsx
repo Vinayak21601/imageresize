@@ -636,8 +636,8 @@ export function ImageConverterStudio({
       {/* 1. HERO HEADER */}
       <div className="text-center space-y-3">
 
-        <h1 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight leading-tight">
-          {title || 'Convert Images to Any Format'}
+        <h1 className="text-xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight font-heading max-w-5xl mx-auto">
+          {title || 'The best free website to convert images to any format.'}
         </h1>
 
         <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto font-medium">
