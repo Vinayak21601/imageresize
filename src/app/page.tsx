@@ -460,7 +460,7 @@ export default function Home() {
                 </p>
               </div>
 
-              {/* Steps Vertical Timeline Layout */}
+
               <div className="relative">
                 {/* Central Vertical Line (Desktop View) */}
                 <div className="hidden md:block absolute left-1/2 top-12 bottom-12 w-0.5 -translate-x-1/2 bg-slate-300/80 z-0" />
