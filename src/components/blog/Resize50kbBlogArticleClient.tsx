@@ -102,19 +102,13 @@ export function Resize50kbBlogArticleClient({ faqItems }: Resize50kbBlogArticleC
           <div className="max-w-4xl mx-auto space-y-6 text-center">
             
             {/* BREADCRUMB NAVIGATION */}
-            <nav aria-label="Breadcrumb" className="flex items-center justify-center gap-2 text-xs font-semibold text-slate-500">
+            <nav aria-label="Breadcrumb" className="flex items-center justify-center gap-2 text-xs font-semibold text-slate-600">
               <Link href="/" className="hover:text-slate-900 transition-colors">Home</Link>
-              <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+              <ChevronRight className="w-3.5 h-3.5 text-[#1E50F2] shrink-0" />
               <span className="text-slate-900">Blog</span>
-              <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+              <ChevronRight className="w-3.5 h-3.5 text-[#1E50F2] shrink-0" />
               <span className="text-[#1E50F2] truncate max-w-[200px] sm:max-w-none">How to Resize Image to 50KB</span>
             </nav>
-
-            {/* TAG & CATEGORY */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 border border-blue-200/80 text-xs font-bold text-[#1E50F2]">
-              <BookOpen className="w-3.5 h-3.5" />
-              <span>Image Size Reduction &bull; 50KB Guide</span>
-            </div>
 
             {/* H1 TITLE */}
             <h1
@@ -125,17 +119,17 @@ export function Resize50kbBlogArticleClient({ faqItems }: Resize50kbBlogArticleC
             </h1>
 
             {/* META DETAILS (AUTHOR, DATE, READ TIME) */}
-            <div className="flex flex-wrap items-center justify-center gap-6 text-xs text-slate-600 font-medium pt-2">
-              <div className="flex items-center gap-2" itemProp="author" itemScope itemType="https://schema.org/Organization">
-                <User className="w-4 h-4 text-slate-400" />
+            <div className="flex flex-wrap items-center justify-center gap-6 text-xs text-slate-700 font-semibold pt-2">
+              <div className="flex items-center gap-2 bg-white/80 border border-slate-200/80 px-3 py-1.5 rounded-full shadow-2xs" itemProp="author" itemScope itemType="https://schema.org/Organization">
+                <User className="w-4 h-4 text-[#1E50F2] shrink-0" />
                 <span itemProp="name">CropMyImages Editorial</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-slate-400" />
+              <div className="flex items-center gap-2 bg-white/80 border border-slate-200/80 px-3 py-1.5 rounded-full shadow-2xs">
+                <Calendar className="w-4 h-4 text-[#1E50F2] shrink-0" />
                 <time itemProp="datePublished" dateTime="2026-08-31">August 31, 2026</time>
               </div>
-              <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4 text-slate-400" />
+              <div className="flex items-center gap-2 bg-white/80 border border-slate-200/80 px-3 py-1.5 rounded-full shadow-2xs">
+                <Clock className="w-4 h-4 text-[#1E50F2] shrink-0" />
                 <span>5 Min Read</span>
               </div>
             </div>
@@ -287,7 +281,7 @@ export function Resize50kbBlogArticleClient({ faqItems }: Resize50kbBlogArticleC
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 py-4">
                 <div className="space-y-2 text-center">
                   <img
-                    src="/enter-target-size.webp"
+                    src="/blogimages/Export-JPG -WebP Format.webp"
                     alt="Select 50KB Target Size"
                     width={500}
                     height={350}
@@ -299,7 +293,7 @@ export function Resize50kbBlogArticleClient({ faqItems }: Resize50kbBlogArticleC
                 </div>
                 <div className="space-y-2 text-center">
                   <img
-                    src="/cropfirstrule.webp"
+                    src="/blogimages/cropfirstrule.webp"
                     alt="Crop Photo First"
                     width={500}
                     height={350}
@@ -311,7 +305,7 @@ export function Resize50kbBlogArticleClient({ faqItems }: Resize50kbBlogArticleC
                 </div>
                 <div className="space-y-2 text-center">
                   <img
-                    src="/modernformats.webp"
+                    src="/blogimages/modernformats.webp"
                     alt="Choose JPG or WebP Format"
                     width={500}
                     height={350}
@@ -405,7 +399,7 @@ export function Resize50kbBlogArticleClient({ faqItems }: Resize50kbBlogArticleC
                   PNG is great for graphics, screenshots, logos and images that require transparency. However, photographs can often become much larger as PNG files.
                 </p>
                 <p>
-                  If you&rsquo;re trying to compress a photo to 50KB and the website accepts JPG, converting the photograph to JPG can make it easier to reach the limit. If the website specifically requires PNG, keep the PNG format and reduce the dimensions and file size accordingly.
+                  If you&rsquo;re trying to compress a photo to 50KB and the website accepts JPG, converting the photograph to JPG using our <Link href="/convert" className="text-[#1E50F2] font-semibold hover:underline">free online image converter tool</Link> can make it much easier to reach the limit. If the website specifically requires PNG, keep the PNG format and reduce the dimensions and file size accordingly.
                 </p>
               </section>
 
@@ -420,7 +414,7 @@ export function Resize50kbBlogArticleClient({ faqItems }: Resize50kbBlogArticleC
                 <ul className="list-disc pl-6 space-y-2 text-slate-700">
                   <li><strong>Reduce the image dimensions:</strong> A very large image contains millions of pixels that may not be necessary for a small online upload.</li>
                   <li><strong>Crop the image:</strong> Remove unnecessary background or areas that aren&rsquo;t needed.</li>
-                  <li><strong>Use JPG for photographs:</strong> If your image is a photo and the website accepts JPG, converting from PNG to JPG will significantly reduce the file size.</li>
+                  <li><strong>Use JPG for photographs:</strong> If your image is a photo and the website accepts JPG, converting from PNG to JPG using our <Link href="/convert" className="text-[#1E50F2] font-semibold hover:underline">online format converter</Link> will significantly reduce the file size.</li>
                   <li><strong>Compress again gradually:</strong> Compress the image gradually rather than immediately choosing the lowest quality setting.</li>
                 </ul>
               </section>
@@ -512,12 +506,19 @@ export function Resize50kbBlogArticleClient({ faqItems }: Resize50kbBlogArticleC
                 <p>
                   With CropMyImages, you can resize and reduce your image size online and prepare it for upload in seconds. Upload your image, set your 50KB limit, make your adjustments, and download your file.
                 </p>
-                <div className="pt-2">
+                <div className="pt-2 flex flex-wrap items-center gap-3">
                   <Link
                     href="/"
                     className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#1E50F2] text-white font-bold text-sm shadow-md hover:bg-blue-700 transition-all"
                   >
                     <span>Resize &amp; Compress Image Now</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                  <Link
+                    href="/convert"
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-sm transition-all border border-slate-200"
+                  >
+                    <span>Format Converter &amp; Compressor Tool</span>
                     <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>
