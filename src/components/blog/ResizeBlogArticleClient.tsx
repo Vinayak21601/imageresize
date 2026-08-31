@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   BookOpen
 } from 'lucide-react';
+import { Navbar } from '@/components/common/Navbar';
 
 interface FAQItem {
   q: string;
@@ -92,9 +93,10 @@ export function ResizeBlogArticleClient({ faqItems }: ResizeBlogArticleClientPro
       </div>
 
       <article itemScope itemType="https://schema.org/BlogPosting" className="w-full">
-        {/* HERO ARTICLE HEADER */}
-        <header className="bg-sky-cloud-hero border-b border-zinc-200/60 py-12 sm:py-16 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto space-y-6 text-center">
+        {/* HERO ARTICLE HEADER WITH INTEGRATED NAVBAR */}
+        <header className="bg-sky-cloud-hero border-b border-zinc-200/60 pb-12 sm:pb-16 pt-4">
+          <Navbar />
+          <div className="max-w-4xl mx-auto space-y-6 text-center pt-8 px-4 sm:px-6 lg:px-8">
             
             {/* BREADCRUMB NAVIGATION */}
             <nav aria-label="Breadcrumb" className="flex items-center justify-center gap-2 text-xs font-semibold text-slate-600">

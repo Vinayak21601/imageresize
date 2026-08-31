@@ -139,7 +139,6 @@ export default function ResizeImageBlogPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdFaq) }}
       />
 
-      <Navbar />
       <ResizeBlogArticleClient faqItems={FAQ_ITEMS} />
       <Footer />
     </div>

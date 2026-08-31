@@ -147,7 +147,6 @@ export default function Resize50kbBlogPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdFaq) }}
       />
 
-      <Navbar />
       <Resize50kbBlogArticleClient faqItems={FAQ_ITEMS} />
       <Footer />
     </div>
