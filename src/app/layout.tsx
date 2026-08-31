@@ -105,7 +105,7 @@ export default function RootLayout({
         <link rel="shortcut icon" href="/logo.webp" type="image/webp" />
         <link rel="apple-touch-icon" href="/logo.webp" />
 
-        {/* Google Tag Manager */}
+        {/* Google Tag Manager Script (GTM-WQD67L3X) */}
         <Script id="google-tag-manager" strategy="afterInteractive">
           {`
             (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':

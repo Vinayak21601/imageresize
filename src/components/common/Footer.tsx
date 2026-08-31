@@ -119,7 +119,7 @@ export function Footer() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {/* Blog Card 1 (Horizontal Layout) */}
             <Link
-              id="footer-featured-blog-card"
+              id="footer-featured-blog-card-1"
               href="/blog/how-to-resize-image-without-losing-quality"
               className="group flex items-center gap-3.5 bg-slate-50 hover:bg-slate-100/90 border border-slate-200/80 rounded-2xl p-3 transition-all shadow-2xs hover:shadow-md"
               title="Read: How to Resize an Image Without Losing Quality"
@@ -140,13 +140,51 @@ export function Footer() {
               {/* Right Text Details */}
               <div className="flex-1 min-w-0 space-y-1">
                 <div className="text-[10px] font-bold text-[#1E50F2] uppercase tracking-wider">
-                  Image Processing Guide
+                  Image Quality Guide
                 </div>
                 <h5 className="text-xs sm:text-sm font-bold text-slate-900 leading-snug group-hover:text-[#1E50F2] transition-colors line-clamp-2">
                   How to Resize an Image Without Losing Quality
                 </h5>
                 <p className="text-[11px] text-slate-500 font-normal line-clamp-1 leading-relaxed">
                   Master aspect ratios, pixel density, and WebP formats.
+                </p>
+                <div className="pt-0.5 flex items-center text-[11px] font-bold text-[#1E50F2] group-hover:translate-x-0.5 transition-transform">
+                  <span>Read Guide</span>
+                  <ArrowUpRight className="w-3.5 h-3.5 ml-0.5" />
+                </div>
+              </div>
+            </Link>
+
+            {/* Blog Card 2 (Horizontal Layout) */}
+            <Link
+              id="footer-featured-blog-card-2"
+              href="/blog/how-to-resize-image-to-50kb"
+              className="group flex items-center gap-3.5 bg-slate-50 hover:bg-slate-100/90 border border-slate-200/80 rounded-2xl p-3 transition-all shadow-2xs hover:shadow-md"
+              title="Read: How to Resize an Image to 50KB Without Losing Quality"
+            >
+              {/* Horizontal Left Thumbnail Image */}
+              <div className="w-28 sm:w-36 h-20 sm:h-24 shrink-0 overflow-hidden rounded-xl bg-slate-200">
+                <img
+                  src="/enter-target-size.webp"
+                  alt="How to Resize an Image to 50KB Without Losing Quality"
+                  width={144}
+                  height={96}
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+
+              {/* Right Text Details */}
+              <div className="flex-1 min-w-0 space-y-1">
+                <div className="text-[10px] font-bold text-[#1E50F2] uppercase tracking-wider">
+                  50KB Compression Guide
+                </div>
+                <h5 className="text-xs sm:text-sm font-bold text-slate-900 leading-snug group-hover:text-[#1E50F2] transition-colors line-clamp-2">
+                  How to Resize an Image to 50KB Without Losing Quality
+                </h5>
+                <p className="text-[11px] text-slate-500 font-normal line-clamp-1 leading-relaxed">
+                  Reduce JPG &amp; PNG files for applications and forms.
                 </p>
                 <div className="pt-0.5 flex items-center text-[11px] font-bold text-[#1E50F2] group-hover:translate-x-0.5 transition-transform">
                   <span>Read Guide</span>
