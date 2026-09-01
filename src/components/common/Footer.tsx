@@ -192,6 +192,44 @@ export function Footer() {
                 </div>
               </div>
             </Link>
+
+            {/* Blog Card 3 (Horizontal Layout) */}
+            <Link
+              id="footer-featured-blog-card-3"
+              href="/blog/compress-image"
+              className="group flex items-center gap-3.5 bg-slate-50 hover:bg-slate-100/90 border border-slate-200/80 rounded-2xl p-3 transition-all shadow-2xs hover:shadow-md"
+              title="Read: Compress Image Online Without Losing Too Much Quality"
+            >
+              {/* Horizontal Left Thumbnail Image */}
+              <div className="w-28 sm:w-36 h-20 sm:h-24 shrink-0 overflow-hidden rounded-xl bg-slate-200">
+                <img
+                  src="/blogimages/Export-JPG-WebP-Format.webp"
+                  alt="Compress Image Online Without Losing Too Much Quality"
+                  width={144}
+                  height={96}
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+
+              {/* Right Text Details */}
+              <div className="flex-1 min-w-0 space-y-1">
+                <div className="text-[10px] font-bold text-[#1E50F2] uppercase tracking-wider">
+                  Image Compression Guide
+                </div>
+                <h5 className="text-xs sm:text-sm font-bold text-slate-900 leading-snug group-hover:text-[#1E50F2] transition-colors line-clamp-2">
+                  Compress Image Online Without Losing Quality
+                </h5>
+                <p className="text-[11px] text-slate-500 font-normal line-clamp-1 leading-relaxed">
+                  Reduce JPG and PNG files for websites &amp; forms.
+                </p>
+                <div className="pt-0.5 flex items-center text-[11px] font-bold text-[#1E50F2] group-hover:translate-x-0.5 transition-transform">
+                  <span>Read Guide</span>
+                  <ArrowUpRight className="w-3.5 h-3.5 ml-0.5" />
+                </div>
+              </div>
+            </Link>
           </div>
         </div>
 
