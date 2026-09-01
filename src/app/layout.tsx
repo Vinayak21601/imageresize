@@ -6,6 +6,7 @@ import './globals.css';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cropmyimages.com';
 const googleTagManagerId = 'GTM-WQD67L3X';
+const googleAnalyticsId = 'G-2L9PQGJ5HS';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -104,6 +105,20 @@ export default function RootLayout({
         <link rel="icon" href="/logo.webp" type="image/webp" sizes="any" />
         <link rel="shortcut icon" href="/logo.webp" type="image/webp" />
         <link rel="apple-touch-icon" href="/logo.webp" />
+
+        {/* Google Analytics (gtag.js) */}
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${googleAnalyticsId}');
+          `}
+        </Script>
 
         {/* Google Tag Manager Script (GTM-WQD67L3X) */}
         <Script id="google-tag-manager" strategy="afterInteractive">
