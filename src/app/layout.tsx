@@ -6,7 +6,7 @@ import './globals.css';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cropmyimages.com';
 const googleTagManagerId = 'GTM-WQD67L3X';
-const googleAnalyticsId = 'G-2L9PQGJ5HS';
+const googleAnalyticsId = 'G-HHJZB507K1';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
