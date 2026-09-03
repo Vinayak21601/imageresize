@@ -172,7 +172,8 @@ export default function Home() {
 
       formData.append('crop', JSON.stringify(cropData));
 
-      const res = await fetch('/api/crop', {
+      const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://api.cropmyimages.com';
+      const res = await fetch(`${BACKEND_URL}/api/image/process`, {
         method: 'POST',
         body: formData,
       });
