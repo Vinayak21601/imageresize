@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { processImageWithSharp } from '@/lib/sharp';
-import { logImageOperation } from '@/lib/db';
 import { OutputFormat } from '@/types/image';
 
 export async function POST(req: NextRequest) {
