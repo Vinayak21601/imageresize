@@ -27,7 +27,7 @@ const PRICING_TIERS = [
     features: [
       'Standard image conversion speed',
       'Basic image cropping & aspect ratios',
-      '5MB max file size per image',
+      '10MB max file size per image',
       'Standard compression algorithm',
       'Watermark-free exports',
       'Community & email support',
@@ -38,8 +38,8 @@ const PRICING_TIERS = [
     id: 'pro',
     name: 'Pro',
     subtitle: 'For professionals & creators',
-    monthlyPrice: 8.99,
-    yearlyPrice: 7.19,
+    monthlyPrice: 6.00,
+    yearlyPrice: 4.99,
     badge: 'MOST POPULAR',
     popular: true,
     buttonText: 'Get Started Pro',
@@ -51,18 +51,18 @@ const PRICING_TIERS = [
       '50MB max file size per image',
       'Fast image processing speed (2x)',
       'Batch conversion (up to 50 files)',
-      '10,000 API calls / month',
-      '24/7 Priority support',
+      'Target file size compressor (KB limits)',
+      'Saved custom cropper presets',
       '100% Ad-free experience',
-      'Custom presets saving'
+      '24/7 Priority support'
     ]
   },
   {
     id: 'ultra',
     name: 'Ultra',
-    subtitle: 'For power users & teams',
-    monthlyPrice: 9.99,
-    yearlyPrice: 7.99,
+    subtitle: 'For power users & agencies',
+    monthlyPrice: 15.00,
+    yearlyPrice: 11.99,
     badge: 'BEST VALUE',
     popular: false,
     buttonText: 'Get Started Ultra',
@@ -73,10 +73,9 @@ const PRICING_TIERS = [
       'Unlimited batch processing size',
       '500MB max file size per image',
       'Advanced target compression (KB/MB)',
-      '100,000 API calls / month',
-      'Dedicated account manager',
+      'Custom QR brand logo overlays',
+      'Custom domain short links',
       '100% Ad-free experience',
-      'Developer Webhooks & API keys',
       'Priority 24/7 VIP Support'
     ]
   }
@@ -89,7 +88,7 @@ const COMPARISON_FEATURES = [
     items: [
       {
         name: 'File size per image',
-        free: '5MB',
+        free: '10MB',
         pro: '50MB',
         ultra: '500MB'
       },
@@ -114,13 +113,13 @@ const COMPARISON_FEATURES = [
         name: 'Other Tools',
         free: 'Full access to basic tools',
         pro: 'Full access to premium tools',
-        ultra: 'Full access to all tools + API'
+        ultra: 'Full access to all suite tools'
       },
       {
         name: 'Output image format',
         free: 'WEBP, JPG, PNG',
         pro: 'WEBP, JPG, PNG, AVIF',
-        ultra: 'All formats + RAW'
+        ultra: 'All formats + High Res SVG'
       },
       {
         name: 'Custom Dimension Presets',
