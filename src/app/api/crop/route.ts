@@ -52,20 +52,21 @@ export async function POST(req: NextRequest) {
 
     const finalSizeBytes = outputBuffer.length;
 
-    // Log to MySQL database (non-blocking)
-    logImageOperation({
-      originalName: file.name || 'image',
-      inputFormat: file.type.split('/')[1] || 'jpeg',
-      outputFormat,
-      originalWidth: settings.originalWidth || finalWidth,
-      originalHeight: settings.originalHeight || finalHeight,
-      finalWidth,
-      finalHeight,
-      unit: settings.unit || 'px',
-      originalSizeBytes,
-      finalSizeBytes,
-      targetSizeKb: settings.targetSizeKb,
-      mode: settings.mode || 'crop',
+    const startTime = Date.now();
+    const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://api.cropmyimages.com';
+
+    // Log job to Hostinger Backend API for Admin Dashboard (non-blocking)
+    fetch(`${BACKEND_URL}/api/admin/job-log`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        filename: file.name || 'image',
+        originalSize: originalSizeBytes,
+        processedSize: finalSizeBytes,
+        operation: settings.mode || 'crop',
+        status: 'completed',
+        durationMs: Date.now() - startTime,
+      }),
     }).catch(() => {});
 
     // Return binary file stream with download header
