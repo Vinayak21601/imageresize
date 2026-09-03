@@ -11,6 +11,7 @@ import { ResultModal } from '@/components/cropper/ResultModal';
 import { AdBanner } from '@/components/common/AdBanner';
 import { ImageMetadata, CropData, ResizeSettings } from '@/types/image';
 import { convertToPixels } from '@/lib/units';
+import { GoogleOneTap } from '@/components/common/GoogleOneTap';
 import {
   Crop,
   Share2,
@@ -320,6 +321,9 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdFaq) }}
       />
+
+      {/* Google One Tap Auto Sign-In for unauthenticated visitors */}
+      <GoogleOneTap />
 
       <main className="flex-1 w-full">
         {/* HERO + STUDIO SECTION WITH BACKGROUND IMAGE BACKDROP */}
