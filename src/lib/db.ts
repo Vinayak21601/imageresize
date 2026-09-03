@@ -1,16 +1,27 @@
 import { PrismaClient } from '@prisma/client';
 
 const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
+  prisma: PrismaClient | null | undefined;
 };
 
-export const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
-    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-  });
+function getPrismaClient(): PrismaClient | null {
+  if (!process.env.DATABASE_URL) {
+    return null;
+  }
+  try {
+    if (!globalForPrisma.prisma) {
+      globalForPrisma.prisma = new PrismaClient({
+        log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+      });
+    }
+    return globalForPrisma.prisma;
+  } catch (err) {
+    console.warn('[Prisma Init Warning] Failed to initialize PrismaClient:', err);
+    return null;
+  }
+}
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+export const prisma = getPrismaClient();
 
 export async function logImageOperation(data: {
   originalName: string;
@@ -27,7 +38,10 @@ export async function logImageOperation(data: {
   mode: string;
 }) {
   try {
-    await prisma.imageOperation.create({
+    const client = getPrismaClient();
+    if (!client) return;
+
+    await client.imageOperation.create({
       data: {
         originalName: data.originalName,
         inputFormat: data.inputFormat,
@@ -44,7 +58,6 @@ export async function logImageOperation(data: {
       },
     });
   } catch (error) {
-    // If MySQL connection fails or DB is not reachable, log warning without breaking image processing
     console.warn('[Database Log Notice] MySQL DB unreachable or pending migration:', error);
   }
 }
