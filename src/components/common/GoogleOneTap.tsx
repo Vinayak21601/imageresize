@@ -47,9 +47,8 @@ export function GoogleOneTap() {
         if (response.credential) {
           const result = await dispatch(loginWithGoogle(response.credential));
           if (loginWithGoogle.fulfilled.match(result)) {
-            // Successfully signed in — remove dismiss key so future visits are clean
             localStorage.removeItem(DISMISS_KEY);
-            router.push('/profile');
+            // User stays on current page — no redirect
           }
         }
       },
