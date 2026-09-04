@@ -100,44 +100,6 @@ export function Footer() {
                   What Is My IP
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="/qr-generator"
-                  className={`transition-colors flex items-center gap-1.5 ${
-                    isDark ? 'hover:text-white' : 'hover:text-slate-900'
-                  }`}
-                >
-                  <span>QR Generator</span>
-                  <span
-                    className={`px-1.5 py-0.5 text-[9px] rounded font-bold font-mono transition-colors ${
-                      isDark
-                        ? 'bg-amber-950/80 text-amber-300 border border-amber-500/30'
-                        : 'bg-amber-100 text-amber-900'
-                    }`}
-                  >
-                    Coming Soon
-                  </span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/url-shortener"
-                  className={`transition-colors flex items-center gap-1.5 ${
-                    isDark ? 'hover:text-white' : 'hover:text-slate-900'
-                  }`}
-                >
-                  <span>URL Shortener</span>
-                  <span
-                    className={`px-1.5 py-0.5 text-[9px] rounded font-bold font-mono transition-colors ${
-                      isDark
-                        ? 'bg-amber-950/80 text-amber-300 border border-amber-500/30'
-                        : 'bg-amber-100 text-amber-900'
-                    }`}
-                  >
-                    Coming Soon
-                  </span>
-                </Link>
-              </li>
             </ul>
           </div>
 

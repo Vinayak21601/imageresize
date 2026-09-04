@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useHeroTheme } from '@/components/common/HeroThemeProvider';
 import {
   ArrowRight,
   Download,
@@ -143,6 +144,8 @@ export function ImageConverterStudio({
   title,
   subtitle,
 }: ImageConverterStudioProps) {
+  const { theme } = useHeroTheme();
+  const isDark = theme === 'dark';
   const [images, setImages] = useState<UploadedImage[]>([]);
   const [globalTargetFormat, setGlobalTargetFormat] = useState<OutputFormat>(defaultTargetFormat);
   const [quality, setQuality] = useState<number>(90);
@@ -631,40 +634,57 @@ export function ImageConverterStudio({
       : `Convert All (${images.length} Files)`;
 
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-8 font-sans">
+    <div id="converter-studio" className="w-full max-w-7xl mx-auto space-y-8 font-sans">
 
       {/* 1. HERO HEADER */}
       <div className="text-center space-y-3">
-
-        <h1 className="text-xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight font-heading max-w-5xl mx-auto">
+        <h1 className={`text-xl sm:text-3xl md:text-4xl font-extrabold tracking-tight leading-tight font-heading max-w-5xl mx-auto transition-colors duration-300 ${
+          isDark ? 'text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)]' : 'text-slate-900'
+        }`}>
           {title || 'The best free website to convert images to any format.'}
         </h1>
 
-        <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto font-medium">
+        <p className={`text-sm sm:text-base max-w-2xl mx-auto font-medium transition-colors duration-300 ${
+          isDark ? 'text-slate-300 drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)]' : 'text-slate-600'
+        }`}>
           {subtitle || 'Upload any image (PNG, JPG, HEIC, WEBP, AVIF, GIF, BMP, TIFF) and instantly convert it to your chosen format with custom dimensions and target output file size in KB or MB.'}
         </p>
       </div>
 
       {/* 2. TARGET FORMAT & SETTINGS PANEL */}
-      <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+      <div className={`border rounded-3xl p-6 sm:p-8 transition-all duration-300 space-y-6 ${
+        isDark
+          ? 'bg-[#0B1226]/85 border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-xl text-white'
+          : 'bg-white border-zinc-200/80 shadow-sm text-slate-900'
+      }`}>
 
         {/* ROW 1: FORMAT SELECTION HEADER */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-zinc-100">
+        <div className={`flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b transition-colors ${
+          isDark ? 'border-white/10' : 'border-zinc-100'
+        }`}>
           <div>
-            <div className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2 font-sans font-body !font-sans">
-              <Layers className="w-5 h-5 text-slate-800" />
+            <div className={`text-base sm:text-lg font-bold flex items-center gap-2 font-sans font-body !font-sans ${
+              isDark ? 'text-white' : 'text-slate-900'
+            }`}>
+              <Layers className={`w-5 h-5 ${isDark ? 'text-sky-400' : 'text-slate-800'}`} />
               <span>1. Choose Target Output Format</span>
             </div>
-            <p className="text-xs text-slate-500 font-medium">
+            <p className={`text-xs font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
               Select the file format you want your images converted into.
             </p>
           </div>
 
           {/* Quality Slider */}
-          <div className="flex items-center gap-3 bg-zinc-50 border border-zinc-200/80 px-4 py-2 rounded-2xl w-full sm:w-auto">
-            <Sliders className="w-4 h-4 text-slate-600 flex-shrink-0" />
+          <div className={`flex items-center gap-3 px-4 py-2 rounded-2xl w-full sm:w-auto border transition-colors ${
+            isDark
+              ? 'bg-slate-900/90 border-white/10 text-slate-200'
+              : 'bg-zinc-50 border-zinc-200/80 text-slate-700'
+          }`}>
+            <Sliders className={`w-4 h-4 flex-shrink-0 ${isDark ? 'text-sky-400' : 'text-slate-600'}`} />
             <div className="flex items-center gap-2 flex-1">
-              <span className="text-xs font-bold text-slate-700 whitespace-nowrap">Quality: {quality}%</span>
+              <span className={`text-xs font-bold whitespace-nowrap ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>
+                Quality: {quality}%
+              </span>
               <input
                 id="converter-quality-slider"
                 type="range"
@@ -673,7 +693,9 @@ export function ImageConverterStudio({
                 value={quality}
                 onChange={(e) => setQuality(Number(e.target.value))}
                 aria-label="Image conversion quality slider"
-                className="w-24 sm:w-32 h-1.5 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-slate-900"
+                className={`w-24 sm:w-32 h-1.5 rounded-lg appearance-none cursor-pointer ${
+                  isDark ? 'bg-slate-800 accent-sky-400' : 'bg-zinc-200 accent-slate-900'
+                }`}
               />
             </div>
           </div>
@@ -688,27 +710,40 @@ export function ImageConverterStudio({
                 key={opt.id}
                 type="button"
                 onClick={() => handleGlobalTargetFormatChange(opt.id)}
-                className={`p-3 rounded-2xl border text-left transition-all relative group cursor-pointer flex flex-col justify-between ${isSelected
-                  ? 'bg-slate-900 text-white border-slate-900 shadow-md ring-2 ring-slate-900/20'
-                  : 'bg-zinc-50 hover:bg-white text-slate-900 border-zinc-200/80 hover:border-slate-300'
-                  }`}
+                className={`p-3 rounded-2xl border text-left transition-all relative group cursor-pointer flex flex-col justify-between ${
+                  isSelected
+                    ? isDark
+                      ? 'bg-white text-slate-950 border-white shadow-md ring-2 ring-white/30 font-bold'
+                      : 'bg-slate-900 text-white border-slate-900 shadow-md ring-2 ring-slate-900/20'
+                    : isDark
+                      ? 'bg-slate-900/70 hover:bg-slate-800/90 text-slate-200 border-white/10 hover:border-white/25'
+                      : 'bg-zinc-50 hover:bg-white text-slate-900 border-zinc-200/80 hover:border-slate-300'
+                }`}
               >
                 <div>
                   <div className="flex items-center justify-between gap-1 mb-1">
                     <span className="font-bold text-xs sm:text-sm">{opt.label}</span>
-                    <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded-full uppercase ${isSelected ? 'bg-white/20 text-white' : 'bg-zinc-200 text-slate-700'
-                      }`}>
+                    <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded-full uppercase ${
+                      isSelected
+                        ? isDark ? 'bg-slate-950/15 text-slate-950 font-black' : 'bg-white/20 text-white'
+                        : isDark ? 'bg-slate-800 text-slate-300' : 'bg-zinc-200 text-slate-700'
+                    }`}>
                       {opt.ext}
                     </span>
                   </div>
-                  <p className={`text-[10px] line-clamp-2 leading-snug font-normal ${isSelected ? 'text-slate-300' : 'text-slate-500'
-                    }`}>
+                  <p className={`text-[10px] line-clamp-2 leading-snug font-normal ${
+                    isSelected
+                      ? isDark ? 'text-slate-800 font-medium' : 'text-slate-300'
+                      : isDark ? 'text-slate-400' : 'text-slate-500'
+                  }`}>
                     {opt.description}
                   </p>
                 </div>
 
                 {isSelected && (
-                  <div className="mt-2 flex items-center gap-1 text-[10px] font-bold text-emerald-400">
+                  <div className={`mt-2 flex items-center gap-1 text-[10px] font-bold ${
+                    isDark ? 'text-emerald-700' : 'text-emerald-400'
+                  }`}>
                     <CheckCircle2 className="w-3 h-3" />
                     <span>Selected</span>
                   </div>
@@ -719,41 +754,56 @@ export function ImageConverterStudio({
         </div>
 
         {/* ROW 2: OPTIONAL CUSTOM DIMENSIONS */}
-        <div className="pt-4 border-t border-zinc-100 space-y-4">
+        <div className={`pt-4 border-t space-y-4 transition-colors ${
+          isDark ? 'border-white/10' : 'border-zinc-100'
+        }`}>
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div>
-              <div className="text-sm font-bold text-slate-900 flex items-center gap-2 font-sans font-body !font-sans">
-                <Scaling className="w-4 h-4 text-slate-700" />
+              <div className={`text-sm font-bold flex items-center gap-2 font-sans font-body !font-sans ${
+                isDark ? 'text-white' : 'text-slate-900'
+              }`}>
+                <Scaling className={`w-4 h-4 ${isDark ? 'text-sky-400' : 'text-slate-700'}`} />
                 <span>2. Custom Output Dimensions (Optional)</span>
               </div>
-              <p className="text-xs text-slate-500 font-medium">
+              <p className={`text-xs font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                 Keep original image resolution or resize to custom width &amp; height.
               </p>
             </div>
 
             {/* Mode Switcher */}
-            <div className="inline-flex p-1 bg-zinc-100 rounded-xl border border-zinc-200 text-xs font-bold">
+            <div className={`inline-flex p-1 rounded-xl border text-xs font-bold transition-colors ${
+              isDark ? 'bg-slate-900/90 border-white/10' : 'bg-zinc-100 border-zinc-200'
+            }`}>
               <button
                 type="button"
                 onClick={() => { setSizeMode('original'); setCustomWidth(''); setCustomHeight(''); }}
-                className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${sizeMode === 'original' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
-                  }`}
+                className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
+                  sizeMode === 'original'
+                    ? isDark ? 'bg-white text-slate-950 shadow-xs' : 'bg-white text-slate-900 shadow-xs'
+                    : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
+                }`}
               >
                 Original Size
               </button>
               <button
                 type="button"
                 onClick={() => setSizeMode('custom')}
-                className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${sizeMode === 'custom' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
-                  }`}
+                className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
+                  sizeMode === 'custom'
+                    ? isDark ? 'bg-white text-slate-950 shadow-xs' : 'bg-white text-slate-900 shadow-xs'
+                    : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
+                }`}
               >
                 Custom Dimensions
               </button>
               <button
                 type="button"
                 onClick={() => setSizeMode('scale')}
-                className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${sizeMode === 'scale' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
-                  }`}
+                className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
+                  sizeMode === 'scale'
+                    ? isDark ? 'bg-white text-slate-950 shadow-xs' : 'bg-white text-slate-900 shadow-xs'
+                    : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'
+                }`}
               >
                 Scale Percentage
               </button>
@@ -762,12 +812,16 @@ export function ImageConverterStudio({
 
           {/* CUSTOM SIZE INPUT FIELDS */}
           {sizeMode === 'custom' && (
-            <div className="p-4 sm:p-5 rounded-2xl bg-zinc-50 border border-zinc-200/80 space-y-4 animate-in fade-in duration-150">
+            <div className={`p-4 sm:p-5 rounded-2xl border space-y-4 animate-in fade-in duration-150 transition-colors ${
+              isDark ? 'bg-slate-900/60 border-white/10' : 'bg-zinc-50 border-zinc-200/80'
+            }`}>
               <div className="flex flex-wrap items-center gap-4">
 
                 {/* WIDTH INPUT */}
                 <div className="space-y-1">
-                  <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Width (px)</label>
+                  <label className={`text-[11px] font-bold uppercase tracking-wider ${
+                    isDark ? 'text-slate-300' : 'text-slate-700'
+                  }`}>Width (px)</label>
                   <div className="relative">
                     <input
                       id="converter-custom-width-input"
@@ -776,7 +830,11 @@ export function ImageConverterStudio({
                       value={customWidth}
                       onChange={(e) => handleWidthChange(e.target.value)}
                       aria-label="Custom output width in pixels"
-                      className="w-32 px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 transition"
+                      className={`w-32 px-3 py-2 border rounded-xl text-xs font-mono font-bold focus:outline-none focus:ring-2 transition ${
+                        isDark
+                          ? 'bg-slate-950/80 border-white/15 text-white focus:ring-sky-500 placeholder:text-slate-600'
+                          : 'bg-white border-zinc-200 text-slate-900 focus:ring-slate-900'
+                      }`}
                     />
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-slate-400 font-mono">px</span>
                   </div>
@@ -787,10 +845,15 @@ export function ImageConverterStudio({
                   <button
                     type="button"
                     onClick={() => setLockAspectRatio((prev) => !prev)}
-                    className={`p-2.5 rounded-xl border transition-all cursor-pointer flex items-center gap-1.5 text-xs font-bold ${lockAspectRatio
-                      ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
-                      : 'bg-white text-slate-600 border-zinc-200 hover:text-slate-900'
-                      }`}
+                    className={`p-2.5 rounded-xl border transition-all cursor-pointer flex items-center gap-1.5 text-xs font-bold ${
+                      lockAspectRatio
+                        ? isDark
+                          ? 'bg-white text-slate-950 border-white shadow-xs'
+                          : 'bg-slate-900 text-white border-slate-900 shadow-xs'
+                        : isDark
+                          ? 'bg-slate-950/80 text-slate-300 border-white/15 hover:text-white'
+                          : 'bg-white text-slate-600 border-zinc-200 hover:text-slate-900'
+                    }`}
                     title={lockAspectRatio ? 'Aspect ratio locked' : 'Aspect ratio unlocked'}
                   >
                     {lockAspectRatio ? <Lock className="w-3.5 h-3.5" /> : <Unlock className="w-3.5 h-3.5" />}
@@ -800,7 +863,9 @@ export function ImageConverterStudio({
 
                 {/* HEIGHT INPUT */}
                 <div className="space-y-1">
-                  <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Height (px)</label>
+                  <label className={`text-[11px] font-bold uppercase tracking-wider ${
+                    isDark ? 'text-slate-300' : 'text-slate-700'
+                  }`}>Height (px)</label>
                   <div className="relative">
                     <input
                       id="converter-custom-height-input"
@@ -809,7 +874,11 @@ export function ImageConverterStudio({
                       value={customHeight}
                       onChange={(e) => handleHeightChange(e.target.value)}
                       aria-label="Custom output height in pixels"
-                      className="w-32 px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 transition"
+                      className={`w-32 px-3 py-2 border rounded-xl text-xs font-mono font-bold focus:outline-none focus:ring-2 transition ${
+                        isDark
+                          ? 'bg-slate-950/80 border-white/15 text-white focus:ring-sky-500 placeholder:text-slate-600'
+                          : 'bg-white border-zinc-200 text-slate-900 focus:ring-slate-900'
+                      }`}
                     />
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-slate-400 font-mono">px</span>
                   </div>
@@ -817,21 +886,31 @@ export function ImageConverterStudio({
 
                 {/* QUICK SIZE PRESETS */}
                 <div className="space-y-1 flex-1 min-w-[200px]">
-                  <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Popular Size Presets</label>
+                  <label className={`text-[11px] font-bold uppercase tracking-wider ${
+                    isDark ? 'text-slate-300' : 'text-slate-700'
+                  }`}>Popular Size Presets</label>
                   <div className="flex flex-wrap items-center gap-1.5">
-                    {SIZE_PRESETS.map((preset) => (
-                      <button
-                        key={preset.label}
-                        type="button"
-                        onClick={() => applyPreset(preset)}
-                        className={`px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border transition-all cursor-pointer ${customWidth === preset.width && customHeight === preset.height
-                          ? 'bg-slate-900 text-white border-slate-900'
-                          : 'bg-white text-slate-700 border-zinc-200 hover:bg-zinc-100'
+                    {SIZE_PRESETS.map((preset) => {
+                      const isPresetActive = customWidth === preset.width && customHeight === preset.height;
+                      return (
+                        <button
+                          key={preset.label}
+                          type="button"
+                          onClick={() => applyPreset(preset)}
+                          className={`px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border transition-all cursor-pointer ${
+                            isPresetActive
+                              ? isDark
+                                ? 'bg-white text-slate-950 border-white'
+                                : 'bg-slate-900 text-white border-slate-900'
+                              : isDark
+                                ? 'bg-slate-950/80 text-slate-300 border-white/15 hover:bg-slate-800'
+                                : 'bg-white text-slate-700 border-zinc-200 hover:bg-zinc-100'
                           }`}
-                      >
-                        {preset.label}
-                      </button>
-                    ))}
+                        >
+                          {preset.label}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -841,15 +920,19 @@ export function ImageConverterStudio({
 
           {/* SCALE PERCENTAGE SLIDER */}
           {sizeMode === 'scale' && (
-            <div className="p-4 sm:p-5 rounded-2xl bg-zinc-50 border border-zinc-200/80 space-y-3 animate-in fade-in duration-150">
+            <div className={`p-4 sm:p-5 rounded-2xl border space-y-3 animate-in fade-in duration-150 transition-colors ${
+              isDark ? 'bg-slate-900/60 border-white/10' : 'bg-zinc-50 border-zinc-200/80'
+            }`}>
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-700">Scaling: {scalePercent}% of original dimensions</span>
-                <span className="text-[11px] text-slate-500 font-mono">
+                <span className={`text-xs font-bold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>
+                  Scaling: {scalePercent}% of original dimensions
+                </span>
+                <span className={`text-[11px] font-mono ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                   {scalePercent === 100 ? 'Original Size' : scalePercent < 100 ? 'Downscaled' : 'Upscaled'}
                 </span>
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-xs font-bold text-slate-500 font-mono">25%</span>
+                <span className={`text-xs font-bold font-mono ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>25%</span>
                 <input
                   id="converter-scale-slider"
                   type="range"
@@ -859,9 +942,11 @@ export function ImageConverterStudio({
                   value={scalePercent}
                   onChange={(e) => setScalePercent(Number(e.target.value))}
                   aria-label="Image scale percentage slider"
-                  className="flex-1 h-2 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-slate-900"
+                  className={`flex-1 h-2 rounded-lg appearance-none cursor-pointer ${
+                    isDark ? 'bg-slate-800 accent-sky-400' : 'bg-zinc-200 accent-slate-900'
+                  }`}
                 />
-                <span className="text-xs font-bold text-slate-500 font-mono">200%</span>
+                <span className={`text-xs font-bold font-mono ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>200%</span>
               </div>
               <div className="flex gap-2 pt-1">
                 {[50, 75, 100, 125, 150].map((pct) => (
@@ -869,8 +954,15 @@ export function ImageConverterStudio({
                     key={pct}
                     type="button"
                     onClick={() => setScalePercent(pct)}
-                    className={`px-3 py-1 rounded-lg text-xs font-bold border transition-colors cursor-pointer ${scalePercent === pct ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-700 border-zinc-200 hover:bg-zinc-100'
-                      }`}
+                    className={`px-3 py-1 rounded-lg text-xs font-bold border transition-colors cursor-pointer ${
+                      scalePercent === pct
+                        ? isDark
+                          ? 'bg-white text-slate-950 border-white'
+                          : 'bg-slate-900 text-white border-slate-900'
+                        : isDark
+                          ? 'bg-slate-950/80 text-slate-300 border-white/15 hover:bg-slate-800'
+                          : 'bg-white text-slate-700 border-zinc-200 hover:bg-zinc-100'
+                    }`}
                   >
                     {pct}%
                   </button>
@@ -882,14 +974,18 @@ export function ImageConverterStudio({
         </div>
 
         {/* ROW 3: TARGET OUTPUT FILE SIZE (KB / MB) */}
-        <div className="pt-4 border-t border-zinc-100 space-y-4">
+        <div className={`pt-4 border-t space-y-4 transition-colors ${
+          isDark ? 'border-white/10' : 'border-zinc-100'
+        }`}>
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div>
-              <div className="text-sm font-bold text-slate-900 flex items-center gap-2 font-sans font-body !font-sans">
-                <Gauge className="w-4 h-4 text-slate-700" />
+              <div className={`text-sm font-bold flex items-center gap-2 font-sans font-body !font-sans ${
+                isDark ? 'text-white' : 'text-slate-900'
+              }`}>
+                <Gauge className={`w-4 h-4 ${isDark ? 'text-emerald-400' : 'text-slate-700'}`} />
                 <span>3. Target Output File Size in KB / MB (Optional)</span>
               </div>
-              <p className="text-xs text-slate-500 font-medium">
+              <p className={`text-xs font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                 Compress the output image to stay strictly under a specific KB or MB limit (e.g. for portals, forms, email limits).
               </p>
             </div>
@@ -901,10 +997,15 @@ export function ImageConverterStudio({
                   setTargetSizeEnabled(!targetSizeEnabled);
                   if (!targetSizeEnabled && !targetSizeValue) setTargetSizeValue(200);
                 }}
-                className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${targetSizeEnabled
-                  ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
-                  : 'bg-zinc-100 hover:bg-zinc-200 text-slate-700 border-zinc-200'
-                  }`}
+                className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  targetSizeEnabled
+                    ? isDark
+                      ? 'bg-emerald-500 text-slate-950 border-emerald-400 shadow-xs'
+                      : 'bg-slate-900 text-white border-slate-900 shadow-xs'
+                    : isDark
+                      ? 'bg-slate-900/90 hover:bg-slate-800 text-slate-300 border-white/10'
+                      : 'bg-zinc-100 hover:bg-zinc-200 text-slate-700 border-zinc-200'
+                }`}
               >
                 <HardDrive className="w-3.5 h-3.5" />
                 <span>{targetSizeEnabled ? 'Limit Active' : 'Set KB/MB Limit'}</span>
@@ -914,12 +1015,16 @@ export function ImageConverterStudio({
 
           {/* TARGET FILE SIZE INPUT & PRESETS */}
           {targetSizeEnabled && (
-            <div className="p-4 sm:p-5 rounded-2xl bg-zinc-50 border border-zinc-200/80 space-y-4 animate-in fade-in duration-150">
+            <div className={`p-4 sm:p-5 rounded-2xl border space-y-4 animate-in fade-in duration-150 transition-colors ${
+              isDark ? 'bg-slate-900/60 border-white/10' : 'bg-zinc-50 border-zinc-200/80'
+            }`}>
               <div className="flex flex-wrap items-center gap-4">
 
                 {/* VALUE INPUT + UNIT TOGGLE */}
                 <div className="space-y-1">
-                  <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">
+                  <label className={`text-[11px] font-bold uppercase tracking-wider ${
+                    isDark ? 'text-slate-300' : 'text-slate-700'
+                  }`}>
                     Max File Size ({targetSizeUnit})
                   </label>
                   <div className="flex items-center gap-1.5">
@@ -932,24 +1037,36 @@ export function ImageConverterStudio({
                       value={targetSizeValue}
                       onChange={(e) => setTargetSizeValue(e.target.value === '' ? '' : parseFloat(e.target.value))}
                       aria-label="Target maximum output file size"
-                      className="w-32 px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900 transition"
+                      className={`w-32 px-3 py-2 border rounded-xl text-xs font-mono font-bold focus:outline-none focus:ring-2 transition ${
+                        isDark
+                          ? 'bg-slate-950/80 border-white/15 text-white focus:ring-emerald-500 placeholder:text-slate-600'
+                          : 'bg-white border-zinc-200 text-slate-900 focus:ring-slate-900'
+                      }`}
                     />
 
                     {/* UNIT TOGGLE PILL */}
-                    <div className="inline-flex p-0.5 bg-zinc-200 rounded-xl">
+                    <div className={`inline-flex p-0.5 rounded-xl border transition-colors ${
+                      isDark ? 'bg-slate-950 border-white/10' : 'bg-zinc-200 border-zinc-200'
+                    }`}>
                       <button
                         type="button"
                         onClick={() => setTargetSizeUnit('KB')}
-                        className={`px-2.5 py-1.5 rounded-lg text-xs font-black transition-all cursor-pointer ${targetSizeUnit === 'KB' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-700 hover:text-black'
-                          }`}
+                        className={`px-2.5 py-1.5 rounded-lg text-xs font-black transition-all cursor-pointer ${
+                          targetSizeUnit === 'KB'
+                            ? isDark ? 'bg-white text-slate-950 shadow-xs' : 'bg-slate-900 text-white shadow-xs'
+                            : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-700 hover:text-black'
+                        }`}
                       >
                         KB
                       </button>
                       <button
                         type="button"
                         onClick={() => setTargetSizeUnit('MB')}
-                        className={`px-2.5 py-1.5 rounded-lg text-xs font-black transition-all cursor-pointer ${targetSizeUnit === 'MB' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-700 hover:text-black'
-                          }`}
+                        className={`px-2.5 py-1.5 rounded-lg text-xs font-black transition-all cursor-pointer ${
+                          targetSizeUnit === 'MB'
+                            ? isDark ? 'bg-white text-slate-950 shadow-xs' : 'bg-slate-900 text-white shadow-xs'
+                            : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-700 hover:text-black'
+                        }`}
                       >
                         MB
                       </button>
@@ -959,21 +1076,31 @@ export function ImageConverterStudio({
 
                 {/* TARGET SIZE PRESETS */}
                 <div className="space-y-1 flex-1 min-w-[200px]">
-                  <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Quick Size Presets</label>
+                  <label className={`text-[11px] font-bold uppercase tracking-wider ${
+                    isDark ? 'text-slate-300' : 'text-slate-700'
+                  }`}>Quick Size Presets</label>
                   <div className="flex flex-wrap items-center gap-1.5">
-                    {TARGET_SIZE_PRESETS.map((preset) => (
-                      <button
-                        key={preset.label}
-                        type="button"
-                        onClick={() => applyTargetSizePreset(preset)}
-                        className={`px-3 py-1.5 rounded-lg text-[11px] font-bold border transition-all cursor-pointer ${targetSizeValue === preset.val && targetSizeUnit === preset.unit
-                          ? 'bg-slate-900 text-white border-slate-900'
-                          : 'bg-white text-slate-700 border-zinc-200 hover:bg-zinc-100'
+                    {TARGET_SIZE_PRESETS.map((preset) => {
+                      const isPresetSel = targetSizeValue === preset.val && targetSizeUnit === preset.unit;
+                      return (
+                        <button
+                          key={preset.label}
+                          type="button"
+                          onClick={() => applyTargetSizePreset(preset)}
+                          className={`px-3 py-1.5 rounded-lg text-[11px] font-bold border transition-all cursor-pointer ${
+                            isPresetSel
+                              ? isDark
+                                ? 'bg-white text-slate-950 border-white'
+                                : 'bg-slate-900 text-white border-slate-900'
+                              : isDark
+                                ? 'bg-slate-950/80 text-slate-300 border-white/15 hover:bg-slate-800'
+                                : 'bg-white text-slate-700 border-zinc-200 hover:bg-zinc-100'
                           }`}
-                      >
-                        {preset.label}
-                      </button>
-                    ))}
+                        >
+                          {preset.label}
+                        </button>
+                      );
+                    })}
 
                     <button
                       type="button"
@@ -981,7 +1108,9 @@ export function ImageConverterStudio({
                         setTargetSizeEnabled(false);
                         setTargetSizeValue('');
                       }}
-                      className="px-2.5 py-1.5 rounded-lg text-[11px] font-bold text-slate-500 hover:text-rose-600 transition-colors cursor-pointer"
+                      className={`px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition-colors cursor-pointer ${
+                        isDark ? 'text-slate-400 hover:text-rose-400' : 'text-slate-500 hover:text-rose-600'
+                      }`}
                     >
                       Clear Limit
                     </button>
@@ -1031,7 +1160,7 @@ export function ImageConverterStudio({
         </div>
 
         {/* MIDDLE FLOATING WHITE CARD WITH COMPACT FONTS */}
-        <div className="w-full max-w-lg bg-white backdrop-blur-md border border-white/80 rounded-2xl p-4 sm:p-5 shadow-md space-y-2 pointer-events-none transition-all group-hover:-translate-y-0.5">
+        <div className="dropzone-card w-full max-w-lg bg-white backdrop-blur-md border border-white/80 rounded-2xl p-4 sm:p-5 shadow-md space-y-2 pointer-events-none transition-all group-hover:-translate-y-0.5">
           <div className="flex items-start gap-3">
             <div className="w-9 h-9 rounded-xl  text-[#1E50F2] flex items-center justify-center shrink-0 shadow-2xs">
               <FileImage className="w-4.5 h-4.5 text-[#1E50F2]" />
@@ -1086,24 +1215,30 @@ export function ImageConverterStudio({
         <div ref={queueRef} id="conversion-queue" className="space-y-4 scroll-mt-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
 
           {/* Action Bar */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-3xl bg-white border border-zinc-200/80 shadow-sm">
+          <div className={`flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-3xl border transition-all ${
+            isDark
+              ? 'bg-[#0B1226]/85 border-white/10 shadow-lg text-white'
+              : 'bg-white border-zinc-200/80 shadow-sm text-slate-900'
+          }`}>
             <div>
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                <div className="text-base sm:text-lg font-black text-slate-900 font-sans font-body !font-sans">
+                <div className={`text-base sm:text-lg font-black font-sans font-body !font-sans ${
+                  isDark ? 'text-white' : 'text-slate-900'
+                }`}>
                   Uploaded Queue ({images.length} Image{images.length > 1 ? 's' : ''})
                 </div>
               </div>
-              <p className="text-xs text-slate-500 font-medium mt-0.5">
-                Target conversion: <span className="font-bold text-slate-900 uppercase">{globalTargetFormat}</span>
+              <p className={`text-xs font-medium mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                Target conversion: <span className={`font-bold uppercase ${isDark ? 'text-white' : 'text-slate-900'}`}>{globalTargetFormat}</span>
                 {sizeMode === 'custom' && customWidth && customHeight && (
-                  <span className="text-slate-700 font-mono"> &bull; Resizing to {customWidth}&times;{customHeight}px</span>
+                  <span className={`font-mono ${isDark ? 'text-slate-300' : 'text-slate-700'}`}> &bull; Resizing to {customWidth}&times;{customHeight}px</span>
                 )}
                 {sizeMode === 'scale' && scalePercent !== 100 && (
-                  <span className="text-slate-700 font-mono"> &bull; Scaling to {scalePercent}%</span>
+                  <span className={`font-mono ${isDark ? 'text-slate-300' : 'text-slate-700'}`}> &bull; Scaling to {scalePercent}%</span>
                 )}
                 {targetSizeEnabled && targetSizeValue && (
-                  <span className="text-emerald-700 font-mono font-bold"> &bull; Target File Size: &le; {targetSizeValue} {targetSizeUnit}</span>
+                  <span className={`font-mono font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}> &bull; Target File Size: &le; {targetSizeValue} {targetSizeUnit}</span>
                 )}
               </p>
             </div>
@@ -1112,7 +1247,11 @@ export function ImageConverterStudio({
               <button
                 type="button"
                 onClick={clearAll}
-                className="px-4 py-2.5 rounded-xl bg-zinc-100 hover:bg-zinc-200 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
+                className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-colors cursor-pointer border ${
+                  isDark
+                    ? 'bg-slate-900 hover:bg-slate-800 text-slate-300 border-white/10'
+                    : 'bg-zinc-100 hover:bg-zinc-200 text-slate-700 border-transparent'
+                }`}
               >
                 Clear All
               </button>
@@ -1121,7 +1260,11 @@ export function ImageConverterStudio({
                 type="button"
                 onClick={handleConvertAll}
                 disabled={isConvertingAll}
-                className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-black text-white text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer disabled:opacity-50"
+                className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer disabled:opacity-50 ${
+                  isDark
+                    ? 'bg-white hover:bg-slate-100 text-slate-950 font-black'
+                    : 'bg-slate-900 hover:bg-black text-white'
+                }`}
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${isConvertingAll ? 'animate-spin' : ''}`} />
                 <span>{convertAllButtonText}</span>
@@ -1154,19 +1297,28 @@ export function ImageConverterStudio({
               return (
                 <div
                   key={item.id}
-                  className={`bg-white border rounded-3xl p-5 sm:p-6 transition-all shadow-sm ${hasConverted
-                    ? 'border-emerald-200 bg-emerald-50/15 ring-1 ring-emerald-500/10'
-                    : isConverting
-                      ? 'border-sky-200 bg-sky-50/15 ring-1 ring-sky-500/10'
-                      : 'border-zinc-200 hover:border-zinc-300'
-                    }`}
+                  className={`border rounded-3xl p-5 sm:p-6 transition-all shadow-sm ${
+                    isDark
+                      ? hasConverted
+                        ? 'border-emerald-500/30 bg-emerald-950/20 ring-1 ring-emerald-500/20 text-white'
+                        : isConverting
+                          ? 'border-sky-500/30 bg-sky-950/20 ring-1 ring-sky-500/20 text-white'
+                          : 'border-white/10 bg-[#0B1226]/80 hover:border-white/20 text-white'
+                      : hasConverted
+                        ? 'border-emerald-200 bg-emerald-50/15 ring-1 ring-emerald-500/10'
+                        : isConverting
+                          ? 'border-sky-200 bg-sky-50/15 ring-1 ring-sky-500/10'
+                          : 'border-zinc-200 hover:border-zinc-300 bg-white'
+                  }`}
                 >
                   <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-5">
 
                     {/* LEFT SECTION: THUMBNAIL + FILE DETAILS */}
                     <div className="flex items-start sm:items-center gap-4 min-w-0 flex-1">
                       {/* Image Thumbnail */}
-                      <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-zinc-100 border border-zinc-200 shrink-0 shadow-inner group">
+                      <div className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden shrink-0 shadow-inner group border ${
+                        isDark ? 'bg-slate-900 border-white/15' : 'bg-zinc-100 border-zinc-200'
+                      }`}>
                         <img
                           src={item.previewUrl}
                           alt={item.name}
@@ -1176,35 +1328,47 @@ export function ImageConverterStudio({
 
                       {/* File Name + Metadata */}
                       <div className="space-y-1.5 min-w-0 flex-1">
-                        <h4 className="font-bold text-slate-900 text-sm sm:text-base truncate max-w-xs sm:max-w-md" title={item.name}>
+                        <h4 className={`font-bold text-sm sm:text-base truncate max-w-xs sm:max-w-md ${
+                          isDark ? 'text-white' : 'text-slate-900'
+                        }`} title={item.name}>
                           {item.name}
                         </h4>
 
                         {/* BADGES ROW (DETECTED FORMAT + STATUS) */}
                         <div className="flex flex-wrap items-center gap-2">
                           {/* FORMAT BADGE */}
-                          <span className="px-2 py-0.5 rounded-md bg-slate-900 text-white font-mono font-bold text-[10px] uppercase shadow-xs">
+                          <span className={`px-2 py-0.5 rounded-md font-mono font-bold text-[10px] uppercase shadow-xs border ${
+                            isDark ? 'bg-slate-800 text-white border-white/10' : 'bg-slate-900 text-white border-transparent'
+                          }`}>
                             Detected: {item.originalFormat}
                           </span>
 
                           {/* STATUS BADGE */}
                           {hasConverted ? (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold">
-                              <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${
+                              isDark ? 'bg-emerald-950/80 text-emerald-300 border-emerald-500/30' : 'bg-emerald-100 text-emerald-800 border-transparent'
+                            }`}>
+                              <CheckCircle2 className="w-3 h-3 text-emerald-400" />
                               Converted to {item.targetFormat.toUpperCase()}
                             </span>
                           ) : isConverting ? (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-800 text-[11px] font-bold">
-                              <RefreshCw className="w-3 h-3 text-sky-600 animate-spin" />
+                            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${
+                              isDark ? 'bg-sky-950/80 text-sky-300 border-sky-500/30' : 'bg-sky-100 text-sky-800 border-transparent'
+                            }`}>
+                              <RefreshCw className="w-3 h-3 text-sky-400 animate-spin" />
                               Converting...
                             </span>
                           ) : isError ? (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 text-[11px] font-bold">
-                              <AlertCircle className="w-3 h-3 text-rose-600" />
+                            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${
+                              isDark ? 'bg-rose-950/80 text-rose-300 border-rose-500/30' : 'bg-rose-100 text-rose-800 border-transparent'
+                            }`}>
+                              <AlertCircle className="w-3 h-3 text-rose-400" />
                               Conversion Failed
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-zinc-100 text-zinc-700 text-[11px] font-semibold">
+                            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${
+                              isDark ? 'bg-slate-900 text-slate-300 border-white/10' : 'bg-zinc-100 text-zinc-700 border-transparent'
+                            }`}>
                               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                               Ready
                             </span>
@@ -1212,27 +1376,33 @@ export function ImageConverterStudio({
                         </div>
 
                         {/* STRUCTURED METRICS ROW */}
-                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-600">
+                        <div className={`flex flex-wrap items-center gap-x-4 gap-y-1 text-xs ${
+                          isDark ? 'text-slate-400' : 'text-slate-600'
+                        }`}>
                           <div className="flex items-center gap-1">
-                            <span className="text-slate-400 font-medium">Original:</span>
-                            <span className="font-mono font-bold text-slate-800">{formatBytes(item.originalSize)}</span>
+                            <span className={isDark ? 'text-slate-500 font-medium' : 'text-slate-400 font-medium'}>Original:</span>
+                            <span className={`font-mono font-bold ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{formatBytes(item.originalSize)}</span>
                             {item.originalWidth && item.originalHeight && (
-                              <span className="font-mono text-slate-500 text-[11px]">({item.originalWidth}&times;{item.originalHeight}px)</span>
+                              <span className={`font-mono text-[11px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>({item.originalWidth}&times;{item.originalHeight}px)</span>
                             )}
                           </div>
 
                           {hasConverted && item.convertedSize && (
-                            <div className="flex items-center gap-1.5 text-emerald-700 font-semibold">
+                            <div className={`flex items-center gap-1.5 font-semibold ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>
                               <span>&bull;</span>
-                              <span className="text-emerald-800 font-medium">Converted:</span>
-                              <span className="font-mono font-black text-emerald-900 bg-emerald-100/80 px-2 py-0.5 rounded-md">
+                              <span className={`font-medium ${isDark ? 'text-emerald-300' : 'text-emerald-800'}`}>Converted:</span>
+                              <span className={`font-mono font-black px-2 py-0.5 rounded-md ${
+                                isDark ? 'text-emerald-300 bg-emerald-950/80 border border-emerald-500/30' : 'text-emerald-900 bg-emerald-100/80'
+                              }`}>
                                 {formatBytes(item.convertedSize)}
                               </span>
                               {item.finalWidth && item.finalHeight && (
-                                <span className="font-mono text-emerald-700 text-[11px]">({item.finalWidth}&times;{item.finalHeight}px)</span>
+                                <span className={`font-mono text-[11px] ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>({item.finalWidth}&times;{item.finalHeight}px)</span>
                               )}
                               {savings > 0 && (
-                                <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">
+                                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                                  isDark ? 'text-emerald-300 bg-emerald-950 border border-emerald-500/30' : 'text-emerald-700 bg-emerald-100'
+                                }`}>
                                   -{savings}% smaller
                                 </span>
                               )}
@@ -1243,14 +1413,20 @@ export function ImageConverterStudio({
                     </div>
 
                     {/* MIDDLE SECTION: CONVERSION ROUTE & SIZE CONTROL */}
-                    <div className="flex flex-wrap items-center gap-3 bg-zinc-50 border border-zinc-200/80 px-4 py-2.5 rounded-2xl shrink-0 self-stretch sm:self-auto justify-center">
+                    <div className={`flex flex-wrap items-center gap-3 px-4 py-2.5 rounded-2xl shrink-0 self-stretch sm:self-auto justify-center border transition-colors ${
+                      isDark
+                        ? 'bg-slate-900/80 border-white/10'
+                        : 'bg-zinc-50 border-zinc-200/80'
+                    }`}>
                       <div className="text-center">
                         <span className="block text-[9px] uppercase font-bold text-slate-400">From</span>
-                        <span className="font-mono font-bold text-xs text-slate-800 uppercase">{item.originalFormat}</span>
+                        <span className={`font-mono font-bold text-xs uppercase ${isDark ? 'text-white' : 'text-slate-800'}`}>{item.originalFormat}</span>
                       </div>
 
-                      <div className="p-1 rounded-full bg-white border border-zinc-200 text-slate-400">
-                        <ArrowRight className="w-3.5 h-3.5 text-slate-600" />
+                      <div className={`p-1 rounded-full border ${
+                        isDark ? 'bg-slate-800 border-white/10 text-slate-300' : 'bg-white border-zinc-200 text-slate-400'
+                      }`}>
+                        <ArrowRight className={`w-3.5 h-3.5 ${isDark ? 'text-slate-300' : 'text-slate-600'}`} />
                       </div>
 
                       <div className="flex flex-col items-center relative">
@@ -1264,20 +1440,30 @@ export function ImageConverterStudio({
                             setOpenSizeMenuId(null);
                             setOpenFormatMenuId(openFormatMenuId === item.id ? null : item.id);
                           }}
-                          className="flex items-center gap-1.5 bg-white hover:bg-slate-900 hover:text-white border border-zinc-200/80 hover:border-slate-900 rounded-xl px-2.5 py-1 font-mono font-black text-xs text-slate-900 uppercase transition-all shadow-xs cursor-pointer group"
+                          className={`flex items-center gap-1.5 rounded-xl px-2.5 py-1 font-mono font-black text-xs uppercase transition-all shadow-xs cursor-pointer group border ${
+                            isDark
+                              ? 'bg-slate-950 hover:bg-white hover:text-slate-950 text-white border-white/15 hover:border-white'
+                              : 'bg-white hover:bg-slate-900 hover:text-white border-zinc-200/80 hover:border-slate-900 text-slate-900'
+                          }`}
                           title="Click to select target format for this image"
                         >
                           <span>{item.targetFormat.toUpperCase()}</span>
-                          <ChevronDown className={`w-3.5 h-3.5 text-slate-500 group-hover:text-white transition-transform ${openFormatMenuId === item.id ? 'rotate-180' : ''}`} />
+                          <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isDark ? 'text-slate-400 group-hover:text-slate-950' : 'text-slate-500 group-hover:text-white'} ${openFormatMenuId === item.id ? 'rotate-180' : ''}`} />
                         </button>
 
                         {/* Custom Floating Format Popover Menu */}
                         {openFormatMenuId === item.id && (
                           <div
-                            className="absolute top-full mt-1.5 right-0 sm:right-auto sm:left-1/2 sm:-translate-x-1/2 w-32 bg-white border border-zinc-200/90 rounded-2xl shadow-2xl p-1.5 z-50 animate-in fade-in zoom-in-95 duration-150 font-mono text-xs"
+                            className={`absolute top-full mt-1.5 right-0 sm:right-auto sm:left-1/2 sm:-translate-x-1/2 w-32 rounded-2xl shadow-2xl p-1.5 z-50 animate-in fade-in zoom-in-95 duration-150 font-mono text-xs border ${
+                              isDark
+                                ? 'bg-slate-950 border-white/15 text-white'
+                                : 'bg-white border-zinc-200/90 text-slate-900'
+                            }`}
                             onClick={(e) => e.stopPropagation()}
                           >
-                            <div className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider px-2 py-1 border-b border-zinc-100 mb-1">
+                            <div className={`text-[9px] font-bold uppercase tracking-wider px-2 py-1 border-b mb-1 ${
+                              isDark ? 'text-slate-400 border-white/10' : 'text-zinc-400 border-zinc-100'
+                            }`}>
                               Target Format
                             </div>
                             <div className="space-y-0.5 max-h-48 overflow-y-auto pr-0.5">
@@ -1302,10 +1488,11 @@ export function ImageConverterStudio({
                                       );
                                       setOpenFormatMenuId(null);
                                     }}
-                                    className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl font-bold uppercase text-xs transition-all cursor-pointer ${isSelected
-                                      ? 'bg-slate-900 text-white shadow-xs'
-                                      : 'text-slate-700 hover:bg-zinc-100 hover:text-slate-900'
-                                      }`}
+                                    className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl font-bold uppercase text-xs transition-all cursor-pointer ${
+                                      isSelected
+                                        ? isDark ? 'bg-white text-slate-950 shadow-xs' : 'bg-slate-900 text-white shadow-xs'
+                                        : isDark ? 'text-slate-300 hover:bg-slate-900 hover:text-white' : 'text-slate-700 hover:bg-zinc-100 hover:text-slate-900'
+                                    }`}
                                   >
                                     <span>{f.ext.toUpperCase()}</span>
                                     {isSelected && <Check className="w-3.5 h-3.5 text-emerald-400" />}
@@ -1317,7 +1504,7 @@ export function ImageConverterStudio({
                         )}
                       </div>
 
-                      <div className="h-5 w-px bg-zinc-200 mx-0.5 hidden sm:block" />
+                      <div className={`h-5 w-px mx-0.5 hidden sm:block ${isDark ? 'bg-white/10' : 'bg-zinc-200'}`} />
 
                       {/* Per-Card Target Output File Size Control */}
                       <div className="flex flex-col items-center relative">
@@ -1329,13 +1516,14 @@ export function ImageConverterStudio({
                             setOpenFormatMenuId(null);
                             setOpenSizeMenuId(openSizeMenuId === item.id ? null : item.id);
                           }}
-                          className={`flex items-center gap-1 px-2.5 py-1 rounded-xl border text-xs font-mono font-bold transition-all cursor-pointer group ${item.targetSizeKb
-                            ? 'bg-emerald-50 text-emerald-800 border-emerald-300 shadow-xs'
-                            : 'bg-white hover:bg-slate-900 hover:text-white border-zinc-200/80 text-slate-700'
-                            }`}
+                          className={`flex items-center gap-1 px-2.5 py-1 rounded-xl border text-xs font-mono font-bold transition-all cursor-pointer group ${
+                            item.targetSizeKb
+                              ? isDark ? 'bg-emerald-950/80 text-emerald-300 border-emerald-500/40 shadow-xs' : 'bg-emerald-50 text-emerald-800 border-emerald-300 shadow-xs'
+                              : isDark ? 'bg-slate-950 hover:bg-white hover:text-slate-950 border-white/15 text-slate-300' : 'bg-white hover:bg-slate-900 hover:text-white border-zinc-200/80 text-slate-700'
+                          }`}
                           title="Set target max file size limit (KB / MB) for this image"
                         >
-                          <Gauge className="w-3.5 h-3.5 text-slate-500 group-hover:text-white" />
+                          <Gauge className={`w-3.5 h-3.5 ${isDark ? 'text-slate-400 group-hover:text-slate-950' : 'text-slate-500 group-hover:text-white'}`} />
                           <span>
                             {item.targetSizeKb
                               ? item.targetSizeKb >= 1024
@@ -1343,17 +1531,21 @@ export function ImageConverterStudio({
                                 : `< ${item.targetSizeKb} KB`
                               : 'No Limit'}
                           </span>
-                          <ChevronDown className={`w-3 h-3 text-slate-500 group-hover:text-white transition-transform ${openSizeMenuId === item.id ? 'rotate-180' : ''}`} />
+                          <ChevronDown className={`w-3 h-3 transition-transform ${isDark ? 'text-slate-400 group-hover:text-slate-950' : 'text-slate-500 group-hover:text-white'} ${openSizeMenuId === item.id ? 'rotate-180' : ''}`} />
                         </button>
 
                         {/* Target Size Popover Menu */}
                         {openSizeMenuId === item.id && (
                           <div
-                            className="absolute top-full mt-1.5 right-0 sm:right-auto sm:left-1/2 sm:-translate-x-1/2 w-60 bg-white border border-zinc-200/90 rounded-2xl shadow-2xl p-2.5 z-50 animate-in fade-in zoom-in-95 duration-150 font-sans text-xs space-y-2.5"
+                            className={`absolute top-full mt-1.5 right-0 sm:right-auto sm:left-1/2 sm:-translate-x-1/2 w-60 rounded-2xl shadow-2xl p-2.5 z-50 animate-in fade-in zoom-in-95 duration-150 font-sans text-xs space-y-2.5 border ${
+                              isDark
+                                ? 'bg-slate-950 border-white/15 text-white'
+                                : 'bg-white border-zinc-200/90 text-slate-900'
+                            }`}
                             onClick={(e) => e.stopPropagation()}
                           >
-                            <div className="flex items-center justify-between border-b border-zinc-100 pb-1.5">
-                              <span className="text-[10px] font-bold text-slate-900 uppercase tracking-wider">Target Max Size</span>
+                            <div className={`flex items-center justify-between border-b pb-1.5 ${isDark ? 'border-white/10' : 'border-zinc-100'}`}>
+                              <span className={`text-[10px] font-bold uppercase tracking-wider ${isDark ? 'text-white' : 'text-slate-900'}`}>Target Max Size</span>
                               {item.targetSizeKb ? (
                                 <button
                                   type="button"
@@ -1363,7 +1555,7 @@ export function ImageConverterStudio({
                                     );
                                     setOpenSizeMenuId(null);
                                   }}
-                                  className="text-[10px] text-rose-600 font-bold hover:underline cursor-pointer"
+                                  className="text-[10px] text-rose-500 font-bold hover:underline cursor-pointer"
                                 >
                                   Clear Limit
                                 </button>
@@ -1371,7 +1563,7 @@ export function ImageConverterStudio({
                             </div>
 
                             <div className="space-y-1">
-                              <span className="text-[9px] font-bold text-zinc-400 uppercase">Select Target KB / MB Cap</span>
+                              <span className="text-[9px] font-bold text-slate-400 uppercase">Select Target KB / MB Cap</span>
                               <div className="grid grid-cols-3 gap-1">
                                 {[50, 100, 200, 500, 1024, 2048, 5120].map((kb) => {
                                   const label = kb >= 1024 ? `< ${kb / 1024} MB` : `< ${kb} KB`;
@@ -1386,10 +1578,11 @@ export function ImageConverterStudio({
                                         );
                                         setOpenSizeMenuId(null);
                                       }}
-                                      className={`py-1 px-1.5 text-[10px] font-mono font-bold rounded-lg border transition-all cursor-pointer ${isSel
-                                        ? 'bg-slate-900 text-white border-slate-900'
-                                        : 'bg-zinc-50 text-slate-700 border-zinc-200 hover:bg-zinc-100'
-                                        }`}
+                                      className={`py-1 px-1.5 text-[10px] font-mono font-bold rounded-lg border transition-all cursor-pointer ${
+                                        isSel
+                                          ? isDark ? 'bg-white text-slate-950 border-white' : 'bg-slate-900 text-white border-slate-900'
+                                          : isDark ? 'bg-slate-900 text-slate-300 border-white/10 hover:bg-slate-800' : 'bg-zinc-50 text-slate-700 border-zinc-200 hover:bg-zinc-100'
+                                      }`}
                                     >
                                       {label}
                                     </button>
@@ -1399,8 +1592,8 @@ export function ImageConverterStudio({
                             </div>
 
                             {/* CUSTOM SIZE INPUT FIELD */}
-                            <div className="space-y-1 pt-1.5 border-t border-zinc-100">
-                              <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider block">Custom Limit (Type Value)</span>
+                            <div className={`space-y-1 pt-1.5 border-t ${isDark ? 'border-white/10' : 'border-zinc-100'}`}>
+                              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Custom Limit (Type Value)</span>
                               <div className="flex items-center gap-1.5">
                                 <input
                                   type="number"
@@ -1428,23 +1621,35 @@ export function ImageConverterStudio({
                                       prev.map((i) => (i.id === item.id ? { ...i, targetSizeKb: kbVal, status: i.status === 'completed' ? 'idle' : i.status } : i))
                                     );
                                   }}
-                                  className="w-full px-2.5 py-1 bg-zinc-50 border border-zinc-200 rounded-xl text-xs font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                                  className={`w-full px-2.5 py-1 border rounded-xl text-xs font-mono font-bold focus:outline-none focus:ring-2 transition ${
+                                    isDark
+                                      ? 'bg-slate-900 border-white/15 text-white focus:ring-sky-500 placeholder:text-slate-600'
+                                      : 'bg-zinc-50 border-zinc-200 text-slate-900 focus:ring-slate-900'
+                                  }`}
                                 />
 
-                                <div className="inline-flex p-0.5 bg-zinc-200 rounded-lg shrink-0">
+                                <div className={`inline-flex p-0.5 rounded-lg shrink-0 border ${
+                                  isDark ? 'bg-slate-900 border-white/10' : 'bg-zinc-200 border-transparent'
+                                }`}>
                                   <button
                                     type="button"
                                     onClick={() => setCardUnit('KB')}
-                                    className={`px-2 py-0.5 rounded-md text-[10px] font-black font-mono transition-all ${cardUnit === 'KB' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-600 hover:text-black'
-                                      }`}
+                                    className={`px-2 py-0.5 rounded-md text-[10px] font-black font-mono transition-all ${
+                                      cardUnit === 'KB'
+                                        ? isDark ? 'bg-white text-slate-950 shadow-xs' : 'bg-slate-900 text-white shadow-xs'
+                                        : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-black'
+                                    }`}
                                   >
                                     KB
                                   </button>
                                   <button
                                     type="button"
                                     onClick={() => setCardUnit('MB')}
-                                    className={`px-2 py-0.5 rounded-md text-[10px] font-black font-mono transition-all ${cardUnit === 'MB' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-600 hover:text-black'
-                                      }`}
+                                    className={`px-2 py-0.5 rounded-md text-[10px] font-black font-mono transition-all ${
+                                      cardUnit === 'MB'
+                                        ? isDark ? 'bg-white text-slate-950 shadow-xs' : 'bg-slate-900 text-white shadow-xs'
+                                        : isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-black'
+                                    }`}
                                   >
                                     MB
                                   </button>
@@ -1457,7 +1662,9 @@ export function ImageConverterStudio({
                     </div>
 
                     {/* RIGHT SECTION: ACTION BUTTONS */}
-                    <div className="flex items-center justify-between sm:justify-end gap-3 w-full lg:w-auto border-t lg:border-t-0 pt-3 lg:pt-0 border-zinc-100">
+                    <div className={`flex items-center justify-between sm:justify-end gap-3 w-full lg:w-auto border-t lg:border-t-0 pt-3 lg:pt-0 ${
+                      isDark ? 'border-white/10' : 'border-zinc-100'
+                    }`}>
                       {hasConverted ? (
                         <button
                           type="button"
@@ -1468,8 +1675,10 @@ export function ImageConverterStudio({
                           <span>Download {item.targetFormat.toUpperCase()}</span>
                         </button>
                       ) : isConverting ? (
-                        <div className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl bg-zinc-100 text-slate-800 text-xs font-bold">
-                          <RefreshCw className="w-4 h-4 animate-spin text-slate-700" />
+                        <div className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl text-xs font-bold ${
+                          isDark ? 'bg-slate-900 text-slate-300 border border-white/10' : 'bg-zinc-100 text-slate-800'
+                        }`}>
+                          <RefreshCw className="w-4 h-4 animate-spin text-sky-400" />
                           <span>Processing...</span>
                         </div>
                       ) : (
@@ -1482,7 +1691,11 @@ export function ImageConverterStudio({
                             const res = await convertSingleImage(item, item.targetFormat, quality);
                             setImages((prev) => prev.map((i) => (i.id === item.id ? res : i)));
                           }}
-                          className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-2xl bg-slate-900 hover:bg-black text-white text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer"
+                          className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-2xl text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer ${
+                            isDark
+                              ? 'bg-white hover:bg-slate-100 text-slate-950 font-black'
+                              : 'bg-slate-900 hover:bg-black text-white'
+                          }`}
                         >
                           <RefreshCw className="w-3.5 h-3.5" />
                           <span>Convert to {item.targetFormat.toUpperCase()}</span>
@@ -1492,7 +1705,11 @@ export function ImageConverterStudio({
                       <button
                         type="button"
                         onClick={() => removeImage(item.id)}
-                        className="p-2.5 text-slate-400 hover:text-rose-600 rounded-2xl hover:bg-rose-50 border border-transparent hover:border-rose-200 transition-all cursor-pointer"
+                        className={`p-2.5 rounded-2xl border transition-all cursor-pointer ${
+                          isDark
+                            ? 'text-slate-400 hover:text-rose-400 hover:bg-rose-950/30 border-transparent hover:border-rose-800/40'
+                            : 'text-slate-400 hover:text-rose-600 hover:bg-rose-50 border-transparent hover:border-rose-200'
+                        }`}
                         title="Remove image from queue"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -1508,33 +1725,53 @@ export function ImageConverterStudio({
       )}
 
       {/* 5. PRIVACY & PERFORMANCE FEATURES */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6 border-t border-zinc-200/80">
-        <div className="p-6 bg-white border border-zinc-200/80 rounded-3xl space-y-2 shadow-sm">
-          <div className="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center font-bold text-slate-900">
-            <Gauge className="w-5 h-5 text-emerald-600" />
+      <div className={`grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6 border-t ${
+        isDark ? 'border-white/10' : 'border-zinc-200/80'
+      }`}>
+        <div className={`p-6 rounded-3xl space-y-2 border transition-all ${
+          isDark
+            ? 'bg-[#0B1226]/85 border-white/10 text-white shadow-md'
+            : 'bg-white border-zinc-200/80 text-slate-900 shadow-sm'
+        }`}>
+          <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-bold ${
+            isDark ? 'bg-slate-900 border border-white/10 text-white' : 'bg-slate-100 text-slate-900'
+          }`}>
+            <Gauge className={`w-5 h-5 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
           </div>
-          <h3 className="font-bold text-slate-900 text-sm">Target File Size (KB &bull; MB)</h3>
-          <p className="text-xs text-slate-600 leading-relaxed font-normal">
+          <h3 className={`font-bold text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>Target File Size (KB &bull; MB)</h3>
+          <p className={`text-xs leading-relaxed font-normal ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
             Intelligent compression and downscaling algorithms optimize files to fit under strict KB and MB caps with maximal clarity.
           </p>
         </div>
 
-        <div className="p-6 bg-white border border-zinc-200/80 rounded-3xl space-y-2 shadow-sm">
-          <div className="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center font-bold text-slate-900">
-            <ShieldCheck className="w-5 h-5 text-emerald-600" />
+        <div className={`p-6 rounded-3xl space-y-2 border transition-all ${
+          isDark
+            ? 'bg-[#0B1226]/85 border-white/10 text-white shadow-md'
+            : 'bg-white border-zinc-200/80 text-slate-900 shadow-sm'
+        }`}>
+          <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-bold ${
+            isDark ? 'bg-slate-900 border border-white/10 text-white' : 'bg-slate-100 text-slate-900'
+          }`}>
+            <ShieldCheck className={`w-5 h-5 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
           </div>
-          <h3 className="font-bold text-slate-900 text-sm">100% Privacy Guarantee</h3>
-          <p className="text-xs text-slate-600 leading-relaxed font-normal">
+          <h3 className={`font-bold text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>100% Privacy Guarantee</h3>
+          <p className={`text-xs leading-relaxed font-normal ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
             Your images remain private on your computer or phone. We do not store, view, or retain your personal photographs.
           </p>
         </div>
 
-        <div className="p-6 bg-white border border-zinc-200/80 rounded-3xl space-y-2 shadow-sm">
-          <div className="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center font-bold text-slate-900">
-            <Sparkles className="w-5 h-5 text-indigo-600" />
+        <div className={`p-6 rounded-3xl space-y-2 border transition-all ${
+          isDark
+            ? 'bg-[#0B1226]/85 border-white/10 text-white shadow-md'
+            : 'bg-white border-zinc-200/80 text-slate-900 shadow-sm'
+        }`}>
+          <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-bold ${
+            isDark ? 'bg-slate-900 border border-white/10 text-white' : 'bg-slate-100 text-slate-900'
+          }`}>
+            <Sparkles className={`w-5 h-5 ${isDark ? 'text-indigo-400' : 'text-indigo-600'}`} />
           </div>
-          <h3 className="font-bold text-slate-900 text-sm">Custom Sizing Fidelity</h3>
-          <p className="text-xs text-slate-600 leading-relaxed font-normal">
+          <h3 className={`font-bold text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>Custom Sizing Fidelity</h3>
+          <p className={`text-xs leading-relaxed font-normal ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
             High-precision pixel interpolation preserves sharpness, text clarity, and proportions when resizing dimensions.
           </p>
         </div>

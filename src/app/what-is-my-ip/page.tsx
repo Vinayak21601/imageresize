@@ -43,7 +43,7 @@ export default function WhatIsMyIpPage() {
                 </div>
 
                 {/* H1 Heading */}
-                <h1 className="text-3xl sm:text-6xl font-black text-slate-900 tracking-tight leading-tight max-w-3xl mx-auto font-heading">
+                <h1 className="sm:text-3xl md:text-4xl font-black text-slate-900 tracking-tight leading-tight max-w-3xl mx-auto font-heading">
                   What is my IP address? <br className="hidden sm:inline" />
                   <em className="font-serif italic font-normal text-slate-900">Instant &amp; accurate network details.</em>
                 </h1>

@@ -120,22 +120,35 @@ h1, h2, h3, .font-heading {
 }
 
 /* Scoped hero typography and accents when in dark mode */
-[data-hero-theme="dark"] .bg-sky-cloud-hero h1,
-[data-hero-theme="dark"] .bg-sky-cloud-hero h2:not(#studio *):not(#how-to *),
-[data-hero-theme="dark"] .bg-sky-cloud-hero h3:not(#studio *):not(#how-to *) {
+[data-hero-theme="dark"] .bg-sky-cloud-hero h1:not(#studio *):not(#converter-studio *),
+[data-hero-theme="dark"] .bg-sky-cloud-hero h2:not(#studio *):not(#how-to *):not(#converter-studio *),
+[data-hero-theme="dark"] .bg-sky-cloud-hero h3:not(#studio *):not(#how-to *):not(#converter-studio *) {
   color: #F8FAFC !important;
   text-shadow: 0 2px 14px rgba(0, 0, 0, 0.5);
 }
 
-[data-hero-theme="dark"] .bg-sky-cloud-hero p.text-slate-700,
-[data-hero-theme="dark"] .bg-sky-cloud-hero p.text-slate-600:not(#studio *):not(#how-to *),
-[data-hero-theme="dark"] .bg-sky-cloud-hero p.text-zinc-600:not(#studio *):not(#how-to *) {
+[data-hero-theme="dark"] .bg-sky-cloud-hero p.text-slate-700:not(#studio *):not(#how-to *):not(#converter-studio *),
+[data-hero-theme="dark"] .bg-sky-cloud-hero p.text-slate-600:not(#studio *):not(#how-to *):not(#converter-studio *),
+[data-hero-theme="dark"] .bg-sky-cloud-hero p.text-zinc-600:not(#studio *):not(#how-to *):not(#converter-studio *) {
   color: #CBD5E1 !important;
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
 }
 
+/* Dropzone floating white card protection in dark mode */
+[data-hero-theme="dark"] .dropzone-card h3 {
+  color: #0F172A !important;
+  text-shadow: none !important;
+}
+[data-hero-theme="dark"] .dropzone-card p {
+  color: #475569 !important;
+  text-shadow: none !important;
+}
+[data-hero-theme="dark"] .dropzone-card span {
+  text-shadow: none !important;
+}
+
 /* Badges inside hero sections */
-[data-hero-theme="dark"] .bg-sky-cloud-hero .inline-flex.rounded-full:not(#studio *):not(#ip-studio *) {
+[data-hero-theme="dark"] .bg-sky-cloud-hero .inline-flex.rounded-full:not(#studio *):not(#ip-studio *):not(#converter-studio *) {
   background-color: var(--hero-badge-bg) !important;
   border-color: var(--hero-badge-border) !important;
   color: var(--hero-badge-text) !important;
@@ -162,7 +175,8 @@ h1, h2, h3, .font-heading {
   color: #F8FAFC;
 }
 
-[data-hero-theme="dark"] .home-page-container {
+[data-hero-theme="dark"] .home-page-container,
+[data-hero-theme="dark"] .converter-page-container {
   background-color: #060913 !important;
   color: #F8FAFC !important;
 }
