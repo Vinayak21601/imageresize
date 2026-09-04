@@ -13,7 +13,7 @@ export function FeedbackWidget() {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 inline-flex items-center gap-2 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-full bg-slate-900 hover:bg-black text-white text-[11px] sm:text-xs font-bold shadow-2xl border border-slate-800 transition-all active:scale-95 cursor-pointer group"
+        className="fixed bottom-3 right-3 sm:bottom-6 sm:right-6 z-40 inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2.5 rounded-full bg-slate-900/90 hover:bg-black text-white text-[11px] sm:text-xs font-bold shadow-xl border border-white/20 backdrop-blur-md transition-all active:scale-95 cursor-pointer group"
         title="Give Feedback & Suggest Features"
       >
         <MessageSquarePlus className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-sky-400 group-hover:rotate-12 transition-transform" />

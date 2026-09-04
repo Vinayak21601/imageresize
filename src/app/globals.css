@@ -156,6 +156,133 @@ h1, h2, h3, .font-heading {
   font-weight: 800 !important;
 }
 
+/* Home Page 2nd (#how-to) and 3rd (FAQ) Sections & Global Dark Styling */
+[data-hero-theme="dark"] body {
+  background-color: #060913;
+  color: #F8FAFC;
+}
+
+[data-hero-theme="dark"] .home-page-container {
+  background-color: #060913 !important;
+  color: #F8FAFC !important;
+}
+
+/* Section 2: How It Works Tutorial */
+[data-hero-theme="dark"] #how-to h2 {
+  color: #F8FAFC !important;
+}
+
+[data-hero-theme="dark"] #how-to h2 em,
+[data-hero-theme="dark"] #how-to h2 i {
+  color: #93C5FD !important;
+}
+
+[data-hero-theme="dark"] #how-to p {
+  color: #94A3B8 !important;
+}
+
+[data-hero-theme="dark"] #how-to h3 {
+  color: #FFFFFF !important;
+}
+
+[data-hero-theme="dark"] #how-to strong {
+  color: #FFFFFF !important;
+}
+
+[data-hero-theme="dark"] #how-to div[class*="bg-white"] {
+  background-color: rgba(15, 23, 42, 0.85) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6), 0 8px 10px -6px rgba(0, 0, 0, 0.6) !important;
+}
+
+[data-hero-theme="dark"] #how-to div[class*="bg-slate-300"] {
+  background-color: #1E293B !important;
+}
+
+[data-hero-theme="dark"] #how-to div[class*="border-white"] {
+  border-color: #0F172A !important;
+}
+
+/* Section 3: FAQ Section */
+[data-hero-theme="dark"] .faq-section h2 {
+  color: #F8FAFC !important;
+}
+
+[data-hero-theme="dark"] .faq-section em,
+[data-hero-theme="dark"] .faq-section i {
+  color: #93C5FD !important;
+}
+
+[data-hero-theme="dark"] .faq-card {
+  background-color: rgba(15, 23, 42, 0.9) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-hero-theme="dark"] .faq-card.faq-open {
+  border-color: rgba(59, 130, 246, 0.5) !important;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.15) !important;
+}
+
+[data-hero-theme="dark"] .faq-card button span {
+  color: #F8FAFC !important;
+}
+
+[data-hero-theme="dark"] .faq-card .border-t {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #CBD5E1 !important;
+}
+
+/* Footer in Dark Mode */
+[data-hero-theme="dark"] footer {
+  background-color: #03060E !important;
+  border-top-color: rgba(255, 255, 255, 0.08) !important;
+  color: #94A3B8 !important;
+}
+
+[data-hero-theme="dark"] footer h4,
+[data-hero-theme="dark"] footer h5,
+[data-hero-theme="dark"] footer span.text-slate-900,
+[data-hero-theme="dark"] footer span.font-serif {
+  color: #F8FAFC !important;
+}
+
+[data-hero-theme="dark"] footer p {
+  color: #94A3B8 !important;
+}
+
+[data-hero-theme="dark"] footer a {
+  color: #CBD5E1 !important;
+}
+
+[data-hero-theme="dark"] footer a:hover {
+  color: #FFFFFF !important;
+}
+
+[data-hero-theme="dark"] footer div[class*="border-b"],
+[data-hero-theme="dark"] footer div[class*="border-t"] {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Article cards in footer */
+[data-hero-theme="dark"] footer a[id^="footer-featured-blog-card"] {
+  background-color: rgba(15, 23, 42, 0.85) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-hero-theme="dark"] footer a[id^="footer-featured-blog-card"]:hover {
+  background-color: rgba(30, 41, 59, 0.9) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+[data-hero-theme="dark"] footer a[id^="footer-featured-blog-card"] h5 {
+  color: #FFFFFF !important;
+}
+
+[data-hero-theme="dark"] footer a[id^="footer-featured-blog-card"] p {
+  color: #94A3B8 !important;
+}
+
 /* Circular Reveal View Transition (Hostinger Style Theme Animation) */
 ::view-transition-old(root),
 ::view-transition-new(root) {

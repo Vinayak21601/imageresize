@@ -310,7 +310,7 @@ export default function Home() {
   };
 
   return (
-    <div itemScope itemType="https://schema.org/WebApplication" className="min-h-screen flex flex-col bg-[#F8FAFC] text-slate-900 font-sans selection:bg-slate-900 selection:text-white">
+    <div itemScope itemType="https://schema.org/WebApplication" className="home-page-container min-h-screen flex flex-col bg-[#F8FAFC] text-slate-900 font-sans selection:bg-slate-900 selection:text-white transition-colors duration-300">
       {/* JSON-LD Structured Schemas for AI Agents & Search Crawlers */}
       <script
         id="webapp-schema"
@@ -592,7 +592,7 @@ export default function Home() {
           </section>
 
           {/* FAQ SECTION */}
-          <section className="py-16">
+          <section className="faq-section py-16">
             <div className="max-w-4xl mx-auto space-y-10">
               <div className="text-center space-y-2">
                 <h2 className="text-xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight font-heading">
@@ -606,8 +606,8 @@ export default function Home() {
                   return (
                     <div
                       key={faq.q}
-                      className={`rounded-2xl border transition-all duration-300 overflow-hidden ${isOpen
-                        ? 'bg-white text-slate-700 border-blue-300 shadow-md ring-1 ring-blue-500/20'
+                      className={`faq-card rounded-2xl border transition-all duration-300 overflow-hidden ${isOpen
+                        ? 'faq-open bg-white text-slate-700 border-blue-300 shadow-md ring-1 ring-blue-500/20'
                         : 'bg-white text-slate-700 border-slate-200/90 hover:border-slate-300'
                         }`}
                     >

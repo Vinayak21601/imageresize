@@ -102,35 +102,38 @@ export function FileUpload({ onImageSelected }: FileUploadProps) {
       </div>
 
       {/* MIDDLE FLOATING WHITE CARD WITH COMPACT FONTS */}
-      <div className="w-full max-w-lg bg-white backdrop-blur-md border border-white/80 rounded-2xl p-4 sm:p-5 shadow-md space-y-2 pointer-events-none transition-all group-hover:bg-[#EBECEF]/95 group-hover:-translate-y-0.5">
-        <div className="flex items-start gap-3">
-          <div className="w-9 h-9 rounded-xl bg-[#DCE6FA] text-[#1E50F2] flex items-center justify-center shrink-0 shadow-2xs">
-            <FileImage className="w-4.5 h-4.5 text-[#1E50F2]" />
+      <div className="w-full max-w-lg bg-white backdrop-blur-md border border-white/80 rounded-2xl p-3.5 sm:p-5 shadow-md space-y-2 pointer-events-none transition-all group-hover:bg-[#EBECEF]/95 group-hover:-translate-y-0.5">
+        <div className="flex items-start gap-2.5 sm:gap-3">
+          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#DCE6FA] text-[#1E50F2] flex items-center justify-center shrink-0 shadow-2xs">
+            <FileImage className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-[#1E50F2]" />
           </div>
           <div className="flex-1 space-y-1 min-w-0">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm sm:text-base font-bold text-slate-900 tracking-tight font-sans">
-                Drop your image here, or <span className="text-[#1E50F2] font-black underline underline-offset-2">Browse</span>
+              <h3 className="text-xs sm:text-base font-bold text-slate-900 tracking-tight font-sans">
+                <span className="hidden sm:inline">Drop your image here, or </span>
+                <span className="sm:hidden">Tap to select photo, or </span>
+                <span className="text-[#1E50F2] font-black underline underline-offset-2">Browse</span>
               </h3>
             </div>
-            <p className="text-[11px] sm:text-xs text-slate-600 font-medium leading-relaxed">
+            <p className="text-[10px] sm:text-xs text-slate-600 font-medium leading-relaxed">
               High-precision cropping studio. Supports PNG, JPG, WEBP, AVIF &amp; GIF up to 10MB.
             </p>
-            <div className="pt-1 flex items-center text-xs font-bold text-[#1E50F2] gap-1">
+            <div className="pt-0.5 flex items-center text-[11px] sm:text-xs font-bold text-[#1E50F2] gap-1">
               <span>Select File from Device</span>
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
         </div>
       </div>
 
       {/* BOTTOM FLOATING TRANSLUCENT ACTION PILL BAR */}
-      <div className="w-full max-w-lg bg-white/20 border border-white/40 backdrop-blur-md rounded-xl px-4 py-2.5 text-white flex items-center justify-between mt-3 shadow-inner text-xs font-medium pointer-events-none">
-        <span className="text-white/95 text-xs font-medium drop-shadow-2xs truncate pr-2">
-          Ready to upload your photo? Click anywhere to start
+      <div className="w-full max-w-lg bg-white/20 border border-white/40 backdrop-blur-md rounded-xl px-3 sm:px-4 py-2 sm:py-2.5 text-white flex items-center justify-between mt-2.5 sm:mt-3 shadow-inner text-xs font-medium pointer-events-none">
+        <span className="text-white/95 text-[11px] sm:text-xs font-medium drop-shadow-2xs truncate pr-2">
+          <span className="hidden sm:inline">Ready to upload your photo? Click anywhere to start</span>
+          <span className="sm:hidden">Tap anywhere to upload photo</span>
         </span>
-        <div className="w-7 h-7 rounded-lg bg-[#1E50F2] text-white shadow-sm flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-          <ImagePlus className="w-3.5 h-3.5" />
+        <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-[#1E50F2] text-white shadow-sm flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+          <ImagePlus className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
         </div>
       </div>
     </div>
