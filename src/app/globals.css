@@ -50,29 +50,126 @@ h1, h2, h3, .font-heading {
   font-family: var(--font-sans-body), var(--font-roboto), system-ui, sans-serif;
 }
 
+/* Hero Backdrop & Theme System (Day & Night Modes) */
+:root, [data-hero-theme="light"] {
+  --hero-bg-mobile: url('/mobile-day-mode-bg-image.webp');
+  --hero-bg-desktop: url('/dekstop-day-mode-bg-image-cropmyimages.webp');
+  --hero-title-color: #0F172A;
+  --hero-italic-color: #0F172A;
+  --hero-subtitle-color: #334155;
+  --hero-badge-bg: rgba(255, 255, 255, 0.9);
+  --hero-badge-border: rgba(228, 228, 231, 0.8);
+  --hero-badge-text: #1E293B;
+  --hero-border-bottom: rgba(228, 228, 231, 0.6);
+  --hero-nav-bg: rgba(255, 255, 255, 0.9);
+  --hero-nav-border: rgba(255, 255, 255, 0.8);
+  --hero-nav-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  --hero-nav-text: #0F172A;
+  --hero-nav-text-muted: #475569;
+  --hero-nav-btn-bg: #0F172A;
+  --hero-nav-btn-text: #FFFFFF;
+  --hero-secondary-btn-bg: rgba(255, 255, 255, 0.9);
+  --hero-secondary-btn-text: #0F172A;
+  --hero-secondary-btn-border: rgba(228, 228, 231, 0.8);
+}
+
+[data-hero-theme="dark"] {
+  --hero-bg-mobile: url('/mobile-nightmode-bg-image.webp');
+  --hero-bg-desktop: url('/dekstop-nightmode-bg-image-cropmyimages.webp');
+  --hero-title-color: #F8FAFC;
+  --hero-italic-color: #93C5FD;
+  --hero-subtitle-color: #CBD5E1;
+  --hero-badge-bg: rgba(15, 23, 42, 0.8);
+  --hero-badge-border: rgba(255, 255, 255, 0.18);
+  --hero-badge-text: #F1F5F9;
+  --hero-border-bottom: rgba(30, 41, 59, 0.85);
+  --hero-nav-bg: rgba(10, 15, 29, 0.88);
+  --hero-nav-border: rgba(255, 255, 255, 0.12);
+  --hero-nav-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+  --hero-nav-text: #F8FAFC;
+  --hero-nav-text-muted: #94A3B8;
+  --hero-nav-btn-bg: #F8FAFC;
+  --hero-nav-btn-text: #020617;
+  --hero-secondary-btn-bg: rgba(15, 23, 42, 0.85);
+  --hero-secondary-btn-text: #F8FAFC;
+  --hero-secondary-btn-border: rgba(255, 255, 255, 0.2);
+}
+
 /* Mixed Serif Italic Typography Helper */
 .font-heading em, .font-heading i, h1 em, h1 i, h2 em, h2 i {
   font-family: var(--font-serif-heading), Georgia, serif;
   font-style: italic;
   font-weight: 400;
-  color: #0F172A;
+  color: var(--hero-italic-color, #0F172A);
+  transition: color 0.25s ease;
 }
 
 /* Hero Backdrop with Mobile and Desktop WebP images */
 .bg-sky-cloud-hero {
-  background-image: url('/mobile-view-bg-image.webp');
+  background-image: var(--hero-bg-mobile);
   background-size: cover;
   background-position: center top;
   background-repeat: no-repeat;
+  border-bottom-color: var(--hero-border-bottom);
 }
 
 @media (min-width: 768px) {
   .bg-sky-cloud-hero {
-    background-image: url('/dekstop-view-bg-image.webp');
-    background-size: cover;
-    background-position: center top;
-    background-repeat: no-repeat;
+    background-image: var(--hero-bg-desktop);
   }
+}
+
+/* Scoped hero typography and accents when in dark mode */
+[data-hero-theme="dark"] .bg-sky-cloud-hero h1,
+[data-hero-theme="dark"] .bg-sky-cloud-hero h2:not(#studio *):not(#how-to *),
+[data-hero-theme="dark"] .bg-sky-cloud-hero h3:not(#studio *):not(#how-to *) {
+  color: #F8FAFC !important;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.5);
+}
+
+[data-hero-theme="dark"] .bg-sky-cloud-hero p.text-slate-700,
+[data-hero-theme="dark"] .bg-sky-cloud-hero p.text-slate-600:not(#studio *):not(#how-to *),
+[data-hero-theme="dark"] .bg-sky-cloud-hero p.text-zinc-600:not(#studio *):not(#how-to *) {
+  color: #CBD5E1 !important;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Badges inside hero sections */
+[data-hero-theme="dark"] .bg-sky-cloud-hero .inline-flex.rounded-full:not(#studio *):not(#ip-studio *) {
+  background-color: var(--hero-badge-bg) !important;
+  border-color: var(--hero-badge-border) !important;
+  color: var(--hero-badge-text) !important;
+}
+
+/* Hero Action buttons */
+[data-hero-theme="dark"] .bg-sky-cloud-hero a[href="#how-to"],
+[data-hero-theme="dark"] .bg-sky-cloud-hero a.hero-btn-secondary {
+  background-color: var(--hero-secondary-btn-bg) !important;
+  color: var(--hero-secondary-btn-text) !important;
+  border-color: var(--hero-secondary-btn-border) !important;
+}
+
+[data-hero-theme="dark"] .bg-sky-cloud-hero a[href="#studio"],
+[data-hero-theme="dark"] .bg-sky-cloud-hero a.hero-btn-primary {
+  background-color: #FFFFFF !important;
+  color: #020617 !important;
+  font-weight: 800 !important;
+}
+
+/* Circular Reveal View Transition (Hostinger Style Theme Animation) */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* New incoming theme always expands cleanly on top across both directions */
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 9999;
 }
 
 /* Custom light scrollbar */

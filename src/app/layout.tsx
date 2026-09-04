@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Script from 'next/script';
 import { FeedbackWidget } from '@/components/common/FeedbackWidget';
 import { ReduxProvider } from '@/lib/redux/ReduxProvider';
+import { HeroThemeProvider } from '@/components/common/HeroThemeProvider';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import './globals.css';
 
@@ -93,6 +94,8 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      data-hero-theme="light"
+      suppressHydrationWarning
       className="scroll-smooth"
       data-scroll-behavior="smooth"
     >
@@ -106,6 +109,43 @@ export default function RootLayout({
         <link rel="icon" href="/logo.webp" type="image/webp" sizes="any" />
         <link rel="shortcut icon" href="/logo.webp" type="image/webp" />
         <link rel="apple-touch-icon" href="/logo.webp" />
+
+        {/* Responsive LCP Preloads for Hero Backgrounds (Fast FCP/LCP) */}
+        <link
+          rel="preload"
+          as="image"
+          href="/dekstop-day-mode-bg-image-cropmyimages.webp"
+          media="(min-width: 768px)"
+          type="image/webp"
+        />
+        <link
+          rel="preload"
+          as="image"
+          href="/mobile-day-mode-bg-image.webp"
+          media="(max-width: 767px)"
+          type="image/webp"
+        />
+
+        {/* Prefetch Night Mode Images in Background for Instant Zero-Lag Switch */}
+        <link
+          rel="prefetch"
+          as="image"
+          href="/dekstop-nightmode-bg-image-cropmyimages.webp"
+          type="image/webp"
+        />
+        <link
+          rel="prefetch"
+          as="image"
+          href="/mobile-nightmode-bg-image.webp"
+          type="image/webp"
+        />
+
+        {/* Blocking Sync Theme Initialization: Prevents FOUC & Eliminates CLS */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('cmi_hero_theme');if(!t){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.setAttribute('data-hero-theme',t);}catch(e){document.documentElement.setAttribute('data-hero-theme','light');}})();`,
+          }}
+        />
 
         {/* Google Analytics (gtag.js) */}
         <Script
@@ -162,9 +202,11 @@ export default function RootLayout({
           />
         </noscript>
         <ReduxProvider>
-          {children}
-          <FeedbackWidget />
-          <SpeedInsights />
+          <HeroThemeProvider>
+            {children}
+            <FeedbackWidget />
+            <SpeedInsights />
+          </HeroThemeProvider>
         </ReduxProvider>
       </body>
     </html>
