@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Script from 'next/script';
 import { FeedbackWidget } from '@/components/common/FeedbackWidget';
 import { ReduxProvider } from '@/lib/redux/ReduxProvider';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import './globals.css';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cropmyimages.com';
@@ -163,6 +164,7 @@ export default function RootLayout({
         <ReduxProvider>
           {children}
           <FeedbackWidget />
+          <SpeedInsights />
         </ReduxProvider>
       </body>
     </html>
