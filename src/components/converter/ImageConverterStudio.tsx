@@ -1724,57 +1724,397 @@ export function ImageConverterStudio({
         </div>
       )}
 
-      {/* 5. PRIVACY & PERFORMANCE FEATURES */}
-      <div className={`grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6 border-t ${
-        isDark ? 'border-white/10' : 'border-zinc-200/80'
+      {/* 5. PRIVACY & PERFORMANCE SHOWCASE CARDS (ORIGINAL DAY MODE TEXTS & BLUE PALETTE) */}
+      <div className={`grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t ${
+        isDark ? 'border-white/10' : 'border-slate-200/70'
       }`}>
-        <div className={`p-6 rounded-3xl space-y-2 border transition-all ${
-          isDark
-            ? 'bg-[#0B1226]/85 border-white/10 text-white shadow-md'
-            : 'bg-white border-zinc-200/80 text-slate-900 shadow-sm'
-        }`}>
-          <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-bold ${
-            isDark ? 'bg-slate-900 border border-white/10 text-white' : 'bg-slate-100 text-slate-900'
-          }`}>
-            <Gauge className={`w-5 h-5 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
+
+        {/* CARD 1: TARGET FILE SIZE (KB • MB) */}
+        <div
+          className={`group rounded-[2rem] p-6 border transition-all duration-300 flex flex-col justify-between overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_14px_35px_rgba(30,80,242,0.08)] hover:-translate-y-0.5 ${
+            isDark
+              ? 'bg-[#0B101D] border-slate-800/80 text-white hover:border-slate-700'
+              : 'bg-white border-slate-200/70 text-slate-900 hover:border-blue-200'
+          }`}
+        >
+          {/* Top Visual Showcase: Dropzone Blue Aura */}
+          <div
+            className={`relative w-full h-56 rounded-2xl overflow-hidden flex items-center justify-center p-4 border select-none transition-colors ${
+              isDark
+                ? 'bg-[#070B14] border-slate-800/60 bg-[radial-gradient(circle_at_center,rgba(42,101,255,0.22)_0%,rgba(30,80,242,0.08)_50%,transparent_75%)]'
+                : 'bg-slate-50/60 border-slate-100 bg-[radial-gradient(circle_at_center,rgba(30,80,242,0.14)_0%,rgba(75,141,248,0.05)_50%,transparent_75%)]'
+            }`}
+          >
+            {/* Smooth feathered ambient dropzone blue glow */}
+            <div
+              className={`absolute w-44 h-44 rounded-full blur-3xl pointer-events-none transition-all duration-500 group-hover:scale-110 ${
+                isDark ? 'bg-[#2A65FF]/20' : 'bg-[#2A65FF]/15'
+              }`}
+            />
+
+            {/* Floating Human Form Card */}
+            <div
+              className={`relative z-10 w-full max-w-[275px] p-4 space-y-3.5 backdrop-blur-md transition-transform duration-300 group-hover:scale-[1.01] ${
+                isDark
+                  ? 'text-white'
+                  : 'text-slate-900'
+              }`}
+            >
+              {/* Natural Question / Label Header */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between text-[11px]">
+                  <span className={`font-semibold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                    Target max file size
+                  </span>
+                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${
+                    isDark
+                      ? 'text-sky-400 bg-blue-950/60 border-blue-800/40'
+                      : 'text-[#1E50F2] bg-blue-50 border-blue-200/60'
+                  }`}>
+                    87% smaller
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div
+                    className={`flex-1 px-3 py-2 rounded-xl border text-xs font-medium flex items-center justify-between transition-colors ${
+                      isDark ? 'bg-slate-950/80 border-slate-800 text-white' : 'bg-slate-50/80 border-slate-200/80 text-slate-900'
+                    }`}
+                  >
+                    <span className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Keep under 200</span>
+                    <span className={`text-[10px] font-semibold ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>KB</span>
+                  </div>
+                  <div className="px-3 py-2 rounded-xl bg-[#1E50F2] hover:bg-[#1945D4] text-white text-xs font-semibold shadow-xs transition-colors">
+                    Apply
+                  </div>
+                </div>
+              </div>
+
+              {/* Smooth Blue Progress Meter */}
+              <div className="space-y-1.5 pt-0.5">
+                <div className="flex justify-between text-[10px]">
+                  <span className={`font-medium ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>1.4 MB original</span>
+                  <span className={`font-semibold ${isDark ? 'text-sky-400' : 'text-[#1E50F2]'}`}>180 KB ready</span>
+                </div>
+                <div className={`w-full h-1.5 rounded-full overflow-hidden ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`}>
+                  <div className="h-full rounded-full bg-gradient-to-r from-[#1E50F2] via-[#2A65FF] to-[#4B8DF8] w-[87%]" />
+                </div>
+              </div>
+
+              {/* Natural Human Presets */}
+              <div className="flex items-center gap-1.5 pt-0.5">
+                {[
+                  { label: '50 KB', note: 'Forms' },
+                  { label: '200 KB', note: 'Email', active: true },
+                  { label: '1 MB', note: 'Web' },
+                ].map((chip) => (
+                  <div
+                    key={chip.label}
+                    className={`flex-1 py-1 px-1.5 rounded-lg text-center border text-[10px] transition-colors ${
+                      chip.active
+                        ? 'bg-[#1E50F2] text-white border-[#1E50F2] shadow-xs'
+                        : isDark
+                          ? 'bg-slate-950/60 text-slate-400 border-slate-800 hover:border-slate-700'
+                          : 'bg-slate-50 text-slate-700 border-slate-200/80 hover:border-blue-200'
+                    }`}
+                  >
+                    <span className="font-semibold">{chip.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
-          <h3 className={`font-bold text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>Target File Size (KB &bull; MB)</h3>
-          <p className={`text-xs leading-relaxed font-normal ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-            Intelligent compression and downscaling algorithms optimize files to fit under strict KB and MB caps with maximal clarity.
-          </p>
+
+          {/* Bottom Info Section (Exact Day Mode Texts) */}
+          <div className="pt-5 space-y-1.5">
+            <div className="flex items-center gap-2.5">
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 border ${
+                isDark
+                  ? 'bg-blue-950/60 text-sky-400 border-blue-800/40'
+                  : 'bg-blue-50 text-[#1E50F2] border-blue-200/50'
+              }`}>
+                <Gauge className="w-3.5 h-3.5" />
+              </div>
+              <h3 className={`font-body font-sans font-bold text-sm tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                Target File Size (KB &bull; MB)
+              </h3>
+            </div>
+            {/* <p className={`text-xs leading-relaxed font-normal pl-8.5 ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+              Intelligent compression and downscaling algorithms optimize files to fit under strict KB and MB caps with maximal clarity.
+            </p> */}
+          </div>
         </div>
 
-        <div className={`p-6 rounded-3xl space-y-2 border transition-all ${
-          isDark
-            ? 'bg-[#0B1226]/85 border-white/10 text-white shadow-md'
-            : 'bg-white border-zinc-200/80 text-slate-900 shadow-sm'
-        }`}>
-          <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-bold ${
-            isDark ? 'bg-slate-900 border border-white/10 text-white' : 'bg-slate-100 text-slate-900'
-          }`}>
-            <ShieldCheck className={`w-5 h-5 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
+        {/* CARD 2: 100% PRIVACY GUARANTEE */}
+        <div
+          className={`group rounded-[2rem] p-6 border transition-all duration-300 flex flex-col justify-between overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_14px_35px_rgba(30,80,242,0.08)] hover:-translate-y-0.5 ${
+            isDark
+              ? 'bg-[#0B101D] border-slate-800/80 text-white hover:border-slate-700'
+              : 'bg-white border-slate-200/70 text-slate-900 hover:border-blue-200'
+          }`}
+        >
+          {/* Top Visual Showcase: Concentric Radar with Floating Privacy Tiles */}
+          <div
+            className={`relative w-full h-56 rounded-2xl overflow-hidden flex items-center justify-center p-4 border select-none transition-colors ${
+              isDark
+                ? 'bg-[#070B14] border-slate-800/60 bg-[radial-gradient(circle_at_center,rgba(42,101,255,0.22)_0%,rgba(30,80,242,0.08)_50%,transparent_75%)]'
+                : 'bg-slate-50/60 border-slate-100 bg-[radial-gradient(circle_at_center,rgba(30,80,242,0.14)_0%,rgba(75,141,248,0.05)_50%,transparent_75%)]'
+            }`}
+          >
+            {/* Smooth feathered ambient dropzone blue glow */}
+            <div
+              className={`absolute w-44 h-44 rounded-full blur-3xl pointer-events-none transition-all duration-500 group-hover:scale-110 ${
+                isDark ? 'bg-[#2A65FF]/20' : 'bg-[#2A65FF]/15'
+              }`}
+            />
+
+            {/* Smooth Whisper-Thin Concentric Rings */}
+            <div className={`absolute w-24 h-24 rounded-full border pointer-events-none transition-transform duration-500 group-hover:scale-105 ${
+              isDark ? 'border-[#2A65FF]/20' : 'border-[#2A65FF]/15'
+            }`} />
+            <div className={`absolute w-40 h-40 rounded-full border pointer-events-none transition-transform duration-700 group-hover:scale-105 ${
+              isDark ? 'border-[#2A65FF]/15' : 'border-[#2A65FF]/10'
+            }`} />
+            <div className={`absolute w-52 h-52 rounded-full border pointer-events-none ${
+              isDark ? 'border-[#2A65FF]/10' : 'border-[#2A65FF]/5'
+            }`} />
+
+            {/* Central Privacy Shield Badge (Signature Dropzone Blue Gradient) */}
+            <div className="relative z-10 w-13 h-13 rounded-2xl bg-gradient-to-tr from-[#1E50F2] via-[#2A65FF] to-[#3B82F6] flex items-center justify-center shadow-[0_8px_20px_rgba(30,80,242,0.35)] group-hover:scale-105 transition-transform duration-500">
+              <ShieldCheck className="w-6 h-6 text-white stroke-[2.2]" />
+            </div>
+
+            {/* Floating Privacy Badges around Center (Staggered orbital layout prevents overlapping) */}
+            {/* 1. Top-Left: Client-Side */}
+            <div
+              className={`absolute top-3 left-3 z-20 px-2.5 py-1 rounded-xl border shadow-[0_4px_14px_rgba(0,0,0,0.05)] flex items-center gap-1.5 transition-transform duration-300 group-hover:-translate-y-0.5 -rotate-2 ${
+                isDark
+                  ? 'bg-slate-900/90 border-slate-700/60 text-white'
+                  : 'bg-white/95 border-slate-200/70 text-slate-900'
+              }`}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[#1E50F2] shrink-0" />
+              <span className={`font-sans font-bold text-[11px] ${isDark ? 'text-white' : 'text-slate-900'}`}>Client-Side</span>
+              <span className={`text-[9.5px] font-semibold px-1.5 py-0.5 rounded-full border shrink-0 ${
+                isDark
+                  ? 'text-sky-400 bg-blue-950/60 border-blue-800/40'
+                  : 'text-[#1E50F2] bg-blue-50 border-blue-200/60'
+              }`}>
+                Private
+              </span>
+            </div>
+
+            {/* 2. Upper-Right: No Server Logs */}
+            <div
+              className={`absolute top-11 right-3 z-20 px-2.5 py-1 rounded-xl border shadow-[0_4px_14px_rgba(0,0,0,0.05)] flex items-center gap-1.5 transition-transform duration-300 group-hover:-translate-y-0.5 rotate-2 ${
+                isDark
+                  ? 'bg-slate-900/90 border-slate-700/60 text-white'
+                  : 'bg-white/95 border-slate-200/70 text-slate-900'
+              }`}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[#2A65FF] shrink-0" />
+              <span className={`font-sans font-bold text-[11px] ${isDark ? 'text-white' : 'text-slate-900'}`}>No Server Logs</span>
+              <span className={`text-[9.5px] font-semibold px-1.5 py-0.5 rounded-full border shrink-0 ${
+                isDark
+                  ? 'text-sky-400 bg-blue-950/60 border-blue-800/40'
+                  : 'text-[#1E50F2] bg-blue-50 border-blue-200/60'
+              }`}>
+                Safe
+              </span>
+            </div>
+
+            {/* 3. Lower-Left: Direct Stream */}
+            <div
+              className={`absolute bottom-11 left-3 z-20 px-2.5 py-1 rounded-xl border shadow-[0_4px_14px_rgba(0,0,0,0.05)] flex items-center gap-1.5 transition-transform duration-300 group-hover:translate-y-0.5 -rotate-2 ${
+                isDark
+                  ? 'bg-slate-900/90 border-slate-700/60 text-white'
+                  : 'bg-white/95 border-slate-200/70 text-slate-900'
+              }`}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[#1E50F2] shrink-0" />
+              <span className={`font-sans font-bold text-[11px] ${isDark ? 'text-white' : 'text-slate-900'}`}>Direct Stream</span>
+              <span className={`text-[9.5px] font-semibold px-1.5 py-0.5 rounded-full border shrink-0 ${
+                isDark
+                  ? 'text-sky-400 bg-blue-950/60 border-blue-800/40'
+                  : 'text-[#1E50F2] bg-blue-50 border-blue-200/60'
+              }`}>
+                Fast
+              </span>
+            </div>
+
+            {/* 4. Bottom-Right: Auto Purge */}
+            <div
+              className={`absolute bottom-3 right-3 z-20 px-2.5 py-1 rounded-xl border shadow-[0_4px_14px_rgba(0,0,0,0.05)] flex items-center gap-1.5 transition-transform duration-300 group-hover:translate-y-0.5 rotate-2 ${
+                isDark
+                  ? 'bg-slate-900/90 border-slate-700/60 text-white'
+                  : 'bg-white/95 border-slate-200/70 text-slate-900'
+              }`}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[#2A65FF] shrink-0" />
+              <span className={`font-sans font-bold text-[11px] ${isDark ? 'text-white' : 'text-slate-900'}`}>Auto Purge</span>
+              <span className={`text-[9.5px] font-semibold px-1.5 py-0.5 rounded-full border shrink-0 ${
+                isDark
+                  ? 'text-sky-400 bg-blue-950/60 border-blue-800/40'
+                  : 'text-[#1E50F2] bg-blue-50 border-blue-200/60'
+              }`}>
+                Instant
+              </span>
+            </div>
           </div>
-          <h3 className={`font-bold text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>100% Privacy Guarantee</h3>
-          <p className={`text-xs leading-relaxed font-normal ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-            Your images remain private on your computer or phone. We do not store, view, or retain your personal photographs.
-          </p>
+
+          {/* Bottom Info Section (Exact Day Mode Texts) */}
+          <div className="pt-5 space-y-1.5">
+            <div className="flex items-center gap-2.5">
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 border ${
+                isDark
+                  ? 'bg-blue-950/60 text-sky-400 border-blue-800/40'
+                  : 'bg-blue-50 text-[#1E50F2] border-blue-200/50'
+              }`}>
+                <ShieldCheck className="w-3.5 h-3.5" />
+              </div>
+              <h3 className={`font-body font-sans font-bold text-sm tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                100% Privacy Guarantee
+              </h3>
+            </div>
+            {/* <p className={`text-xs leading-relaxed font-normal pl-8.5 ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+              Your images remain private on your computer or phone. We do not store, view, or retain your personal photographs.
+            </p> */}
+          </div>
         </div>
 
-        <div className={`p-6 rounded-3xl space-y-2 border transition-all ${
-          isDark
-            ? 'bg-[#0B1226]/85 border-white/10 text-white shadow-md'
-            : 'bg-white border-zinc-200/80 text-slate-900 shadow-sm'
-        }`}>
-          <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-bold ${
-            isDark ? 'bg-slate-900 border border-white/10 text-white' : 'bg-slate-100 text-slate-900'
-          }`}>
-            <Sparkles className={`w-5 h-5 ${isDark ? 'text-indigo-400' : 'text-indigo-600'}`} />
+        {/* CARD 3: CUSTOM SIZING FIDELITY */}
+        <div
+          className={`group rounded-[2rem] p-6 border transition-all duration-300 flex flex-col justify-between overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_14px_35px_rgba(30,80,242,0.08)] hover:-translate-y-0.5 ${
+            isDark
+              ? 'bg-[#0B101D] border-slate-800/80 text-white hover:border-slate-700'
+              : 'bg-white border-slate-200/70 text-slate-900 hover:border-blue-200'
+          }`}
+        >
+          {/* Top Visual Showcase: Stacked Sizing Rows */}
+          <div
+            className={`relative w-full h-56 rounded-2xl overflow-hidden flex items-center justify-center p-4 border select-none transition-colors ${
+              isDark
+                ? 'bg-[#070B14] border-slate-800/60 bg-[radial-gradient(circle_at_center,rgba(42,101,255,0.22)_0%,rgba(30,80,242,0.08)_50%,transparent_75%)]'
+                : 'bg-slate-50/60 border-slate-100 bg-[radial-gradient(circle_at_center,rgba(30,80,242,0.14)_0%,rgba(75,141,248,0.05)_50%,transparent_75%)]'
+            }`}
+          >
+            {/* Smooth feathered ambient dropzone blue glow */}
+            <div
+              className={`absolute w-44 h-44 rounded-full blur-3xl pointer-events-none transition-all duration-500 group-hover:scale-110 ${
+                isDark ? 'bg-[#2A65FF]/20' : 'bg-[#2A65FF]/15'
+              }`}
+            />
+
+            {/* Stacked List Items (Precision Scaling & Ratios) */}
+            <div className="relative z-10 w-full max-w-[275px] space-y-2.5">
+              
+              {/* Item 1 */}
+              <div
+                className={`p-2.5 px-3 rounded-xl border shadow-[0_4px_12px_rgba(0,0,0,0.04)] flex items-center justify-between gap-2 backdrop-blur-md transition-transform duration-300 group-hover:-translate-y-0.5 ${
+                  isDark
+                    ? 'bg-slate-900/90 border-slate-700/60 text-white'
+                    : 'bg-white/95 border-slate-200/70 text-slate-900'
+                }`}
+              >
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className={`w-5 h-5 rounded-lg flex items-center justify-center shrink-0 ${
+                    isDark ? 'bg-blue-950/60 text-sky-400' : 'bg-blue-50 text-[#1E50F2]'
+                  }`}>
+                    <FileImage className="w-3 h-3" />
+                  </div>
+                  <div className="truncate text-xs font-semibold">
+                    <span className={isDark ? 'text-white' : 'text-slate-900'}>hero-banner.png</span>{' '}
+                    <span className={`text-[10px] font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>1920&times;1080</span>
+                  </div>
+                </div>
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold shrink-0 border ${
+                  isDark
+                    ? 'bg-blue-950/60 text-sky-400 border-blue-800/40'
+                    : 'bg-blue-50 text-[#1E50F2] border-blue-200/60'
+                }`}>
+                  Ratio Locked
+                </span>
+              </div>
+
+              {/* Item 2 */}
+              <div
+                className={`p-2.5 px-3 rounded-xl border shadow-[0_4px_12px_rgba(0,0,0,0.04)] flex items-center justify-between gap-2 backdrop-blur-md transition-transform duration-300 group-hover:-translate-y-0.5 delay-75 ${
+                  isDark
+                    ? 'bg-slate-900/90 border-slate-700/60 text-white'
+                    : 'bg-white/95 border-slate-200/70 text-slate-900'
+                }`}
+              >
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className={`w-5 h-5 rounded-lg flex items-center justify-center shrink-0 ${
+                    isDark ? 'bg-blue-950/60 text-sky-400' : 'bg-blue-50 text-[#1E50F2]'
+                  }`}>
+                    <FileImage className="w-3 h-3" />
+                  </div>
+                  <div className="truncate text-xs font-semibold">
+                    <span className={isDark ? 'text-white' : 'text-slate-900'}>profile-photo.jpg</span>{' '}
+                    <span className={`text-[10px] font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Smart Scale</span>
+                  </div>
+                </div>
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold shrink-0 border ${
+                  isDark
+                    ? 'bg-blue-950/60 text-sky-400 border-blue-800/40'
+                    : 'bg-blue-50 text-[#1E50F2] border-blue-200/60'
+                }`}>
+                  High-DPI
+                </span>
+              </div>
+
+              {/* Item 3 */}
+              <div
+                className={`p-2.5 px-3 rounded-xl border shadow-[0_4px_12px_rgba(0,0,0,0.04)] flex items-center justify-between gap-2 backdrop-blur-md transition-transform duration-300 group-hover:-translate-y-0.5 delay-150 ${
+                  isDark
+                    ? 'bg-slate-900/90 border-slate-700/60 text-white'
+                    : 'bg-white/95 border-slate-200/70 text-slate-900'
+                }`}
+              >
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className={`w-5 h-5 rounded-lg flex items-center justify-center shrink-0 ${
+                    isDark ? 'bg-blue-950/60 text-sky-400' : 'bg-blue-50 text-[#1E50F2]'
+                  }`}>
+                    <Sliders className="w-3 h-3" />
+                  </div>
+                  <div className="truncate text-xs font-semibold">
+                    <span className={isDark ? 'text-white' : 'text-slate-900'}>brand-asset.webp</span>{' '}
+                    <span className={`text-[10px] font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Interpolated</span>
+                  </div>
+                </div>
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold shrink-0 border ${
+                  isDark
+                    ? 'bg-blue-950/60 text-sky-400 border-blue-800/40'
+                    : 'bg-blue-50 text-[#1E50F2] border-blue-200/60'
+                }`}>
+                  Pixel-Perfect
+                </span>
+              </div>
+
+            </div>
           </div>
-          <h3 className={`font-bold text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>Custom Sizing Fidelity</h3>
-          <p className={`text-xs leading-relaxed font-normal ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-            High-precision pixel interpolation preserves sharpness, text clarity, and proportions when resizing dimensions.
-          </p>
+
+          {/* Bottom Info Section (Exact Day Mode Texts) */}
+          <div className="pt-5 space-y-1.5">
+            <div className="flex items-center gap-2.5">
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 border ${
+                isDark
+                  ? 'bg-blue-950/60 text-sky-400 border-blue-800/40'
+                  : 'bg-blue-50 text-[#1E50F2] border-blue-200/50'
+              }`}>
+                <Sparkles className="w-3.5 h-3.5" />
+              </div>
+              <h3 className={`font-body font-sans font-bold text-sm tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                Custom Sizing Fidelity
+              </h3>
+            </div>
+            {/* <p className={`text-xs leading-relaxed font-normal pl-8.5 ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+              High-precision pixel interpolation preserves sharpness, text clarity, and proportions when resizing dimensions.
+            </p> */}
+          </div>
         </div>
+
       </div>
 
     </div>

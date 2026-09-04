@@ -1,43 +1,11 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, createContext, useContext } from 'react';
-import {
-  Globe,
-  Copy,
-  Check,
-  RefreshCw,
-  Shield,
-  ShieldAlert,
-  ShieldCheck,
-  Search,
-  MapPin,
-  Clock,
-  Wifi,
-  Monitor,
-  Download,
-  Share2,
-  ExternalLink,
-  Zap,
-  ChevronDown,
-  HelpCircle,
-  History,
-  Activity,
-  Compass,
-  ArrowRight,
-  Server
-} from 'lucide-react';
 import { IpResponseData } from '@/app/api/ip/route';
-
-interface BrowserDiagnostics {
-  userAgent: string;
-  browser: string;
-  os: string;
-  screenResolution: string;
-  pixelRatio: number;
-  language: string;
-  online: boolean;
-  timeZone: string;
-}
+import { useHeroTheme } from '@/components/common/HeroThemeProvider';
+import { Navbar } from '@/components/common/Navbar';
+import { Footer } from '@/components/common/Footer';
+import { AdBanner } from '@/components/common/AdBanner';
 
 interface IpStudioContextType {
   ipData: IpResponseData | null;
@@ -50,15 +18,11 @@ interface IpStudioContextType {
   copied: string | null;
   localTime: string;
   history: string[];
-  pingLatency: number | null;
-  testingPing: boolean;
   openFaq: number | null;
   setOpenFaq: React.Dispatch<React.SetStateAction<number | null>>;
-  diagnostics: BrowserDiagnostics | null;
   fetchIpDetails: (targetIp?: string) => Promise<void>;
   copyToClipboard: (text: string, label: string) => void;
   handleSearchSubmit: (e: React.FormEvent) => void;
-  testPing: () => Promise<void>;
   downloadReport: (format: 'txt' | 'json') => void;
   clearHistory: () => void;
 }
@@ -83,60 +47,26 @@ export function IpStudioProvider({ children }: { children: React.ReactNode }) {
   const [copied, setCopied] = useState<string | null>(null);
   const [localTime, setLocalTime] = useState<string>('');
   const [history, setHistory] = useState<string[]>([]);
-  const [pingLatency, setPingLatency] = useState<number | null>(null);
-  const [testingPing, setTestingPing] = useState<boolean>(false);
-  const [openFaq, setOpenFaq] = useState<number | null>(0);
-  const [diagnostics, setDiagnostics] = useState<BrowserDiagnostics | null>(null);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
 
-  // Load history from localStorage on mount
+  // Load search history from localStorage
   useEffect(() => {
     try {
-      const saved = localStorage.getItem('ip_lookup_history');
+      const saved = localStorage.getItem('cmi_ip_history');
       if (saved) {
         setHistory(JSON.parse(saved));
       }
     } catch {
-      // ignore
+      // ignore storage errors
     }
-  }, []);
-
-  // Fetch client diagnostics
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const ua = navigator.userAgent;
-    let browser = 'Unknown Browser';
-    if (ua.includes('Firefox/')) browser = 'Mozilla Firefox';
-    else if (ua.includes('Edg/')) browser = 'Microsoft Edge';
-    else if (ua.includes('Chrome/')) browser = 'Google Chrome';
-    else if (ua.includes('Safari/') && !ua.includes('Chrome/')) browser = 'Apple Safari';
-    else if (ua.includes('OPR/') || ua.includes('Opera/')) browser = 'Opera';
-
-    let os = 'Unknown OS';
-    if (ua.includes('Win')) os = 'Windows';
-    else if (ua.includes('Mac')) os = 'macOS';
-    else if (ua.includes('Linux')) os = 'Linux';
-    else if (ua.includes('Android')) os = 'Android';
-    else if (ua.includes('iPhone') || ua.includes('iPad')) os = 'iOS';
-
-    setDiagnostics({
-      userAgent: ua,
-      browser,
-      os,
-      screenResolution: `${window.screen.width} x ${window.screen.height}`,
-      pixelRatio: window.devicePixelRatio || 1,
-      language: navigator.language || 'en-US',
-      online: navigator.onLine,
-      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    });
   }, []);
 
   const addToHistory = (ip: string) => {
     setHistory((prev) => {
       const filtered = prev.filter((item) => item !== ip);
-      const updated = [ip, ...filtered].slice(0, 8);
+      const updated = [ip, ...filtered].slice(0, 6);
       try {
-        localStorage.setItem('ip_lookup_history', JSON.stringify(updated));
+        localStorage.setItem('cmi_ip_history', JSON.stringify(updated));
       } catch {
         // ignore
       }
@@ -147,13 +77,13 @@ export function IpStudioProvider({ children }: { children: React.ReactNode }) {
   const clearHistory = () => {
     setHistory([]);
     try {
-      localStorage.removeItem('ip_lookup_history');
+      localStorage.removeItem('cmi_ip_history');
     } catch {
       // ignore
     }
   };
 
-  // Dedicated IPv4 fetcher when primary connection is IPv6
+  // Fetch dedicated IPv4 if primary connection is IPv6
   const fetchDedicatedIpv4 = useCallback(async () => {
     try {
       const res = await fetch('https://api.ipify.org?format=json');
@@ -162,7 +92,6 @@ export function IpStudioProvider({ children }: { children: React.ReactNode }) {
         setIpv4(data.ip);
       }
     } catch {
-      // Secondary fallback for IPv4
       try {
         const res2 = await fetch('https://ipwho.is/');
         const data2 = await res2.json();
@@ -175,121 +104,82 @@ export function IpStudioProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const fetchIpDetails = useCallback(async (targetIp?: string) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const endpoint = targetIp
-        ? `/api/ip?ip=${encodeURIComponent(targetIp)}`
-        : '/api/ip';
-      
-      const res = await fetch(endpoint);
-      const data: IpResponseData = await res.json();
-
-      if (!data.success) {
-        const fallbackUrl = targetIp
-          ? `https://ipwho.is/${encodeURIComponent(targetIp)}`
-          : 'https://ipwho.is/';
-        const fallbackRes = await fetch(fallbackUrl);
-        const fbData = await fallbackRes.json();
-
-        if (fbData && fbData.ip) {
-          const fallbackResponse: IpResponseData = {
-            success: true,
-            ip: fbData.ip,
-            type: fbData.type || (fbData.ip.includes(':') ? 'IPv6' : 'IPv4'),
-            country: fbData.country || 'Unknown',
-            countryCode: fbData.country_code || '',
-            countryFlag: fbData.flag?.emoji || '🌐',
-            region: fbData.region || 'Unknown',
-            city: fbData.city || 'Unknown',
-            postal: fbData.postal || '',
-            latitude: fbData.latitude || 0,
-            longitude: fbData.longitude || 0,
-            timezone: fbData.timezone?.id || 'UTC',
-            isp: fbData.connection?.isp || fbData.connection?.org || 'ISP Provider',
-            org: fbData.connection?.org || fbData.connection?.isp || 'Organization',
-            asn: fbData.connection?.asn ? `AS${fbData.connection.asn}` : 'N/A',
-            connectionType: 'Broadband',
-            hostname: fbData.connection?.domain || fbData.ip,
-            security: {
-              isProxy: Boolean(fbData.security?.proxy),
-              isVpn: Boolean(fbData.security?.vpn),
-              isTor: Boolean(fbData.security?.tor),
-              isHosting: Boolean(fbData.security?.hosting),
-            },
-          };
-          setIpData(fallbackResponse);
-          if (fallbackResponse.ip.includes(':')) {
-            setIpv6(fallbackResponse.ip);
-            fetchDedicatedIpv4();
-          } else {
-            setIpv4(fallbackResponse.ip);
-          }
-        } else {
-          setError(data.message || 'Failed to fetch IP information.');
-        }
-      } else {
-        setIpData(data);
-        if (data.ip.includes(':')) {
-          setIpv6(data.ip);
-          fetchDedicatedIpv4();
-        } else {
-          setIpv4(data.ip);
-        }
-        if (targetIp && data.ip) {
-          addToHistory(data.ip);
-        }
-      }
-    } catch (err: any) {
-      console.error('IP Fetch Error:', err);
+  const fetchIpDetails = useCallback(
+    async (targetIp?: string) => {
+      setLoading(true);
+      setError(null);
       try {
-        const fallbackRes = await fetch(
-          targetIp ? `https://ipwho.is/${encodeURIComponent(targetIp)}` : 'https://ipwho.is/'
-        );
-        const fbData = await fallbackRes.json();
-        if (fbData && fbData.ip) {
-          const isV6 = fbData.ip.includes(':');
-          setIpData({
-            success: true,
-            ip: fbData.ip,
-            type: isV6 ? 'IPv6' : 'IPv4',
-            country: fbData.country || 'Unknown',
-            countryCode: fbData.country_code || '',
-            countryFlag: fbData.flag?.emoji || '🌐',
-            region: fbData.region || 'Unknown',
-            city: fbData.city || 'Unknown',
-            postal: fbData.postal || '',
-            latitude: fbData.latitude || 0,
-            longitude: fbData.longitude || 0,
-            timezone: fbData.timezone?.id || 'UTC',
-            isp: fbData.connection?.isp || fbData.connection?.org || 'Network',
-            org: fbData.connection?.org || fbData.connection?.isp || 'Org',
-            asn: fbData.connection?.asn ? `AS${fbData.connection.asn}` : 'N/A',
-            hostname: fbData.connection?.domain || fbData.ip,
-            security: {
-              isProxy: Boolean(fbData.security?.proxy),
-              isVpn: Boolean(fbData.security?.vpn),
-              isTor: Boolean(fbData.security?.tor),
-              isHosting: Boolean(fbData.security?.hosting),
-            },
-          });
-          if (isV6) {
-            setIpv6(fbData.ip);
-            fetchDedicatedIpv4();
+        const endpoint = targetIp
+          ? `/api/ip?ip=${encodeURIComponent(targetIp)}`
+          : '/api/ip';
+
+        const res = await fetch(endpoint);
+        const data: IpResponseData = await res.json();
+
+        if (!data.success) {
+          const fallbackUrl = targetIp
+            ? `https://ipwho.is/${encodeURIComponent(targetIp)}`
+            : 'https://ipwho.is/';
+          const fallbackRes = await fetch(fallbackUrl);
+          const fbData = await fallbackRes.json();
+
+          if (fbData && fbData.ip) {
+            const fallbackResponse: IpResponseData = {
+              success: true,
+              ip: fbData.ip,
+              type: fbData.type || (fbData.ip.includes(':') ? 'IPv6' : 'IPv4'),
+              country: fbData.country || 'Unknown',
+              countryCode: fbData.country_code || '',
+              countryFlag: fbData.flag?.emoji || '🌐',
+              region: fbData.region || 'Unknown',
+              city: fbData.city || 'Unknown',
+              postal: fbData.postal || '',
+              latitude: fbData.latitude || 0,
+              longitude: fbData.longitude || 0,
+              timezone: fbData.timezone?.id || 'UTC',
+              isp: fbData.connection?.isp || fbData.connection?.org || 'ISP Provider',
+              org: fbData.connection?.org || fbData.connection?.isp || 'Organization',
+              asn: fbData.connection?.asn ? `AS${fbData.connection.asn}` : 'N/A',
+              connectionType: 'Broadband',
+              hostname: fbData.connection?.domain || fbData.ip,
+              security: {
+                isProxy: Boolean(fbData.security?.proxy),
+                isVpn: Boolean(fbData.security?.vpn),
+                isTor: Boolean(fbData.security?.tor),
+                isHosting: Boolean(fbData.security?.hosting),
+              },
+            };
+            setIpData(fallbackResponse);
+            if (fallbackResponse.ip.includes(':')) {
+              setIpv6(fallbackResponse.ip);
+              fetchDedicatedIpv4();
+            } else {
+              setIpv4(fallbackResponse.ip);
+            }
           } else {
-            setIpv4(fbData.ip);
+            setError(data.message || 'Could not resolve IP details.');
           }
         } else {
-          setError('Unable to fetch IP details. Check network connection.');
+          setIpData(data);
+          if (data.ip.includes(':')) {
+            setIpv6(data.ip);
+            fetchDedicatedIpv4();
+          } else {
+            setIpv4(data.ip);
+          }
+          if (targetIp && data.ip) {
+            addToHistory(data.ip);
+          }
         }
-      } catch {
-        setError('Network error while reaching IP service.');
+      } catch (err) {
+        console.error('IP Fetch Error:', err);
+        setError('Network error while looking up IP information.');
+      } finally {
+        setLoading(false);
       }
-    } finally {
-      setLoading(false);
-    }
-  }, [fetchDedicatedIpv4]);
+    },
+    [fetchDedicatedIpv4]
+  );
 
   useEffect(() => {
     fetchIpDetails();
@@ -329,75 +219,38 @@ export function IpStudioProvider({ children }: { children: React.ReactNode }) {
     fetchIpDetails(searchQuery.trim());
   };
 
-  const testPing = async () => {
-    setTestingPing(true);
-    setPingLatency(null);
-    const pings: number[] = [];
-    
-    for (let i = 0; i < 3; i++) {
-      const start = performance.now();
-      try {
-        await fetch('/api/ip', { cache: 'no-store' });
-        const end = performance.now();
-        pings.push(end - start);
-      } catch {
-        // ignore sample error
-      }
-    }
-
-    if (pings.length > 0) {
-      const avg = Math.round(pings.reduce((a, b) => a + b, 0) / pings.length);
-      setPingLatency(avg);
-    }
-    setTestingPing(false);
-  };
-
   const downloadReport = (format: 'txt' | 'json') => {
     if (!ipData) return;
 
     let content = '';
-    let mime = 'text/plain';
-    let filename = `ip-details-${ipData.ip}.${format}`;
+    const mime = format === 'json' ? 'application/json' : 'text/plain';
+    const filename = `ip-${ipData.ip}.${format}`;
 
     if (format === 'json') {
-      content = JSON.stringify({ ...ipData, ipv4, ipv6, diagnostics }, null, 2);
-      mime = 'application/json';
+      content = JSON.stringify({ ...ipData, ipv4, ipv6 }, null, 2);
     } else {
-      content = `=========================================
-MY IP ADDRESS DETAILS REPORT
-Generated on: ${new Date().toLocaleString()}
-=========================================
+      content = `CropMyImages — Public IP Lookup
+Generated: ${new Date().toLocaleString()}
 
-IPv4 Address:      ${ipv4 || 'N/A'}
-IPv6 Address:      ${ipv6 || 'N/A'}
-Primary IP:        ${ipData.ip} (${ipData.type || 'IPv4'})
-Hostname:          ${ipData.hostname || 'N/A'}
+IP Address:       ${ipData.ip} (${ipData.type || 'IPv4'})
+IPv4:             ${ipv4 || 'N/A'}
+IPv6:             ${ipv6 || 'N/A'}
+Hostname:         ${ipData.hostname || 'N/A'}
 
-LOCATION
-Country:           ${ipData.country} (${ipData.countryCode})
-Region / State:    ${ipData.region}
-City:              ${ipData.city}
-Postal Code:       ${ipData.postal || 'N/A'}
-Coordinates:       ${ipData.latitude}, ${ipData.longitude}
-Timezone:          ${ipData.timezone}
+Location:         ${ipData.city}, ${ipData.region}, ${ipData.country} (${ipData.countryCode})
+Postal Code:      ${ipData.postal || 'N/A'}
+Coordinates:      ${ipData.latitude}, ${ipData.longitude}
+Timezone:         ${ipData.timezone}
 
-NETWORK & PROVIDER
-ISP:               ${ipData.isp}
-Organization:      ${ipData.org}
-ASN:               ${ipData.asn}
+Provider:         ${ipData.isp}
+Organization:     ${ipData.org}
+ASN:              ${ipData.asn}
 
-SECURITY ASSESSMENT
-Proxy Detected:    ${ipData.security?.isProxy ? 'Yes' : 'No'}
-VPN Detected:      ${ipData.security?.isVpn ? 'Yes' : 'No'}
-Tor Exit Node:     ${ipData.security?.isTor ? 'Yes' : 'No'}
-Datacenter/Hosting:${ipData.security?.isHosting ? 'Yes' : 'No'}
-
-SYSTEM DIAGNOSTICS
-Browser:           ${diagnostics?.browser || 'N/A'}
-Operating System:  ${diagnostics?.os || 'N/A'}
-Screen Resolution: ${diagnostics?.screenResolution || 'N/A'}
-User Agent:        ${diagnostics?.userAgent || 'N/A'}
-=========================================`;
+VPN Detected:     ${ipData.security?.isVpn ? 'Yes' : 'No'}
+Proxy Detected:   ${ipData.security?.isProxy ? 'Yes' : 'No'}
+Tor Node:         ${ipData.security?.isTor ? 'Yes' : 'No'}
+Hosting/Cloud:    ${ipData.security?.isHosting ? 'Yes' : 'No'}
+`;
     }
 
     const blob = new Blob([content], { type: mime });
@@ -424,15 +277,11 @@ User Agent:        ${diagnostics?.userAgent || 'N/A'}
         copied,
         localTime,
         history,
-        pingLatency,
-        testingPing,
         openFaq,
         setOpenFaq,
-        diagnostics,
         fetchIpDetails,
         copyToClipboard,
         handleSearchSubmit,
-        testPing,
         downloadReport,
         clearHistory,
       }}
@@ -442,299 +291,223 @@ User Agent:        ${diagnostics?.userAgent || 'N/A'}
   );
 }
 
-{/* HERO IP DISPLAY CARD COMPONENT (Matching light theme card style) */}
+// ─────────────────────────────────────────────────────────────────────────────
+// HERO IP STUDIO CARD (Clean, purposeful tool UI matching Cropper & Converter)
+// ─────────────────────────────────────────────────────────────────────────────
 export function IpHeroCard() {
+  const { theme } = useHeroTheme();
+  const isDark = theme === 'dark';
+
   const {
     ipData,
     ipv4,
     ipv6,
     loading,
-    error,
     searchQuery,
+    setSearchQuery,
     copied,
     fetchIpDetails,
     copyToClipboard,
+    handleSearchSubmit,
   } = useIpStudioContext();
 
+  const [activeTab, setActiveTab] = useState<'ipv4' | 'ipv6'>('ipv4');
+  const displayIp =
+    activeTab === 'ipv6'
+      ? ipv6 || (ipData?.ip.includes(':') ? ipData.ip : null)
+      : ipv4 || (ipData && !ipData.ip.includes(':') ? ipData.ip : null);
+
   return (
-    <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
-      
-      {/* Header badges & Action buttons */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-2">
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-50 text-sky-700 border border-sky-200/80 text-xs font-bold">
-            <Globe className="w-3.5 h-3.5 text-sky-600" />
-            {ipData?.type || 'IPv4'} Active Connection
-          </span>
-
-          {ipData?.security?.isVpn || ipData?.security?.isProxy ? (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200/80 text-xs font-bold">
-              <ShieldAlert className="w-3.5 h-3.5 text-amber-600" />
-              VPN / Proxy Detected
-            </span>
-          ) : (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/80 text-xs font-bold">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-              Clean Direct Connection
-            </span>
-          )}
-
-          {ipData?.isLocalhost && (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200/80 text-xs font-bold">
-              Dev Environment (Public IP Resolved)
-            </span>
-          )}
+    <div
+      className={`rounded-[2rem] p-6 sm:p-8 border transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.04)] ${
+        isDark
+          ? 'bg-[#0B101D] border-slate-800/80 text-white'
+          : 'bg-white border-slate-200/80 text-slate-900'
+      }`}
+    >
+      {/* Top Controls: Protocol Tabs + Security Status Pill + Action Buttons */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-slate-200/70 dark:border-slate-800/60">
+        {/* Protocol Switcher */}
+        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800">
+          <button
+            type="button"
+            onClick={() => setActiveTab('ipv4')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+              activeTab === 'ipv4'
+                ? isDark
+                  ? 'bg-slate-800 text-white shadow-xs'
+                  : 'bg-white text-slate-900 shadow-xs'
+                : isDark
+                  ? 'text-slate-400 hover:text-white'
+                  : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            IPv4 Address
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('ipv6')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
+              activeTab === 'ipv6'
+                ? isDark
+                  ? 'bg-slate-800 text-white shadow-xs'
+                  : 'bg-white text-slate-900 shadow-xs'
+                : isDark
+                  ? 'text-slate-400 hover:text-white'
+                  : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <span>IPv6 Address</span>
+            {ipv6 && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />}
+          </button>
         </div>
 
-        <div className="flex items-center gap-2 w-full sm:w-auto">
+        {/* Status + Actions */}
+        <div className="flex flex-wrap items-center gap-2.5">
+          {/* Security connection badge */}
+          {ipData && (
+            <span
+              className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold border ${
+                ipData.security?.isVpn || ipData.security?.isProxy
+                  ? isDark
+                    ? 'bg-amber-950/60 text-amber-300 border-amber-800/50'
+                    : 'bg-amber-50 text-amber-700 border-amber-200/80'
+                  : isDark
+                    ? 'bg-emerald-950/60 text-emerald-300 border-emerald-800/50'
+                    : 'bg-emerald-50 text-emerald-700 border-emerald-200/60'
+              }`}
+            >
+              <span
+                className={`w-1.5 h-1.5 rounded-full ${
+                  ipData.security?.isVpn || ipData.security?.isProxy
+                    ? 'bg-amber-500'
+                    : 'bg-emerald-500'
+                }`}
+              />
+              <span>
+                {ipData.security?.isVpn || ipData.security?.isProxy
+                  ? 'VPN / Proxy Detected'
+                  : 'Direct Connection'}
+              </span>
+            </span>
+          )}
+
+          {/* Refresh Button */}
           <button
             type="button"
             onClick={() => fetchIpDetails(searchQuery || undefined)}
             disabled={loading}
-            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-slate-900 hover:bg-black text-white font-bold text-xs transition-all active:scale-95 shadow-sm cursor-pointer disabled:opacity-50"
+            className={`inline-flex items-center px-3 py-1 rounded-xl text-xs font-semibold border transition-all cursor-pointer disabled:opacity-50 ${
+              isDark
+                ? 'bg-slate-900 hover:bg-slate-800 text-slate-200 border-slate-700/80'
+                : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200/80'
+            }`}
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            <span>Refresh</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => copyToClipboard(JSON.stringify({ ip: ipData?.ip, ipv4, ipv6, location: `${ipData?.city}, ${ipData?.country}` }, null, 2), 'hero-json')}
-            disabled={!ipData}
-            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-zinc-100 hover:bg-zinc-200 text-slate-800 font-bold text-xs border border-zinc-200/80 transition-all active:scale-95 cursor-pointer disabled:opacity-50"
-          >
-            <Share2 className="w-3.5 h-3.5 text-slate-600" />
-            <span>{copied === 'hero-json' ? 'Copied!' : 'Share Details'}</span>
+            {loading ? 'Refreshing...' : 'Refresh'}
           </button>
         </div>
       </div>
 
-      {/* DUAL IP DISPLAY: IPv4 & IPv6 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        
-        {/* IPv4 DISPLAY BOX */}
-        <div className="p-5 rounded-2xl bg-zinc-50 border border-zinc-200/80 space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs uppercase tracking-widest text-sky-700 font-extrabold flex items-center gap-1.5">
-              <Server className="w-3.5 h-3.5 text-sky-600" />
-              Your IPv4 Address
+      {/* Primary IP Display Section */}
+      <div className="py-6 sm:py-8 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-4">
+          <div className="space-y-1">
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              {activeTab === 'ipv4' ? 'Public IPv4' : 'Public IPv6'}
             </span>
-            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-sky-100 text-sky-800 border border-sky-200/80">
-              IPv4
-            </span>
-          </div>
-
-          {loading ? (
-            <div className="h-10 w-48 bg-zinc-200 rounded-lg animate-pulse" />
-          ) : (
-            <div className="flex items-center justify-between gap-3">
-              <span className="text-2xl sm:text-3xl font-black font-mono text-slate-900 tracking-tight break-all">
-                {ipv4 || (ipData && !ipData.ip.includes(':') ? ipData.ip : 'Resolving IPv4...')}
-              </span>
-              <button
-                type="button"
-                onClick={() => {
-                  const targetIp = ipv4 || (ipData && !ipData.ip.includes(':') ? ipData.ip : '');
-                  if (targetIp) copyToClipboard(targetIp, 'ipv4-copy');
-                }}
-                disabled={!ipv4 && (ipData?.ip.includes(':') ?? true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-black text-white font-bold text-xs transition-all active:scale-95 shadow-sm cursor-pointer disabled:opacity-40"
-              >
-                {copied === 'ipv4-copy' ? (
-                  <>
-                    <Check className="w-3.5 h-3.5 text-emerald-400" />
-                    <span className="text-emerald-400 font-bold">Copied</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-3.5 h-3.5 text-slate-200" />
-                    <span>Copy</span>
-                  </>
-                )}
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* IPv6 DISPLAY BOX */}
-        <div className="p-5 rounded-2xl bg-zinc-50 border border-zinc-200/80 space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-xs uppercase tracking-widest text-indigo-700 font-extrabold flex items-center gap-1.5">
-              <Globe className="w-3.5 h-3.5 text-indigo-600" />
-              Your IPv6 Address
-            </span>
-            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-800 border border-indigo-200/80">
-              IPv6
-            </span>
-          </div>
-
-          {loading ? (
-            <div className="h-10 w-48 bg-zinc-200 rounded-lg animate-pulse" />
-          ) : (
-            <div className="flex items-center justify-between gap-3">
-              <span className="text-sm sm:text-base font-black font-mono text-slate-900 tracking-tight break-all">
-                {ipv6 || (ipData && ipData.ip.includes(':') ? ipData.ip : 'Not Detected / IPv4 Active')}
-              </span>
-              {ipv6 || (ipData && ipData.ip.includes(':')) ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    const targetIp = ipv6 || (ipData && ipData.ip.includes(':') ? ipData.ip : '');
-                    if (targetIp) copyToClipboard(targetIp, 'ipv6-copy');
-                  }}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-black text-white font-bold text-xs transition-all active:scale-95 shadow-sm cursor-pointer"
+            {loading ? (
+              <div className="h-10 sm:h-12 w-64 rounded-xl animate-pulse bg-slate-200 dark:bg-slate-800" />
+            ) : (
+              <div className="flex flex-wrap items-center gap-3">
+                <span
+                  className={`text-3xl sm:text-5xl font-mono font-bold tracking-tight select-all ${
+                    isDark ? 'text-white' : 'text-slate-900'
+                  }`}
                 >
-                  {copied === 'ipv6-copy' ? (
-                    <>
-                      <Check className="w-3.5 h-3.5 text-emerald-400" />
-                      <span className="text-emerald-400 font-bold">Copied</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-3.5 h-3.5 text-slate-200" />
-                      <span>Copy</span>
-                    </>
-                  )}
-                </button>
-              ) : (
-                <span className="text-[11px] text-slate-400 font-medium">Inactive</span>
-              )}
+                  {displayIp || (activeTab === 'ipv6' ? 'No IPv6 Detected' : ipData?.ip || 'Resolving...')}
+                </span>
+
+                {displayIp && (
+                  <button
+                    type="button"
+                    onClick={() => copyToClipboard(displayIp, 'main-ip')}
+                    className={`inline-flex items-center px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all active:scale-95 cursor-pointer ${
+                      copied === 'main-ip'
+                        ? 'bg-emerald-500 text-white'
+                        : isDark
+                          ? 'bg-[#1E50F2] hover:bg-[#1945D4] text-white shadow-xs'
+                          : 'bg-slate-900 hover:bg-black text-white shadow-xs'
+                    }`}
+                  >
+                    {copied === 'main-ip' ? 'Copied' : 'Copy IP'}
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Quick Copy cURL helper */}
+          {displayIp && (
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => copyToClipboard(`curl -s ${displayIp}`, 'curl-cmd')}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono font-medium transition-colors border cursor-pointer ${
+                  isDark
+                    ? 'bg-slate-900/80 hover:bg-slate-800 text-slate-300 border-slate-800'
+                    : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200/80'
+                }`}
+                title="Copy terminal command"
+              >
+                <span className="text-[#1E50F2] dark:text-sky-400 font-bold">$</span>
+                <span>{copied === 'curl-cmd' ? 'Copied' : 'curl command'}</span>
+              </button>
             </div>
           )}
         </div>
 
+        {/* Quick Metadata Bar (Flag • Location • Provider • ASN) */}
+        {!loading && ipData && (
+          <div className="flex flex-wrap items-center gap-2.5 pt-2 text-xs font-medium">
+            <span className="text-xl leading-none">{ipData.countryFlag}</span>
+            <span className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+              {ipData.city ? `${ipData.city}, ` : ''}{ipData.country}
+            </span>
+            <span className="text-slate-300 dark:text-slate-700">•</span>
+            <span className={isDark ? 'text-slate-300' : 'text-slate-700'}>{ipData.isp}</span>
+            <span className="text-slate-300 dark:text-slate-700">•</span>
+            <span className="font-mono text-[11px] text-slate-500 dark:text-slate-400">{ipData.asn}</span>
+          </div>
+        )}
       </div>
 
-      {/* Location Subline */}
-      {!loading && ipData && (
-        <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm text-slate-600 font-medium pt-3 border-t border-zinc-100">
-          <span className="text-xl leading-none">{ipData.countryFlag}</span>
-          <span className="font-bold text-slate-900">
-            {ipData.city}, {ipData.region}, {ipData.country}
-          </span>
-          <span className="text-slate-300">•</span>
-          <span className="text-slate-700 font-medium">{ipData.isp}</span>
-          <span className="text-slate-300">•</span>
-          <span className="text-slate-500 font-mono text-xs">{ipData.asn}</span>
-        </div>
-      )}
-
-    </div>
-  );
-}
-
-{/* DETAILS DASHBOARD COMPONENT (Rendered on clean light background below hero) */}
-export function IpDetailsDashboard() {
-  const {
-    ipData,
-    ipv4,
-    ipv6,
-    searchQuery,
-    setSearchQuery,
-    copied,
-    localTime,
-    history,
-    pingLatency,
-    testingPing,
-    openFaq,
-    setOpenFaq,
-    diagnostics,
-    fetchIpDetails,
-    copyToClipboard,
-    handleSearchSubmit,
-    testPing,
-    downloadReport,
-    clearHistory,
-    loading,
-  } = useIpStudioContext();
-
-  const presets = [
-    { label: 'Google DNS', ip: '8.8.8.8' },
-    { label: 'Cloudflare DNS', ip: '1.1.1.1' },
-    { label: 'Quad9', ip: '9.9.9.9' },
-    { label: 'OpenDNS', ip: '208.67.222.222' },
-  ];
-
-  const faqs = [
-    {
-      q: 'What is an IP address?',
-      a: 'An IP (Internet Protocol) address is a unique numerical or alphanumerical string assigned to every device connected to a computer network. It serves as your digital street address, allowing computers to send and receive data packets across the global Internet.',
-    },
-    {
-      q: 'What is the difference between IPv4 and IPv6?',
-      a: 'IPv4 uses 32-bit addresses formatted as four numbers separated by dots (e.g. 192.168.1.1), providing ~4.3 billion unique addresses. IPv6 uses 128-bit hexadecimal addresses separated by colons (e.g. 2001:0db8:85a3::8a2e:0370:7334), creating billions of trillions of addresses to accommodate modern devices.',
-    },
-    {
-      q: 'Can anyone find my exact street address from my IP address?',
-      a: 'No. IP geolocation only identifies your country, state/region, city, zip code area, and Internet Service Provider (ISP). It does NOT reveal your physical home address, name, or phone number.',
-    },
-    {
-      q: 'How can I hide or change my public IP address?',
-      a: 'You can mask or change your IP address by using a reputable Virtual Private Network (VPN), connecting through a proxy server, using the Tor browser, or using a mobile network hotspot.',
-    },
-    {
-      q: 'What are ISP and ASN?',
-      a: 'ISP stands for Internet Service Provider (the company giving you Internet access like Comcast, AT&T, or Airtel). ASN stands for Autonomous System Number, a globally unique identifier for a collection of routing prefixes maintained by a network operator.',
-    },
-  ];
-
-  return (
-    <div className="space-y-10">
-      
-      {/* 1. SEARCH & LOOKUP TOOL */}
-      <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <h3 className="text-xl font-bold text-slate-900 font-sans flex items-center gap-2">
-              <Search className="w-5 h-5 text-sky-600" />
-              IP &amp; Domain Lookup Tool
-            </h3>
-            <p className="text-xs text-slate-600 font-normal">
-              Enter any IPv4 address, IPv6 address, or website domain name to inspect full network details.
-            </p>
-          </div>
-
-          {/* Quick Presets */}
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Presets:</span>
-            {presets.map((p) => (
-              <button
-                key={p.ip}
-                type="button"
-                onClick={() => {
-                  setSearchQuery(p.ip);
-                  fetchIpDetails(p.ip);
-                }}
-                className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-zinc-100 hover:bg-sky-50 hover:text-sky-700 text-slate-700 transition-colors border border-zinc-200/80 cursor-pointer"
-              >
-                {p.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Search input form */}
-        <form onSubmit={handleSearchSubmit} className="flex flex-col sm:flex-row gap-3">
+      {/* Integrated Search & Lookup Bar */}
+      <div className="pt-5 border-t border-slate-200/70 dark:border-slate-800/60 space-y-3">
+        <form onSubmit={handleSearchSubmit} className="flex flex-col sm:flex-row gap-2.5">
           <div className="relative flex-1">
-            <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" />
             <input
-              id="ip-lookup-search-input"
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="e.g. 8.8.8.8, 1.1.1.1 or github.com"
-              aria-label="IP address or domain to lookup"
-              className="w-full pl-12 pr-4 py-3.5 text-sm rounded-2xl bg-zinc-50 border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white text-slate-900 font-mono transition-all"
+              placeholder="Lookup an IP address or hostname (e.g. 1.1.1.1 or github.com)..."
+              className={`w-full px-4 py-2.5 rounded-xl border text-xs font-mono transition-colors focus:outline-none focus:ring-2 focus:ring-[#1E50F2]/30 ${
+                isDark
+                  ? 'bg-slate-950/80 border-slate-800 text-white placeholder-slate-500 focus:border-[#1E50F2]'
+                  : 'bg-slate-50 border-slate-200/80 text-slate-900 placeholder-slate-400 focus:border-[#1E50F2]'
+              }`}
             />
           </div>
-          
+
           <button
             type="submit"
             disabled={loading || !searchQuery.trim()}
-            className="px-6 py-3.5 bg-slate-900 hover:bg-black text-white font-bold text-xs rounded-2xl transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+            className={`px-5 py-2.5 rounded-xl font-semibold text-xs transition-all active:scale-95 shadow-xs cursor-pointer disabled:opacity-50 ${
+              isDark
+                ? 'bg-white hover:bg-slate-100 text-slate-950'
+                : 'bg-slate-900 hover:bg-black text-white'
+            }`}
           >
-            <span>Lookup IP</span>
-            <ArrowRight className="w-4 h-4" />
+            Lookup
           </button>
 
           {searchQuery && (
@@ -744,469 +517,442 @@ export function IpDetailsDashboard() {
                 setSearchQuery('');
                 fetchIpDetails();
               }}
-              className="px-4 py-3.5 bg-zinc-100 hover:bg-zinc-200 text-slate-700 font-bold text-xs rounded-2xl transition-colors cursor-pointer"
+              className={`px-3.5 py-2.5 rounded-xl font-semibold text-xs border transition-colors cursor-pointer ${
+                isDark
+                  ? 'bg-slate-900 hover:bg-slate-800 text-slate-300 border-slate-800'
+                  : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200/80'
+              }`}
             >
-              My IP
+              Reset to My IP
             </button>
           )}
         </form>
 
-        {/* History Pills */}
-        {history.length > 0 && (
-          <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-zinc-100 text-xs">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="flex items-center gap-1 font-bold text-slate-500 text-[11px]">
-                <History className="w-3.5 h-3.5 text-slate-400" />
-                Recent Lookups:
-              </span>
-              {history.map((ip) => (
-                <button
-                  key={ip}
-                  type="button"
-                  onClick={() => {
-                    setSearchQuery(ip);
-                    fetchIpDetails(ip);
-                  }}
-                  className="px-2.5 py-1 text-xs font-mono font-medium rounded-full bg-slate-100 hover:bg-sky-100 hover:text-sky-800 text-slate-700 transition-colors cursor-pointer"
-                >
-                  {ip}
-                </button>
-              ))}
-            </div>
-
+        {/* Quick DNS Presets */}
+        <div className="flex flex-wrap items-center gap-2 text-[11px]">
+          <span className="font-semibold text-slate-500 dark:text-slate-400">DNS Presets:</span>
+          {[
+            { label: 'Cloudflare', ip: '1.1.1.1' },
+            { label: 'Google DNS', ip: '8.8.8.8' },
+            { label: 'Quad9', ip: '9.9.9.9' },
+          ].map((preset) => (
             <button
+              key={preset.ip}
               type="button"
-              onClick={clearHistory}
-              className="text-[11px] text-zinc-400 hover:text-rose-600 font-medium underline cursor-pointer"
+              onClick={() => {
+                setSearchQuery(preset.ip);
+                fetchIpDetails(preset.ip);
+              }}
+              className={`px-2.5 py-0.5 rounded-lg border font-mono transition-colors cursor-pointer ${
+                isDark
+                  ? 'bg-slate-900/60 hover:bg-slate-800 text-slate-300 border-slate-800'
+                  : 'bg-slate-50 hover:bg-blue-50 text-slate-700 border-slate-200/80 hover:border-blue-200'
+              }`}
             >
-              Clear History
+              {preset.label} <span className="text-[10px] text-slate-400">({preset.ip})</span>
             </button>
-          </div>
-        )}
-      </div>
-
-      {/* 2. DETAILED INFORMATION GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        
-        {/* CARD 1: GEOLOCATION & LOCATION */}
-        <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 space-y-4 shadow-sm flex flex-col justify-between">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
-              <div className="flex items-center gap-2">
-                <div className="w-9 h-9 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center font-bold">
-                  <MapPin className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-bold text-slate-900">Location Data</h4>
-                  <p className="text-[11px] text-slate-500 font-normal">Geographic coordinates</p>
-                </div>
-              </div>
-              <span className="text-2xl">{ipData?.countryFlag || '🌐'}</span>
-            </div>
-
-            <div className="space-y-3 text-xs">
-              <div className="flex items-center justify-between py-1 border-b border-zinc-50">
-                <span className="text-slate-500 font-medium">Country</span>
-                <span className="font-bold text-slate-900">{ipData?.country} ({ipData?.countryCode})</span>
-              </div>
-
-              <div className="flex items-center justify-between py-1 border-b border-zinc-50">
-                <span className="text-slate-500 font-medium">Region / State</span>
-                <span className="font-bold text-slate-900">{ipData?.region || 'N/A'}</span>
-              </div>
-
-              <div className="flex items-center justify-between py-1 border-b border-zinc-50">
-                <span className="text-slate-500 font-medium">City</span>
-                <span className="font-bold text-slate-900">{ipData?.city || 'N/A'}</span>
-              </div>
-
-              <div className="flex items-center justify-between py-1 border-b border-zinc-50">
-                <span className="text-slate-500 font-medium">Postal / Zip Code</span>
-                <span className="font-mono font-bold text-slate-900">{ipData?.postal || 'N/A'}</span>
-              </div>
-
-              <div className="flex items-center justify-between py-1 border-b border-zinc-50">
-                <span className="text-slate-500 font-medium">Coordinates</span>
-                <span className="font-mono font-bold text-slate-900">
-                  {ipData?.latitude?.toFixed(4)}, {ipData?.longitude?.toFixed(4)}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between py-1">
-                <span className="text-slate-500 font-medium">Timezone</span>
-                <span className="font-bold text-slate-900 flex items-center gap-1">
-                  <Clock className="w-3.5 h-3.5 text-sky-600" />
-                  {ipData?.timezone || 'UTC'}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {localTime && (
-            <div className="pt-3 border-t border-zinc-100 flex items-center justify-between bg-sky-50/60 -mx-6 -mb-6 p-4 rounded-b-3xl text-xs">
-              <span className="text-sky-900 font-semibold flex items-center gap-1.5">
-                <Clock className="w-4 h-4 text-sky-600" />
-                IP Local Time:
-              </span>
-              <span className="font-mono font-bold text-sky-900 text-sm">{localTime}</span>
-            </div>
-          )}
+          ))}
         </div>
+      </div>
+    </div>
+  );
+}
 
-        {/* CARD 2: NETWORK & ISP */}
-        <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 space-y-4 shadow-sm flex flex-col justify-between">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
-              <div className="flex items-center gap-2">
-                <div className="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">
-                  <Wifi className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-bold text-slate-900">Network &amp; Provider</h4>
-                  <p className="text-[11px] text-slate-500 font-normal">ISP &amp; ASN info</p>
-                </div>
+// ─────────────────────────────────────────────────────────────────────────────
+// DETAILS DASHBOARD: 2-COLUMN NETWORK & GEOLOCATION WORKBENCH
+// ─────────────────────────────────────────────────────────────────────────────
+export function IpDetailsDashboard() {
+  const { theme } = useHeroTheme();
+  const isDark = theme === 'dark';
+
+  const {
+    ipData,
+    ipv4,
+    ipv6,
+    copied,
+    localTime,
+    copyToClipboard,
+    downloadReport,
+    openFaq,
+    setOpenFaq,
+  } = useIpStudioContext();
+
+  const faqs = [
+    {
+      q: 'What is a public IP address?',
+      a: 'A public IP address is an identifier assigned to your network connection by your Internet Service Provider (ISP). It enables web servers to deliver images, websites, and data back to your device across the internet.',
+    },
+    {
+      q: 'How accurate is IP geolocation?',
+      a: 'IP geolocation estimates your location based on your ISP routing hubs. It accurately identifies your country, state/region, and city, but it cannot pinpoint your exact street address or home coordinates.',
+    },
+    {
+      q: 'What is the difference between IPv4 and IPv6?',
+      a: 'IPv4 uses 32-bit addresses formatted as four dot-separated numbers (e.g., 192.0.2.1). IPv6 is the modern standard with 128-bit hexadecimal addresses (e.g., 2001:db8::1) created to provide virtually limitless unique addresses.',
+    },
+    {
+      q: 'How can I keep my IP address private?',
+      a: 'You can mask your public IP address by connecting through a Virtual Private Network (VPN), an encrypted proxy server, or by tethering to mobile cellular data.',
+    },
+  ];
+
+  return (
+    <div className="space-y-8">
+      {/* 2-Column Core Workbench: Left Specs + Right Geolocation Map */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        {/* LEFT: Complete Network, Geolocation & Security Specs (7 cols) */}
+        <div
+          className={`lg:col-span-7 rounded-[2rem] p-6 sm:p-7 border transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col justify-between space-y-6 ${
+            isDark
+              ? 'bg-[#0B101D] border-slate-800/80 text-white'
+              : 'bg-white border-slate-200/80 text-slate-900'
+          }`}
+        >
+          <div className="space-y-6">
+            {/* Section Header */}
+            <div className="flex items-center justify-between pb-4 border-b border-slate-200/70 dark:border-slate-800/60">
+              <div>
+                <h3 className="font-bold text-sm tracking-tight font-sans">
+                  Network &amp; Geolocation Specs
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-normal">
+                  Technical attributes reported by your internet connection
+                </p>
               </div>
-              <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 font-mono text-[10px] font-bold">
-                {ipData?.type || 'IPv4'}
-              </span>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => downloadReport('json')}
+                  disabled={!ipData}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-colors cursor-pointer disabled:opacity-50 ${
+                    isDark
+                      ? 'bg-slate-900 hover:bg-slate-800 text-slate-300 border-slate-800'
+                      : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200/80'
+                  }`}
+                  title="Export JSON"
+                >
+                  Export JSON
+                </button>
+                <button
+                  type="button"
+                  onClick={() => downloadReport('txt')}
+                  disabled={!ipData}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-colors cursor-pointer disabled:opacity-50 ${
+                    isDark
+                      ? 'bg-slate-900 hover:bg-slate-800 text-slate-300 border-slate-800'
+                      : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200/80'
+                  }`}
+                  title="Export TXT"
+                >
+                  Export TXT
+                </button>
+              </div>
             </div>
 
-            <div className="space-y-3 text-xs">
-              <div className="flex items-center justify-between py-1 border-b border-zinc-50">
-                <span className="text-slate-500 font-medium">IPv4 Address</span>
-                <span className="font-mono font-bold text-slate-900 truncate max-w-[140px]">
-                  {ipv4 || 'N/A'}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between py-1 border-b border-zinc-50">
-                <span className="text-slate-500 font-medium">ISP Provider</span>
-                <span className="font-bold text-slate-900 truncate max-w-[140px]" title={ipData?.isp}>
+            {/* Structured Specifications Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3.5 text-xs">
+              {/* Row 1 */}
+              <div className="flex justify-between items-center py-1 border-b border-slate-100 dark:border-slate-800/40">
+                <span className="text-slate-500 dark:text-slate-400 font-medium">Internet Provider</span>
+                <span className="font-semibold text-slate-900 dark:text-white truncate max-w-[150px]" title={ipData?.isp}>
                   {ipData?.isp || 'Unknown'}
                 </span>
               </div>
 
-              <div className="flex items-center justify-between py-1 border-b border-zinc-50">
-                <span className="text-slate-500 font-medium">Organization</span>
-                <span className="font-bold text-slate-900 truncate max-w-[140px]" title={ipData?.org}>
-                  {ipData?.org || 'Unknown'}
+              <div className="flex justify-between items-center py-1 border-b border-slate-100 dark:border-slate-800/40">
+                <span className="text-slate-500 dark:text-slate-400 font-medium">ASN</span>
+                <span className="font-mono font-semibold text-slate-900 dark:text-white">
+                  {ipData?.asn || 'N/A'}
                 </span>
               </div>
 
-              <div className="flex items-center justify-between py-1 border-b border-zinc-50">
-                <span className="text-slate-500 font-medium">ASN</span>
-                <span className="font-mono font-bold text-slate-900">{ipData?.asn || 'N/A'}</span>
-              </div>
-
-              <div className="flex items-center justify-between py-1 border-b border-zinc-50">
-                <span className="text-slate-500 font-medium">Connection Type</span>
-                <span className="font-bold text-slate-900">{ipData?.connectionType || 'Broadband'}</span>
-              </div>
-
-              <div className="flex items-center justify-between py-1">
-                <span className="text-slate-500 font-medium">Hostname</span>
-                <span className="font-mono font-bold text-slate-900 truncate max-w-[140px]" title={ipData?.hostname}>
-                  {ipData?.hostname || 'N/A'}
+              {/* Row 2 */}
+              <div className="flex justify-between items-center py-1 border-b border-slate-100 dark:border-slate-800/40">
+                <span className="text-slate-500 dark:text-slate-400 font-medium">Country</span>
+                <span className="font-semibold text-slate-900 dark:text-white flex items-center gap-1.5">
+                  <span>{ipData?.countryFlag}</span>
+                  <span>{ipData?.country || 'Unknown'}</span>
                 </span>
+              </div>
+
+              <div className="flex justify-between items-center py-1 border-b border-slate-100 dark:border-slate-800/40">
+                <span className="text-slate-500 dark:text-slate-400 font-medium">City &amp; Region</span>
+                <span className="font-semibold text-slate-900 dark:text-white truncate max-w-[150px]">
+                  {ipData?.city ? `${ipData.city}, ` : ''}{ipData?.region || 'N/A'}
+                </span>
+              </div>
+
+              {/* Row 3 */}
+              <div className="flex justify-between items-center py-1 border-b border-slate-100 dark:border-slate-800/40">
+                <span className="text-slate-500 dark:text-slate-400 font-medium">Postal Code</span>
+                <span className="font-mono font-semibold text-slate-900 dark:text-white">
+                  {ipData?.postal || 'N/A'}
+                </span>
+              </div>
+
+              <div className="flex justify-between items-center py-1 border-b border-slate-100 dark:border-slate-800/40">
+                <span className="text-slate-500 dark:text-slate-400 font-medium">Coordinates</span>
+                <span className="font-mono font-semibold text-slate-900 dark:text-white">
+                  {ipData?.latitude ? `${ipData.latitude.toFixed(3)}, ${ipData.longitude?.toFixed(3)}` : 'N/A'}
+                </span>
+              </div>
+
+              {/* Row 4 */}
+              <div className="flex justify-between items-center py-1 border-b border-slate-100 dark:border-slate-800/40">
+                <span className="text-slate-500 dark:text-slate-400 font-medium">Timezone</span>
+                <span className="font-semibold text-slate-900 dark:text-white">
+                  {ipData?.timezone || 'UTC'}
+                </span>
+              </div>
+
+              <div className="flex justify-between items-center py-1 border-b border-slate-100 dark:border-slate-800/40">
+                <span className="text-slate-500 dark:text-slate-400 font-medium">Local Clock</span>
+                <span className="font-mono font-semibold text-[#1E50F2] dark:text-sky-400">
+                  {localTime || 'Synchronizing...'}
+                </span>
+              </div>
+            </div>
+
+            {/* Security Status Badges Grid */}
+            <div className="space-y-2 pt-2">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                Connection Security Checks
+              </span>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                <div className="p-3 rounded-xl border border-slate-200/70 dark:border-slate-800/60 bg-slate-50/60 dark:bg-slate-900/40 space-y-1">
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Proxy</span>
+                  <div className="text-xs font-bold text-slate-900 dark:text-white">
+                    {ipData?.security?.isProxy ? 'Detected' : 'None'}
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-xl border border-slate-200/70 dark:border-slate-800/60 bg-slate-50/60 dark:bg-slate-900/40 space-y-1">
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">VPN</span>
+                  <div className="text-xs font-bold text-slate-900 dark:text-white">
+                    {ipData?.security?.isVpn ? 'Active' : 'None'}
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-xl border border-slate-200/70 dark:border-slate-800/60 bg-slate-50/60 dark:bg-slate-900/40 space-y-1">
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Tor Node</span>
+                  <div className="text-xs font-bold text-slate-900 dark:text-white">
+                    {ipData?.security?.isTor ? 'Yes' : 'Clean'}
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-xl border border-slate-200/70 dark:border-slate-800/60 bg-slate-50/60 dark:bg-slate-900/40 space-y-1">
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Network Type</span>
+                  <div className="text-xs font-bold text-slate-900 dark:text-white">
+                    {ipData?.security?.isHosting ? 'Hosting' : 'Residential'}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
+          {/* Quick Copy summary button */}
           <button
             type="button"
-            onClick={() => ipData?.ip && copyToClipboard(`IPv4: ${ipv4 || 'N/A'} | IPv6: ${ipv6 || 'N/A'} | ISP: ${ipData.isp} (${ipData.asn})`, 'isp-info')}
-            className="w-full py-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold text-xs transition-colors border border-zinc-200/80 cursor-pointer flex items-center justify-center gap-1.5"
+            onClick={() => {
+              if (ipData?.ip) {
+                copyToClipboard(
+                  `IP: ${ipData.ip} | Location: ${ipData.city}, ${ipData.country} | ISP: ${ipData.isp} (${ipData.asn})`,
+                  'summary-copy'
+                );
+              }
+            }}
+            className={`w-full py-2.5 rounded-xl text-xs font-semibold border transition-colors cursor-pointer flex items-center justify-center ${
+              isDark
+                ? 'bg-slate-900 hover:bg-slate-800 text-slate-300 border-slate-800'
+                : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200/80'
+            }`}
           >
-            <Copy className="w-3.5 h-3.5 text-slate-500" />
-            <span>{copied === 'isp-info' ? 'Copied Network Info!' : 'Copy Network Details'}</span>
+            {copied === 'summary-copy' ? 'Copied to Clipboard!' : 'Copy Summary Specs'}
           </button>
         </div>
 
-        {/* CARD 3: SECURITY & PRIVACY */}
-        <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 space-y-4 shadow-sm flex flex-col justify-between">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
-              <div className="flex items-center gap-2">
-                <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
-                  <Shield className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-bold text-slate-900">Security &amp; Privacy</h4>
-                  <p className="text-[11px] text-slate-500 font-normal">Proxy, VPN &amp; Bot check</p>
-                </div>
-              </div>
-
-              {ipData?.security?.isVpn || ipData?.security?.isProxy ? (
-                <span className="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold text-[10px]">
-                  Masked
-                </span>
-              ) : (
-                <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">
-                  Clean
-                </span>
-              )}
-            </div>
-
-            <div className="space-y-3 text-xs">
-              <div className="flex items-center justify-between py-1 border-b border-zinc-50">
-                <span className="text-slate-500 font-medium">Proxy Server</span>
-                <span className={`font-bold ${ipData?.security?.isProxy ? 'text-amber-600' : 'text-emerald-600'}`}>
-                  {ipData?.security?.isProxy ? 'Yes (Detected)' : 'No (Direct)'}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between py-1 border-b border-zinc-50">
-                <span className="text-slate-500 font-medium">VPN Tunnel</span>
-                <span className={`font-bold ${ipData?.security?.isVpn ? 'text-amber-600' : 'text-emerald-600'}`}>
-                  {ipData?.security?.isVpn ? 'Yes (Detected)' : 'No (Direct)'}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between py-1 border-b border-zinc-50">
-                <span className="text-slate-500 font-medium">Tor Exit Node</span>
-                <span className={`font-bold ${ipData?.security?.isTor ? 'text-rose-600' : 'text-emerald-600'}`}>
-                  {ipData?.security?.isTor ? 'Yes (Detected)' : 'No (Clean)'}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between py-1 border-b border-zinc-50">
-                <span className="text-slate-500 font-medium">Datacenter / Hosting</span>
-                <span className={`font-bold ${ipData?.security?.isHosting ? 'text-indigo-600' : 'text-slate-700'}`}>
-                  {ipData?.security?.isHosting ? 'Hosting / Server' : 'Residential / ISP'}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between py-1">
-                <span className="text-slate-500 font-medium">Overall Threat Score</span>
-                <span className="font-bold text-emerald-600 flex items-center gap-1">
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                  Low Risk
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="p-3 bg-zinc-50 rounded-2xl text-[11px] text-slate-600 leading-relaxed font-normal">
-            💡 Your IP address is visible to websites you visit unless you use an encrypted VPN or proxy server.
-          </div>
-        </div>
-
-      </div>
-
-      {/* 3. GEOLOCATION MAP & LATENCY TEST */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        {/* MAP DISPLAY (2 Cols) */}
-        <div className="lg:col-span-2 bg-white border border-zinc-200/80 rounded-3xl p-6 space-y-4 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-xl font-bold text-slate-900 font-sans flex items-center gap-2">
-                <Compass className="w-5 h-5 text-sky-600" />
-                IP Geolocation Map
-              </h3>
-              <p className="text-xs text-slate-600 font-normal">
-                Visual interactive location view based on IP latitude ({ipData?.latitude}) and longitude ({ipData?.longitude}).
-              </p>
-            </div>
-
-            {ipData?.latitude && ipData?.longitude && (
-              <a
-                href={`https://www.openstreetmap.org/?mlat=${ipData.latitude}&mlon=${ipData.longitude}#map=12/${ipData.latitude}/${ipData.longitude}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-sky-700 bg-sky-50 hover:bg-sky-100 rounded-xl transition-colors"
-              >
-                <span>Open map</span>
-                <ExternalLink className="w-3.5 h-3.5" />
-              </a>
-            )}
-          </div>
-
-          {/* OpenStreetMap Iframe Embed */}
-          <div className="w-full h-80 rounded-2xl overflow-hidden border border-zinc-200 relative bg-slate-100">
-            {ipData?.latitude && ipData?.longitude ? (
-              <iframe
-                title="IP Location Map"
-                width="100%"
-                height="100%"
-                frameBorder="0"
-                scrolling="no"
-                src={`https://www.openstreetmap.org/export/embed.html?bbox=${ipData.longitude - 0.05}%2C${ipData.latitude - 0.05}%2C${ipData.longitude + 0.05}%2C${ipData.latitude + 0.05}&layer=mapnik&marker=${ipData.latitude}%2C${ipData.longitude}`}
-                className="w-full h-full"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs font-semibold">
-                Map coordinates loading...
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* LATENCY / SPEED TEST & EXPORT (1 Col) */}
-        <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 space-y-6 shadow-sm flex flex-col justify-between">
-          
-          {/* Latency Test */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 pb-3 border-b border-zinc-100">
-              <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold">
-                <Activity className="w-5 h-5" />
-              </div>
+        {/* RIGHT: Interactive Geolocation Map (5 cols) */}
+        <div
+          className={`lg:col-span-5 rounded-[2rem] p-6 sm:p-7 border transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col justify-between space-y-4 ${
+            isDark
+              ? 'bg-[#0B101D] border-slate-800/80 text-white'
+              : 'bg-white border-slate-200/80 text-slate-900'
+          }`}
+        >
+          <div className="space-y-3">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200/70 dark:border-slate-800/60">
               <div>
-                <h4 className="text-sm font-bold text-slate-900">Network Latency Test</h4>
-                <p className="text-[11px] text-slate-500 font-normal">Ping round-trip response time</p>
+                <h3 className="font-bold text-sm tracking-tight font-sans">
+                  Geolocation Map
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-normal">
+                  Approximate routing coordinates
+                </p>
               </div>
+
+              {ipData?.latitude && ipData?.longitude && (
+                <a
+                  href={`https://www.openstreetmap.org/?mlat=${ipData.latitude}&mlon=${ipData.longitude}#map=12/${ipData.latitude}/${ipData.longitude}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs font-semibold text-[#1E50F2] dark:text-sky-400 hover:underline"
+                >
+                  Open Full Map ↗
+                </a>
+              )}
             </div>
 
-            <div className="p-4 bg-zinc-50 rounded-2xl text-center space-y-3">
-              <div className="text-xs text-slate-500 font-medium">Average Round-Trip Ping</div>
-              <div className="text-4xl font-black text-slate-900 font-mono">
-                {testingPing ? (
-                  <span className="text-amber-500 animate-pulse">Testing...</span>
-                ) : pingLatency !== null ? (
-                  `${pingLatency} ms`
-                ) : (
-                  '--'
-                )}
-              </div>
-
-              {pingLatency !== null && (
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
-                  <Zap className="w-3.5 h-3.5" />
-                  {pingLatency < 80 ? 'Ultra Low Latency' : pingLatency < 200 ? 'Good Latency' : 'Standard Speed'}
+            {/* Embedded OpenStreetMap Preview */}
+            <div className="w-full h-64 sm:h-72 rounded-2xl overflow-hidden border border-slate-200/80 dark:border-slate-800/80 relative bg-slate-100 dark:bg-slate-950">
+              {ipData?.latitude && ipData?.longitude ? (
+                <iframe
+                  title="IP Location Map"
+                  width="100%"
+                  height="100%"
+                  frameBorder="0"
+                  scrolling="no"
+                  src={`https://www.openstreetmap.org/export/embed.html?bbox=${ipData.longitude - 0.05}%2C${ipData.latitude - 0.05}%2C${ipData.longitude + 0.05}%2C${ipData.latitude + 0.05}&layer=mapnik&marker=${ipData.latitude}%2C${ipData.longitude}`}
+                  className="w-full h-full"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-xs text-slate-400 font-medium">
+                  Loading map coordinates...
                 </div>
               )}
-
-              <button
-                type="button"
-                onClick={testPing}
-                disabled={testingPing}
-                className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-black text-white font-bold text-xs transition-all active:scale-95 shadow-sm cursor-pointer disabled:opacity-50"
-              >
-                {testingPing ? 'Measuring Ping...' : 'Run Latency Test'}
-              </button>
             </div>
           </div>
 
-          {/* Export Report Options */}
-          <div className="space-y-3 pt-4 border-t border-zinc-100">
-            <div className="text-xs font-bold text-slate-900">Export IP Report</div>
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={() => downloadReport('txt')}
-                disabled={!ipData}
-                className="py-2.5 px-3 rounded-xl bg-zinc-100 hover:bg-zinc-200 text-slate-800 font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
-              >
-                <Download className="w-3.5 h-3.5 text-slate-600" />
-                <span>TXT Report</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => downloadReport('json')}
-                disabled={!ipData}
-                className="py-2.5 px-3 rounded-xl bg-zinc-100 hover:bg-zinc-200 text-slate-800 font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
-              >
-                <Download className="w-3.5 h-3.5 text-slate-600" />
-                <span>JSON File</span>
-              </button>
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-
-      {/* 4. BROWSER & SYSTEM DIAGNOSTICS */}
-      {diagnostics && (
-        <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-zinc-100">
-            <div>
-              <h3 className="text-xl font-bold text-slate-900 font-sans flex items-center gap-2">
-                <Monitor className="w-5 h-5 text-indigo-600" />
-                My Device &amp; Browser Diagnostics
-              </h3>
-              <p className="text-xs text-slate-600 font-normal">
-                Technical browser fingerprint metadata transmitted to websites during request headers.
-              </p>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => copyToClipboard(diagnostics.userAgent, 'ua-copy')}
-              className="px-3.5 py-2 rounded-xl bg-zinc-100 hover:bg-zinc-200 text-slate-700 font-semibold text-xs transition-colors flex items-center gap-1.5 cursor-pointer"
-            >
-              <Copy className="w-3.5 h-3.5 text-slate-500" />
-              <span>{copied === 'ua-copy' ? 'User Agent Copied!' : 'Copy User Agent'}</span>
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs">
-            
-            <div className="p-4 bg-zinc-50 rounded-2xl space-y-1">
-              <div className="text-slate-500 font-medium">Browser</div>
-              <div className="font-bold text-slate-900 text-sm">{diagnostics.browser}</div>
-            </div>
-
-            <div className="p-4 bg-zinc-50 rounded-2xl space-y-1">
-              <div className="text-slate-500 font-medium">Operating System</div>
-              <div className="font-bold text-slate-900 text-sm">{diagnostics.os}</div>
-            </div>
-
-            <div className="p-4 bg-zinc-50 rounded-2xl space-y-1">
-              <div className="text-slate-500 font-medium">Screen Resolution</div>
-              <div className="font-mono font-bold text-slate-900 text-sm">{diagnostics.screenResolution}</div>
-            </div>
-
-            <div className="p-4 bg-zinc-50 rounded-2xl space-y-1">
-              <div className="text-slate-500 font-medium">System Language</div>
-              <div className="font-bold text-slate-900 text-sm">{diagnostics.language}</div>
-            </div>
-
-          </div>
-
-          <div className="p-4 bg-slate-900 text-slate-300 rounded-2xl space-y-2">
-            <div className="text-[11px] font-bold uppercase tracking-wider text-sky-400 font-mono">
-              Raw User Agent String
-            </div>
-            <div className="font-mono text-xs break-all leading-relaxed bg-black/40 p-3 rounded-xl border border-slate-800 text-slate-200">
-              {diagnostics.userAgent}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 5. FAQ ACCORDION SECTION */}
-      <div className="bg-white border border-zinc-200/80 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
-        <div className="space-y-2">
-          <h3 className="text-xl sm:text-2xl font-black text-slate-900 font-sans flex items-center gap-2">
-            <HelpCircle className="w-6 h-6 text-sky-600" />
-            Frequently Asked Questions about IP Addresses
-          </h3>
-          <p className="text-xs sm:text-sm text-slate-600 font-normal">
-            Everything you need to know about IPv4, IPv6, location tracking, and online privacy.
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 font-normal leading-relaxed">
+            Note: IP-based geolocation maps to your ISP provider’s regional hub rather than a physical street address.
           </p>
         </div>
 
-        <div className="space-y-3">
+      </div>
+
+      {/* ─────────────────────────────────────────────────────────────────── */}
+      {/* 3 SHOWCASE FEATURE CARDS (Matching CropMyImages Studio aesthetic) */}
+      {/* ─────────────────────────────────────────────────────────────────── */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-slate-200/70 dark:border-white/10">
+        
+        {/* Card 1: Dual-Stack Resolution */}
+        <div
+          className={`rounded-[2rem] p-6 border transition-all duration-300 flex flex-col justify-between shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:-translate-y-0.5 ${
+            isDark
+              ? 'bg-[#0B101D] border-slate-800/80 text-white'
+              : 'bg-white border-slate-200/70 text-slate-900'
+          }`}
+        >
+          <div className="space-y-3">
+            <span className="inline-block text-[10px] font-mono font-bold tracking-wider uppercase px-2 py-0.5 rounded-md border text-[#1E50F2] bg-blue-50 border-blue-200/60 dark:text-sky-300 dark:bg-blue-950/60 dark:border-blue-800/50">
+              Protocol Telemetry
+            </span>
+            <h4 className="font-body font-sans font-bold text-sm tracking-tight text-slate-900 dark:text-white">
+              Dual-Stack IPv4 &amp; IPv6
+            </h4>
+            <p className="text-xs text-slate-600 dark:text-slate-300 font-normal leading-relaxed">
+              Detects both legacy IPv4 and modern IPv6 addresses simultaneously, with automatic protocol classification.
+            </p>
+          </div>
+        </div>
+
+        {/* Card 2: Privacy Guarantee */}
+        <div
+          className={`rounded-[2rem] p-6 border transition-all duration-300 flex flex-col justify-between shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:-translate-y-0.5 ${
+            isDark
+              ? 'bg-[#0B101D] border-slate-800/80 text-white'
+              : 'bg-white border-slate-200/70 text-slate-900'
+          }`}
+        >
+          <div className="space-y-3">
+            <span className="inline-block text-[10px] font-mono font-bold tracking-wider uppercase px-2 py-0.5 rounded-md border text-emerald-700 bg-emerald-50 border-emerald-200/60 dark:text-emerald-300 dark:bg-emerald-950/60 dark:border-emerald-800/50">
+              Zero Retention
+            </span>
+            <h4 className="font-body font-sans font-bold text-sm tracking-tight text-slate-900 dark:text-white">
+              Zero Query Logging
+            </h4>
+            <p className="text-xs text-slate-600 dark:text-slate-300 font-normal leading-relaxed">
+              Your lookups are queried in real time. We never retain, store, or profile your personal IP address or search history.
+            </p>
+          </div>
+        </div>
+
+        {/* Card 3: ISP & Routing Health */}
+        <div
+          className={`rounded-[2rem] p-6 border transition-all duration-300 flex flex-col justify-between shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:-translate-y-0.5 ${
+            isDark
+              ? 'bg-[#0B101D] border-slate-800/80 text-white'
+              : 'bg-white border-slate-200/70 text-slate-900'
+          }`}
+        >
+          <div className="space-y-3">
+            <span className="inline-block text-[10px] font-mono font-bold tracking-wider uppercase px-2 py-0.5 rounded-md border text-purple-700 bg-purple-50 border-purple-200/60 dark:text-purple-300 dark:bg-purple-950/60 dark:border-purple-800/50">
+              ASN &amp; Routing
+            </span>
+            <h4 className="font-body font-sans font-bold text-sm tracking-tight text-slate-900 dark:text-white">
+              ISP &amp; Autonomous Systems
+            </h4>
+            <p className="text-xs text-slate-600 dark:text-slate-300 font-normal leading-relaxed">
+              Inspect your autonomous system numbers (ASN), Internet Service Provider routing nodes, and proxy status in one click.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      {/* ─────────────────────────────────────────────────────────────────── */}
+      {/* FAQ SECTION (Clean accordion with natural, helpful answers) */}
+      {/* ─────────────────────────────────────────────────────────────────── */}
+      <div
+        className={`rounded-[2rem] p-6 sm:p-8 border transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.03)] space-y-6 ${
+          isDark
+            ? 'bg-[#0B101D] border-slate-800/80 text-white'
+            : 'bg-white border-slate-200/80 text-slate-900'
+        }`}
+      >
+        <div className="space-y-1">
+          <h3 className="font-body font-sans font-bold text-base sm:text-lg tracking-tight text-slate-900 dark:text-white">
+            Frequently Asked Questions
+          </h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400 font-normal">
+            Helpful answers on public IP addresses, geolocation, and online privacy
+          </p>
+        </div>
+
+        <div className="space-y-2.5">
           {faqs.map((faq, index) => {
             const isOpen = openFaq === index;
             return (
               <div
                 key={faq.q}
-                className="border border-zinc-200/80 rounded-2xl overflow-hidden transition-all"
+                className="rounded-xl border border-slate-200/70 dark:border-slate-800/60 overflow-hidden transition-colors"
               >
                 <button
                   type="button"
                   onClick={() => setOpenFaq(isOpen ? null : index)}
-                  className="w-full p-4 text-left font-bold text-sm text-slate-900 flex items-center justify-between bg-zinc-50/50 hover:bg-zinc-100/80 transition-colors cursor-pointer"
+                  className={`w-full p-4 text-left font-semibold text-xs sm:text-sm flex items-center justify-between transition-colors cursor-pointer ${
+                    isDark
+                      ? 'bg-slate-950/40 hover:bg-slate-900/60 text-white'
+                      : 'bg-slate-50/70 hover:bg-slate-100/80 text-slate-900'
+                  }`}
                 >
                   <span>{faq.q}</span>
-                  <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${isOpen ? 'rotate-180 text-slate-900' : ''}`} />
+                  <svg
+                    className={`w-4 h-4 transition-transform duration-200 text-slate-400 ${
+                      isOpen ? 'rotate-180 text-[#1E50F2] dark:text-sky-400' : ''
+                    }`}
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
                 </button>
 
                 {isOpen && (
-                  <div className="p-4 bg-white text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-zinc-100 animate-in fade-in duration-150">
+                  <div className="p-4 text-xs leading-relaxed text-slate-600 dark:text-slate-300 border-t border-slate-200/60 dark:border-slate-800/60 bg-white dark:bg-slate-900/30">
                     {faq.a}
                   </div>
                 )}
@@ -1220,11 +966,82 @@ export function IpDetailsDashboard() {
   );
 }
 
-{/* Default component wrapper if rendered directly */}
+// ─────────────────────────────────────────────────────────────────────────────
+// FULL PAGE VIEW (With Navbar, Sky Cloud Hero, and Footer)
+// ─────────────────────────────────────────────────────────────────────────────
+export function WhatIsMyIpView() {
+  const { theme } = useHeroTheme();
+  const isDark = theme === 'dark';
+
+  return (
+    <IpStudioProvider>
+      <div
+        className={`ip-page-container min-h-screen flex flex-col font-sans transition-colors duration-300 ${
+          isDark
+            ? 'bg-[#060913] text-slate-100 selection:bg-sky-500 selection:text-white'
+            : 'bg-[#F8FAFC] text-slate-900 selection:bg-slate-900 selection:text-white'
+        }`}
+      >
+        <main className="flex-1 w-full">
+          {/* HERO SECTION WITH CLOUD BACKDROP */}
+          <div
+            className={`relative bg-sky-cloud-hero border-b overflow-hidden min-h-screen flex flex-col justify-between transition-colors duration-300 ${
+              isDark ? 'border-white/10' : 'border-zinc-200/60'
+            }`}
+          >
+            <div>
+              <Navbar />
+
+              <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-2">
+                <AdBanner slot="top-landing-leaderboard" format="horizontal" label="Advertisement" />
+              </div>
+
+              {/* CLEAN, AUTHENTIC HERO HEADLINE */}
+              <section className="pt-6 pb-6 px-4 sm:px-6 lg:px-8 text-center">
+                <div className="max-w-3xl mx-auto space-y-3">
+                  <h1
+                    className={`text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight font-heading transition-colors ${
+                      isDark ? 'text-white' : 'text-slate-900'
+                    }`}
+                  >
+                    What is my IP address?
+                  </h1>
+
+                  <p
+                    className={`text-sm sm:text-base max-w-lg mx-auto font-normal leading-relaxed transition-colors ${
+                      isDark ? 'text-slate-300' : 'text-slate-600'
+                    }`}
+                  >
+                    Check your public IP, internet service provider, approximate location, and connection security in real time.
+                  </p>
+                </div>
+              </section>
+
+              {/* MAIN HERO IP STUDIO */}
+              <div id="ip-studio" className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pb-12 scroll-mt-6">
+                <IpHeroCard />
+              </div>
+            </div>
+          </div>
+
+          {/* DASHBOARD DETAILS, MAP & FAQ SECTION */}
+          <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <IpDetailsDashboard />
+          </div>
+
+        </main>
+
+        <Footer />
+      </div>
+    </IpStudioProvider>
+  );
+}
+
+// Standalone export wrapper
 export function IpStudio() {
   return (
     <IpStudioProvider>
-      <div className="space-y-10">
+      <div className="space-y-8">
         <IpHeroCard />
         <IpDetailsDashboard />
       </div>

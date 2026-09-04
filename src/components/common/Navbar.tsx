@@ -178,13 +178,9 @@ export function Navbar() {
               <Link
                 href="/blog"
                 className={`inline-flex items-center gap-1.5 px-4 py-1.5 text-xs rounded-full transition-all cursor-pointer ${
-                  pathname.startsWith('/blog') || isBlogMegaOpen
-                    ? isDark
-                      ? 'bg-white text-slate-950 font-bold shadow-sm'
-                      : 'bg-slate-900 text-white font-bold shadow-sm'
-                    : isDark
-                      ? 'text-slate-300 hover:text-white hover:bg-white/10 font-semibold'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-semibold'
+                  isDark
+                    ? 'text-slate-300 hover:text-white hover:bg-white/10 font-semibold'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-semibold'
                 }`}
               >
                 <BookOpen className="w-3.5 h-3.5" />
@@ -657,13 +653,9 @@ export function Navbar() {
               <div className="pt-0.5">
                 <div
                   className={`flex items-center justify-between px-3.5 py-2.5 rounded-2xl cursor-pointer transition-all ${
-                    pathname.startsWith('/blog')
-                      ? isDark
-                        ? 'bg-white text-slate-950 shadow-sm'
-                        : 'bg-slate-900 text-white shadow-sm'
-                      : isDark
-                        ? 'text-slate-200 hover:bg-white/10'
-                        : 'text-slate-700 hover:bg-zinc-100'
+                    isDark
+                      ? 'text-slate-200 hover:bg-white/10'
+                      : 'text-slate-700 hover:bg-zinc-100'
                   }`}
                   onClick={() => setIsMobileBlogOpen(!isMobileBlogOpen)}
                 >

@@ -1,10 +1,38 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
+import { Playfair_Display, Abril_Fatface, Source_Sans_3, Roboto } from 'next/font/google';
 import { FeedbackWidget } from '@/components/common/FeedbackWidget';
 import { ReduxProvider } from '@/lib/redux/ReduxProvider';
 import { HeroThemeProvider } from '@/components/common/HeroThemeProvider';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import './globals.css';
+
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  variable: '--font-serif-heading',
+  display: 'swap',
+});
+
+const abril = Abril_Fatface({
+  weight: '400',
+  subsets: ['latin'],
+  variable: '--font-abril',
+  display: 'swap',
+});
+
+const sourceSans = Source_Sans_3({
+  subsets: ['latin'],
+  weight: ['300', '400', '600', '700', '900'],
+  variable: '--font-sans-body',
+  display: 'swap',
+});
+
+const roboto = Roboto({
+  weight: ['300', '400', '500', '700'],
+  subsets: ['latin'],
+  variable: '--font-roboto',
+  display: 'swap',
+});
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cropmyimages.com';
 const googleTagManagerId = 'GTM-WQD67L3X';
@@ -96,16 +124,10 @@ export default function RootLayout({
       lang="en"
       data-hero-theme="light"
       suppressHydrationWarning
-      className="scroll-smooth"
+      className={`scroll-smooth ${playfair.variable} ${abril.variable} ${sourceSans.variable} ${roboto.variable}`}
       data-scroll-behavior="smooth"
     >
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Roboto:wght@300;400;500;700&family=Source+Sans+3:wght@300;400;600;700;900&display=swap"
-          rel="stylesheet"
-        />
         <link rel="icon" href="/logo.webp" type="image/webp" sizes="any" />
         <link rel="shortcut icon" href="/logo.webp" type="image/webp" />
         <link rel="apple-touch-icon" href="/logo.webp" />

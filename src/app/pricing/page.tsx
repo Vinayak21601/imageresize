@@ -10,20 +10,20 @@ import {
 } from 'lucide-react';
 import { Navbar } from '@/components/common/Navbar';
 import { Footer } from '@/components/common/Footer';
+import { useHeroTheme } from '@/components/common/HeroThemeProvider';
 
-// Pricing Tiers Data
+// The exact CropMyImages image processing features
 const PRICING_TIERS = [
   {
     id: 'free',
     name: 'Free',
+    price: '$0',
+    unit: 'Forever',
     subtitle: 'For casual image editing',
-    monthlyPrice: 0,
-    yearlyPrice: 0,
-    badge: null,
-    popular: false,
-    buttonText: 'Get Started',
+    buttonText: 'Sign Up Now',
     buttonHref: '/',
-    buttonVariant: 'secondary',
+    subButtonNote: 'Billed monthly',
+    featuresHeading: 'Free plan includes:',
     features: [
       'Standard image conversion speed',
       'Basic image cropping & aspect ratios',
@@ -37,14 +37,13 @@ const PRICING_TIERS = [
   {
     id: 'pro',
     name: 'Pro',
+    price: '$6.99',
+    unit: '/ month',
     subtitle: 'For professionals & creators',
-    monthlyPrice: 6.00,
-    yearlyPrice: 4.99,
-    badge: 'MOST POPULAR',
-    popular: true,
-    buttonText: 'Get Started Pro',
+    buttonText: 'Start Free Trial',
     buttonHref: '/?plan=pro',
-    buttonVariant: 'primary',
+    subButtonNote: 'Billed monthly',
+    featuresHeading: 'All free plan features, plus:',
     features: [
       'Full access to image resizer tools',
       'Multi-unit converter (px, in, cm, mm)',
@@ -60,14 +59,13 @@ const PRICING_TIERS = [
   {
     id: 'ultra',
     name: 'Ultra',
+    price: '$9.99',
+    unit: '/ month',
     subtitle: 'For power users & agencies',
-    monthlyPrice: 15.00,
-    yearlyPrice: 11.99,
-    badge: 'BEST VALUE',
-    popular: false,
-    buttonText: 'Get Started Ultra',
+    buttonText: 'Start Free Trial',
     buttonHref: '/?plan=ultra',
-    buttonVariant: 'secondary',
+    subButtonNote: 'Billed monthly',
+    featuresHeading: 'All pro plan features, plus:',
     features: [
       'Maximum image processing speed (5x)',
       'Unlimited batch processing size',
@@ -82,85 +80,64 @@ const PRICING_TIERS = [
 ];
 
 // Feature Comparison Matrix
-const COMPARISON_FEATURES = [
+const COMPARISON_ROWS = [
   {
-    category: 'Limits & Storage',
-    items: [
-      {
-        name: 'File size per image',
-        free: '10MB',
-        pro: '50MB',
-        ultra: '500MB'
-      },
-      {
-        name: 'Batch Processing',
-        free: 'Limited (3 files)',
-        pro: 'Large batch (50 files)',
-        ultra: 'Highest batch (Unlimited)'
-      },
-      {
-        name: 'Processing Speed',
-        free: 'Standard',
-        pro: 'Fast (2x GPU accelerated)',
-        ultra: 'Ultra-fast (5x priority)'
-      }
-    ]
+    name: 'Starting per image',
+    free: '10MB',
+    pro: 'Larger file size (50MB)',
+    ultra: 'Highest file size (500MB)'
   },
   {
-    category: 'Tools & Functionality',
-    items: [
-      {
-        name: 'Other Tools',
-        free: 'Full access to basic tools',
-        pro: 'Full access to premium tools',
-        ultra: 'Full access to all suite tools'
-      },
-      {
-        name: 'Output image format',
-        free: 'WEBP, JPG, PNG',
-        pro: 'WEBP, JPG, PNG, AVIF',
-        ultra: 'All formats + High Res SVG'
-      },
-      {
-        name: 'Custom Dimension Presets',
-        free: true,
-        pro: true,
-        ultra: true
-      },
-      {
-        name: 'One-time Processing',
-        free: true,
-        pro: true,
-        ultra: true
-      }
-    ]
+    name: 'Batch Processing',
+    free: 'Limited (3 files)',
+    pro: 'Large batch (50 files)',
+    ultra: 'Highest batch limit (Unlimited)'
   },
   {
-    category: 'Security & Support',
-    items: [
-      {
-        name: 'Support',
-        free: 'Community Time',
-        pro: 'Priority Contact',
-        ultra: '24/7 VIP Support'
-      },
-      {
-        name: 'Secure & Certified',
-        free: true,
-        pro: true,
-        ultra: true
-      },
-      {
-        name: 'Ads-free',
-        free: false,
-        pro: true,
-        ultra: true
-      }
-    ]
+    name: 'Other Tools',
+    free: 'Full access to basic tools',
+    pro: 'Full access to premium tools',
+    ultra: 'Full access to all suite tools'
+  },
+  {
+    name: 'Output image limit',
+    free: '100 images / 1 hour image processing',
+    pro: '100 images / 1 hour image processing',
+    ultra: 'Unlimited images'
+  },
+  {
+    name: 'Support',
+    free: 'Community Support',
+    pro: 'Priority Support',
+    ultra: '24/7 Support'
+  },
+  {
+    name: 'One-time Processing',
+    free: 'Included',
+    pro: 'Included',
+    ultra: 'Included'
+  },
+  {
+    name: 'Secure and Certified (HTTPS)',
+    free: 'Included',
+    pro: 'Included',
+    ultra: 'Included'
+  },
+  {
+    name: 'SSL/TLS Certified',
+    free: 'Included',
+    pro: 'Included',
+    ultra: 'Included'
+  },
+  {
+    name: 'Ad policy',
+    free: 'Ad-supported',
+    pro: 'No ads',
+    ultra: 'No ads'
   }
 ];
 
-// FAQ Data
+// 17 FAQs matching reference
 const FAQS = [
   {
     q: 'Are my payment details secure?',
@@ -227,13 +204,15 @@ const FAQS = [
     a: 'Yes, automated PDF tax invoices with full VAT/GST details are sent to your billing email immediately after every transaction.'
   },
   {
-    q: 'Can I purchase an account for an entire team?',
+    q: 'Can I purchase a corporate account for our employees?',
     a: 'Yes! Ultra plans support multi-user team seats and shared API quota keys. Contact our sales team for custom enterprise seat volumes.'
   }
 ];
 
 export default function PricingPage() {
-  const [isYearly, setIsYearly] = useState(false);
+  const { theme } = useHeroTheme();
+  const isDark = theme === 'dark';
+
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [faqQuery, setFaqQuery] = useState('');
 
@@ -244,377 +223,657 @@ export default function PricingPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 font-sans flex flex-col selection:bg-slate-900 selection:text-white">
-      {/* Hero Section & Pricing Cards Grid Container with Background Image */}
-      <div className="relative bg-sky-cloud-hero border-b border-zinc-200/60 overflow-hidden">
+    <div
+      className={`min-h-screen font-sans flex flex-col transition-colors duration-300 ${
+        isDark
+          ? 'bg-[#05070B] text-slate-100 selection:bg-blue-600 selection:text-white'
+          : 'bg-[#F8FAFC] text-slate-900 selection:bg-slate-900 selection:text-white'
+      }`}
+    >
+      {/* HERO SECTION WITH CLOUD BACKDROP (MATCHING OTHER SECTIONS) */}
+      <div
+        className={`relative bg-sky-cloud-hero border-b overflow-hidden transition-colors duration-300 ${
+          isDark ? 'border-white/10' : 'border-zinc-200/60'
+        }`}
+      >
         <Navbar />
 
-        <section className="pt-8 pb-8 px-4 sm:px-6 lg:px-8 text-center">
+        {/* HERO HEADLINE (MATCHING OTHER HERO SECTIONS) */}
+        <section className="pt-10 pb-8 px-4 sm:px-6 lg:px-8 text-center">
           <div className="max-w-4xl mx-auto space-y-4">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-zinc-200 text-xs font-semibold text-slate-800 shadow-sm">
-              Simple, Transparent Plans
-            </div>
-
-            <h1 className="text-4xl sm:text-6xl font-black text-slate-900 tracking-tight leading-tight max-w-3xl mx-auto font-heading">
-              Pricing that <em className="font-serif italic font-normal text-slate-900">stays small.</em>
+            <h1
+              className={`text-3xl sm:text-3xl md:text-3xl font-black tracking-tight leading-tight max-w-4xl mx-auto font-heading transition-colors duration-300 ${
+                isDark ? 'text-white' : 'text-slate-900'
+              }`}
+            >
+              Affordable pricing for your{' '}
+              <em
+                className={`font-serif italic font-normal transition-colors duration-300 ${
+                  isDark ? 'text-sky-300' : 'text-slate-900'
+                }`}
+              >
+                image processing needs.
+              </em>
             </h1>
 
-            <p className="text-base sm:text-lg text-zinc-600 max-w-xl mx-auto font-light">
-              One simple plan for your needs. Billed monthly or annually with zero lock-in contracts.
+            <p
+              className={`text-sm sm:text-base md:text-lg max-w-xl mx-auto font-normal leading-relaxed transition-colors duration-300 ${
+                isDark ? 'text-slate-300' : 'text-slate-600'
+              }`}
+            >
+              Simple, transparent pricing for all creators.
             </p>
-
-            {/* Billing Cycle Toggle */}
-            <div className="pt-6 flex items-center justify-center gap-4">
-              <span className={`text-xs sm:text-sm font-semibold transition-colors ${!isYearly ? 'text-slate-900' : 'text-zinc-500'}`}>
-                Monthly
-              </span>
-
-              <button
-                onClick={() => setIsYearly(!isYearly)}
-                aria-label="Toggle annual billing"
-                className="relative w-16 h-8 rounded-full bg-white border border-zinc-300 p-1 cursor-pointer transition-colors focus:outline-none shadow-sm"
-              >
-                <motion.div
-                  className="w-6 h-6 rounded-full bg-black shadow-sm"
-                  animate={{ x: isYearly ? 32 : 0 }}
-                  transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                />
-              </button>
-
-              <span className={`text-xs sm:text-sm font-semibold flex items-center gap-2 transition-colors ${isYearly ? 'text-slate-900' : 'text-zinc-500'}`}>
-                Yearly
-                <span className="px-2.5 py-0.5 text-[11px] font-bold text-white bg-black rounded-full shadow-sm">
-                  Save 20%
-                </span>
-              </span>
-            </div>
           </div>
         </section>
 
-        {/* Pricing Cards Grid */}
-        <section className="px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full pb-16">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch">
-            {PRICING_TIERS.map((tier) => {
-              const price = isYearly ? tier.yearlyPrice : tier.monthlyPrice;
+        {/* THE 3 PRICING CARDS */}
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 pt-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
+              
+              {/* CARD 1: FREE */}
+              <div
+                className={`rounded-[2rem] p-7 sm:p-8 flex flex-col justify-between transition-all duration-300 ${
+                  isDark
+                    ? 'bg-[#0D111A] border border-white/[0.08] shadow-[0_10px_30px_rgba(0,0,0,0.5)] hover:border-white/20'
+                    : 'bg-white border border-slate-200/80 shadow-[0_4px_24px_rgba(0,0,0,0.04)] hover:border-blue-200 hover:shadow-[0_10px_30px_rgba(30,80,242,0.06)]'
+                }`}
+              >
+                <div className="space-y-5">
+                  <h3
+                    className={`!font-sans text-base font-bold transition-colors ${
+                      isDark ? 'text-white' : 'text-slate-900'
+                    }`}
+                  >
+                    Free
+                  </h3>
 
-              return (
-                <motion.div
-                  key={tier.id}
-                  whileHover={{ y: -4 }}
-                  transition={{ duration: 0.2 }}
-                  className={`relative flex flex-col justify-between rounded-3xl transition-all ${
-                    tier.popular
-                      ? 'bg-gradient-to-b from-sky-400 via-blue-600 to-indigo-600 p-[2px] shadow-xl z-10'
-                      : 'bg-white border border-zinc-200/90 shadow-sm hover:shadow-xl hover:border-slate-800'
-                  }`}
-                >
-                  <div className={`flex flex-col justify-between h-full rounded-[22px] p-5 sm:p-6 ${tier.popular ? 'bg-white' : ''}`}>
-
-                    {/* Popular Badge */}
-                    {tier.badge && (
-                      <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-slate-900 text-white font-black text-[9px] tracking-widest uppercase shadow-md border border-slate-700 flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                        {tier.badge}
-                      </div>
-                    )}
-
-                    <div className="space-y-4">
-                      {/* Title & Subtitle */}
-                      <div>
-                        <div className="flex items-center justify-between">
-                          <h3 className="text-xl sm:text-2xl font-black text-slate-900 font-heading tracking-tight">
-                            {tier.name}
-                          </h3>
-                          {tier.id === 'ultra' && (
-                            <span className="px-2 py-0.5 rounded-full bg-sky-50 text-[#0284C7] text-[9px] font-bold uppercase tracking-wider border border-sky-100">
-                              PRO SUITE
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-[11px] text-slate-600 mt-0.5 font-normal">{tier.subtitle}</p>
-                      </div>
-
-                      {/* Pricing */}
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-3xl sm:text-4xl font-black text-slate-900 font-mono tracking-tight">
-                          ${price.toFixed(2)}
-                        </span>
-                        <span className="text-[11px] text-slate-600 font-bold uppercase tracking-wider">/ mo</span>
-                      </div>
-
-                      {/* CTA Button */}
-                      <Link
-                        href={tier.buttonHref}
-                        className={`w-full py-3 px-4 rounded-full font-bold text-xs text-center uppercase tracking-wider transition-all shadow-sm cursor-pointer flex items-center justify-center gap-1.5 active:scale-95 ${
-                          tier.popular
-                            ? 'bg-slate-900 text-white hover:bg-black shadow-slate-900/20 shadow-md'
-                            : 'bg-zinc-100 hover:bg-zinc-200 text-slate-900 border border-zinc-200/80'
-                        }`}
-                      >
-                        <span>{tier.buttonText}</span>
-                      </Link>
-
-                      <div className="w-full h-px bg-zinc-100" />
-
-                      {/* Feature List */}
-                      <div className="space-y-2.5">
-                        <div className="text-[10px] font-extrabold text-slate-900 uppercase tracking-wider font-sans">
-                          What&apos;s included:
-                        </div>
-                        <ul className="space-y-2 text-xs text-slate-800">
-                          {tier.features.map((feature, idx) => (
-                            <li key={idx} className="flex items-start gap-2.5 leading-relaxed font-normal">
-                              <div className="w-3.5 h-3.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200/80 flex items-center justify-center shrink-0 mt-0.5">
-                                <Check className="w-2 h-2 text-emerald-600 stroke-[3]" />
-                              </div>
-                              <span className="text-slate-800 font-medium text-[11px]">{feature}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-
-                    <div className="mt-6 pt-3 border-t border-zinc-100 text-center">
-                      <span className="text-[10px] text-zinc-500 font-mono font-medium">
-                        {tier.id === 'free' ? 'No credit card required' : 'Cancel or change anytime'}
-                      </span>
-                    </div>
-
+                  {/* Price */}
+                  <div className="flex items-baseline gap-1.5">
+                    <span
+                      className={`!font-sans text-4xl sm:text-5xl font-extrabold tracking-tight transition-colors ${
+                        isDark ? 'text-white' : 'text-slate-900'
+                      }`}
+                    >
+                      $0
+                    </span>
+                    <span
+                      className={`!font-sans text-xs font-medium transition-colors ${
+                        isDark ? 'text-zinc-400' : 'text-slate-500'
+                      }`}
+                    >
+                      Forever
+                    </span>
                   </div>
-                </motion.div>
-              );
-            })}
-          </div>
+
+                  <p
+                    className={`!font-sans text-xs font-normal leading-relaxed min-h-[32px] transition-colors ${
+                      isDark ? 'text-zinc-400' : 'text-slate-500'
+                    }`}
+                  >
+                    For casual image editing
+                  </p>
+
+                  {/* Button */}
+                  <div className="pt-2">
+                    <Link
+                      href="/"
+                      className={`!font-sans w-full py-3 px-4 rounded-xl text-xs font-semibold transition-all shadow-xs flex items-center justify-center cursor-pointer active:scale-98 ${
+                        isDark
+                          ? 'bg-[#161B26] hover:bg-[#1E2433] border border-white/10 text-white'
+                          : 'bg-slate-100 hover:bg-slate-200 text-slate-900 border border-slate-200/80'
+                      }`}
+                    >
+                      Sign Up Now
+                    </Link>
+                    <span
+                      className={`!font-sans text-[11px] text-center block mt-2 font-normal transition-colors ${
+                        isDark ? 'text-zinc-500' : 'text-slate-400'
+                      }`}
+                    >
+                      Billed monthly
+                    </span>
+                  </div>
+
+                  {/* Divider */}
+                  <div
+                    className={`w-full h-px my-4 transition-colors ${
+                      isDark ? 'bg-white/[0.08]' : 'bg-slate-100'
+                    }`}
+                  />
+
+                  {/* Features */}
+                  <div className="space-y-3 pt-1">
+                    <div
+                      className={`!font-sans text-xs font-bold transition-colors ${
+                        isDark ? 'text-white' : 'text-slate-900'
+                      }`}
+                    >
+                      Free plan includes:
+                    </div>
+                    <ul
+                      className={`space-y-2.5 text-xs font-normal !font-sans transition-colors ${
+                        isDark ? 'text-zinc-300' : 'text-slate-600'
+                      }`}
+                    >
+                      {PRICING_TIERS[0].features.map((feature, idx) => (
+                        <li key={idx} className="flex items-center gap-2.5">
+                          <Check
+                            className={`w-3.5 h-3.5 stroke-[2.5] shrink-0 ${
+                              isDark ? 'text-zinc-400' : 'text-slate-400'
+                            }`}
+                          />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              {/* CARD 2: PRO (THE HERO RADIANT BLUE CARD) */}
+              <div className="rounded-[2rem] p-7 sm:p-8 bg-gradient-to-b from-[#2B4BEE] via-[#243ED4] to-[#182B99] text-white border border-blue-400/30 shadow-[0_12px_45px_rgba(37,99,235,0.35)] flex flex-col justify-between relative transition-all duration-300 hover:shadow-[0_16px_55px_rgba(37,99,235,0.45)] md:-translate-y-2">
+                <div className="space-y-5">
+                  <h3 className="!font-sans text-base font-bold text-white">
+                    Pro
+                  </h3>
+
+                  {/* Price */}
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="!font-sans text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
+                      $6.99
+                    </span>
+                    <span className="!font-sans text-xs text-blue-100 font-medium">
+                      / month
+                    </span>
+                  </div>
+
+                  <p className="!font-sans text-xs text-blue-100/90 font-normal leading-relaxed min-h-[32px]">
+                    For professionals &amp; creators
+                  </p>
+
+                  {/* Crisp White CTA Button */}
+                  <div className="pt-2">
+                    <Link
+                      href="/?plan=pro"
+                      className="!font-sans w-full py-3.5 px-4 rounded-xl text-xs font-bold bg-white hover:bg-slate-100 text-slate-950 transition-all shadow-md flex items-center justify-center cursor-pointer active:scale-98"
+                    >
+                      Start Free Trial
+                    </Link>
+                    <span className="!font-sans text-[11px] text-blue-200/90 text-center block mt-2 font-normal">
+                      Billed monthly
+                    </span>
+                  </div>
+
+                  {/* Divider */}
+                  <div className="w-full h-px bg-blue-300/20 my-4" />
+
+                  {/* Features */}
+                  <div className="space-y-3 pt-1">
+                    <div className="!font-sans text-xs font-bold text-white">
+                      All free plan features, plus:
+                    </div>
+                    <ul className="space-y-2.5 text-xs text-white font-normal !font-sans">
+                      {PRICING_TIERS[1].features.map((feature, idx) => (
+                        <li key={idx} className="flex items-center gap-2.5">
+                          <Check className="w-3.5 h-3.5 text-white stroke-[2.5] shrink-0" />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              {/* CARD 3: ULTRA */}
+              <div
+                className={`rounded-[2rem] p-7 sm:p-8 flex flex-col justify-between transition-all duration-300 ${
+                  isDark
+                    ? 'bg-[#0D111A] border border-white/[0.08] shadow-[0_10px_30px_rgba(0,0,0,0.5)] hover:border-white/20'
+                    : 'bg-white border border-slate-200/80 shadow-[0_4px_24px_rgba(0,0,0,0.04)] hover:border-blue-200 hover:shadow-[0_10px_30px_rgba(30,80,242,0.06)]'
+                }`}
+              >
+                <div className="space-y-5">
+                  <h3
+                    className={`!font-sans text-base font-bold transition-colors ${
+                      isDark ? 'text-white' : 'text-slate-900'
+                    }`}
+                  >
+                    Ultra
+                  </h3>
+
+                  {/* Price */}
+                  <div className="flex items-baseline gap-1.5">
+                    <span
+                      className={`!font-sans text-4xl sm:text-5xl font-extrabold tracking-tight transition-colors ${
+                        isDark ? 'text-white' : 'text-slate-900'
+                      }`}
+                    >
+                      $9.99
+                    </span>
+                    <span
+                      className={`!font-sans text-xs font-medium transition-colors ${
+                        isDark ? 'text-zinc-400' : 'text-slate-500'
+                      }`}
+                    >
+                      / month
+                    </span>
+                  </div>
+
+                  <p
+                    className={`!font-sans text-xs font-normal leading-relaxed min-h-[32px] transition-colors ${
+                      isDark ? 'text-zinc-400' : 'text-slate-500'
+                    }`}
+                  >
+                    For power users &amp; agencies
+                  </p>
+
+                  {/* Button */}
+                  <div className="pt-2">
+                    <Link
+                      href="/?plan=ultra"
+                      className={`!font-sans w-full py-3 px-4 rounded-xl text-xs font-semibold transition-all shadow-xs flex items-center justify-center cursor-pointer active:scale-98 ${
+                        isDark
+                          ? 'bg-[#161B26] hover:bg-[#1E2433] border border-white/10 text-white'
+                          : 'bg-slate-100 hover:bg-slate-200 text-slate-900 border border-slate-200/80'
+                      }`}
+                    >
+                      Start Free Trial
+                    </Link>
+                    <span
+                      className={`!font-sans text-[11px] text-center block mt-2 font-normal transition-colors ${
+                        isDark ? 'text-zinc-500' : 'text-slate-400'
+                      }`}
+                    >
+                      Billed monthly
+                    </span>
+                  </div>
+
+                  {/* Divider */}
+                  <div
+                    className={`w-full h-px my-4 transition-colors ${
+                      isDark ? 'bg-white/[0.08]' : 'bg-slate-100'
+                    }`}
+                  />
+
+                  {/* Features */}
+                  <div className="space-y-3 pt-1">
+                    <div
+                      className={`!font-sans text-xs font-bold transition-colors ${
+                        isDark ? 'text-white' : 'text-slate-900'
+                      }`}
+                    >
+                      All pro plan features, plus:
+                    </div>
+                    <ul
+                      className={`space-y-2.5 text-xs font-normal !font-sans transition-colors ${
+                        isDark ? 'text-zinc-300' : 'text-slate-600'
+                      }`}
+                    >
+                      {PRICING_TIERS[2].features.map((feature, idx) => (
+                        <li key={idx} className="flex items-center gap-2.5">
+                          <Check
+                            className={`w-3.5 h-3.5 stroke-[2.5] shrink-0 ${
+                              isDark ? 'text-zinc-400' : 'text-slate-400'
+                            }`}
+                          />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+            </div>
         </section>
       </div>
 
-      {/* Feature Comparison Matrix Section */}
-      <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full py-16 space-y-8">
-        <div className="text-center space-y-2">
-          <h2 className="text-3xl sm:text-5xl font-black text-slate-900 font-heading tracking-tight">
-            Compare plan features
-          </h2>
-          <p className="text-sm text-zinc-500 font-light">Detailed breakdown of quotas, formats, and enterprise support.</p>
-        </div>
-
-        {/* Table Container */}
-        <div className="overflow-x-auto rounded-3xl border border-zinc-200 bg-white shadow-xl">
-          <table className="w-full text-left border-collapse min-w-[700px]">
-            <thead>
-              <tr className="border-b border-zinc-200 bg-zinc-50/80">
-                <th className="py-5 px-6 text-sm font-bold text-slate-900 w-2/5 font-sans">Overview</th>
-                <th className="py-5 px-6 text-sm font-bold text-slate-900 text-center w-1/5">Free</th>
-                <th className="py-5 px-6 text-sm font-bold text-slate-900 text-center w-1/5 bg-zinc-100/50">Pro</th>
-                <th className="py-5 px-6 text-sm font-bold text-slate-900 text-center w-1/5">Ultra</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-100">
-              {COMPARISON_FEATURES.map((category, catIdx) => (
-                <React.Fragment key={catIdx}>
-                  <tr className="bg-zinc-50/50">
-                    <td colSpan={4} className="py-3 px-6 text-xs font-mono font-bold text-slate-900 uppercase tracking-wider">
-                      {category.category}
-                    </td>
-                  </tr>
-                  {category.items.map((item, itemIdx) => (
-                    <tr key={itemIdx} className="hover:bg-zinc-50/80 transition-colors text-xs">
-                      <td className="py-4 px-6 font-medium text-slate-800">{item.name}</td>
-
-                      {/* Free Col */}
-                      <td className="py-4 px-6 text-center text-zinc-600">
-                        {typeof item.free === 'boolean' ? (
-                          item.free ? (
-                            <span className="text-emerald-600 font-semibold">Included</span>
-                          ) : (
-                            <span className="text-zinc-400">Not included</span>
-                          )
-                        ) : (
-                          item.free
-                        )}
-                      </td>
-
-                      {/* Pro Col */}
-                      <td className="py-4 px-6 text-center text-slate-900 font-bold bg-zinc-100/40">
-                        {typeof item.pro === 'boolean' ? (
-                          item.pro ? (
-                            <span className="text-black font-extrabold">Included</span>
-                          ) : (
-                            <span className="text-zinc-400">Not included</span>
-                          )
-                        ) : (
-                          item.pro
-                        )}
-                      </td>
-
-                      {/* Ultra Col */}
-                      <td className="py-4 px-6 text-center text-slate-900 font-bold">
-                        {typeof item.ultra === 'boolean' ? (
-                          item.ultra ? (
-                            <span className="text-black font-extrabold">Included</span>
-                          ) : (
-                            <span className="text-zinc-400">Not included</span>
-                          )
-                        ) : (
-                          item.ultra
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </React.Fragment>
-              ))}
-
-              {/* Table Bottom Action Row */}
-              <tr className="bg-zinc-50/80 border-t border-zinc-200">
-                <td className="py-6 px-6 font-bold text-slate-900 text-sm">Get Started Today</td>
-                <td className="py-6 px-6 text-center">
-                  <Link
-                    href="/"
-                    className="inline-block px-4 py-2 text-xs font-bold text-slate-900 bg-zinc-100 hover:bg-zinc-200 rounded-full transition-all"
-                  >
-                    Get Started
-                  </Link>
-                </td>
-                <td className="py-6 px-6 text-center bg-zinc-100/50">
-                  <Link
-                    href="/?plan=pro"
-                    className="inline-block px-5 py-2 text-xs font-bold text-white bg-black hover:bg-zinc-800 rounded-full transition-all shadow-sm"
-                  >
-                    Get Started
-                  </Link>
-                </td>
-                <td className="py-6 px-6 text-center">
-                  <Link
-                    href="/?plan=ultra"
-                    className="inline-block px-4 py-2 text-xs font-bold text-slate-900 bg-zinc-100 hover:bg-zinc-200 rounded-full transition-all"
-                  >
-                    Get Started
-                  </Link>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      {/* FAQ Section */}
-      <section className="px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full py-16 space-y-8">
-        <div className="text-center space-y-3">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white border border-zinc-200 text-xs font-semibold text-slate-800 shadow-sm">
-            Support &amp; Information
-          </div>
-          <h2 className="text-3xl sm:text-5xl font-black text-slate-900 font-heading tracking-tight">
-            Frequently <em className="font-serif italic font-normal text-slate-900">asked questions.</em>
-          </h2>
-          <p className="text-sm text-zinc-500 font-light">
-            Got questions? We&apos;ve got answers. If you have any questions, feel free to reach out.
-          </p>
-        </div>
-
-        {/* Search Bar */}
-        <div className="relative max-w-md mx-auto">
-          <Search className="w-4 h-4 text-zinc-400 absolute left-4 top-1/2 -translate-y-1/2" />
-          <input
-            id="pricing-faq-search-input"
-            type="text"
-            value={faqQuery}
-            onChange={(e) => setFaqQuery(e.target.value)}
-            placeholder="Search questions (e.g. security, refund, quota)..."
-            aria-label="Search frequently asked questions"
-            className="w-full bg-white border border-zinc-200 focus:border-black rounded-full pl-11 pr-4 py-3 text-xs text-slate-900 placeholder-zinc-400 focus:outline-none transition-colors shadow-sm"
-          />
-          {faqQuery && (
-            <button
-              onClick={() => setFaqQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-zinc-400 hover:text-black font-semibold"
+      {/* MAIN BODY: COMPARISON MATRIX & FAQ */}
+      <main className="flex-1 w-full">
+        <section className="px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full py-16 space-y-8">
+          <div className="text-center space-y-2">
+            <h2
+              className={`!font-sans text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight transition-colors ${
+                isDark ? 'text-white' : 'text-slate-900'
+              }`}
             >
-              Clear
-            </button>
-          )}
-        </div>
-
-        {/* FAQ Accordion List */}
-        <div className="space-y-3">
-          {filteredFaqs.length === 0 ? (
-            <div className="text-center py-12 text-zinc-500 text-xs">
-              No matching questions found for &quot;{faqQuery}&quot;.
-            </div>
-          ) : (
-            filteredFaqs.map((faq, idx) => {
-              const isOpen = openFaq === idx;
-
-              return (
-                <div
-                  key={idx}
-                  className={`rounded-2xl border transition-all overflow-hidden ${isOpen
-                      ? 'bg-white text-slate-900 border-zinc-300 shadow-md'
-                      : 'bg-white text-slate-900 border-zinc-200/80 hover:border-zinc-300'
-                    }`}
-                >
-                  <button
-                    onClick={() => setOpenFaq(isOpen ? null : idx)}
-                    className="w-full flex items-center justify-between p-4 sm:p-5 text-left focus:outline-none group cursor-pointer"
-                  >
-                    <span className="text-xs sm:text-sm font-bold text-slate-900 flex items-center gap-3">
-                      <span className="font-mono text-xs text-zinc-400 font-bold">
-                        {(idx + 1).toString().padStart(2, '0')}.
-                      </span>
-                      {faq.q}
-                    </span>
-                    <ChevronDown
-                      className={`w-4 h-4 text-zinc-400 transition-transform duration-200 shrink-0 ${isOpen ? 'rotate-180 text-black' : ''
-                        }`}
-                    />
-                  </button>
-
-                  <AnimatePresence>
-                    {isOpen && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <div className="px-4 pb-5 sm:px-5 sm:pb-5 pt-0 text-xs text-zinc-600 leading-relaxed border-t border-zinc-100 font-light">
-                          <p className="mt-3">{faq.a}</p>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              );
-            })
-          )}
-        </div>
-      </section>
-
-      {/* Bottom CTA Banner */}
-      <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full pb-20">
-        <div className="relative rounded-3xl p-8 sm:p-12 overflow-hidden bg-sky-cloud-hero border border-zinc-200/80 shadow-xl text-center space-y-6">
-          <div className="relative z-10 space-y-3 max-w-2xl mx-auto">
-            <h3 className="text-2xl sm:text-4xl font-black text-slate-900 font-heading">
-              Ready to experience high-precision image editing?
-            </h3>
-            <p className="text-xs sm:text-sm text-zinc-600 font-light">
-              Start free with no credit card required, or upgrade anytime for lightning-fast GPU-accelerated batch operations.
+              Compare plan features
+            </h2>
+            <p
+              className={`!font-sans text-xs sm:text-sm font-normal transition-colors ${
+                isDark ? 'text-zinc-400' : 'text-slate-500'
+              }`}
+            >
+              Detailed breakdown of processing limits, formats, and enterprise capability.
             </p>
           </div>
 
-          <div className="relative z-10 flex flex-wrap items-center justify-center gap-4 pt-2">
-            <Link
-              href="/"
-              className="px-8 py-3.5 text-xs font-bold text-white bg-black hover:bg-zinc-800 rounded-full transition-all shadow-md active:scale-95 cursor-pointer"
-            >
-              Launch Studio Free
-            </Link>
-            <Link
-              href="/?plan=pro"
-              className="px-8 py-3.5 text-xs font-bold text-slate-900 bg-white/90 hover:bg-white border border-zinc-200 rounded-full transition-all shadow-sm active:scale-95 cursor-pointer"
-            >
-              Upgrade to Pro ($8.99/mo)
-            </Link>
+          {/* Clean Day / Dark Table */}
+          <div
+            className={`overflow-x-auto rounded-3xl border shadow-xl transition-colors ${
+              isDark
+                ? 'border-white/[0.08] bg-[#0D111A]'
+                : 'border-slate-200/80 bg-white'
+            }`}
+          >
+            <table className="w-full text-left border-collapse min-w-[650px] text-xs !font-sans">
+              <thead>
+                <tr
+                  className={`border-b transition-colors ${
+                    isDark
+                      ? 'border-white/[0.08] bg-white/[0.02]'
+                      : 'border-slate-200/80 bg-slate-50/70'
+                  }`}
+                >
+                  <th
+                    className={`py-4 px-6 font-bold w-2/5 transition-colors ${
+                      isDark ? 'text-white' : 'text-slate-900'
+                    }`}
+                  >
+                    Overview
+                  </th>
+                  <th
+                    className={`py-4 px-6 font-bold text-center w-1/5 transition-colors ${
+                      isDark ? 'text-zinc-300' : 'text-slate-600'
+                    }`}
+                  >
+                    Free
+                  </th>
+                  <th
+                    className={`py-4 px-6 font-bold text-center w-1/5 transition-colors ${
+                      isDark ? 'text-sky-400 bg-blue-950/30' : 'text-[#1E50F2] bg-blue-50/50'
+                    }`}
+                  >
+                    Pro
+                  </th>
+                  <th
+                    className={`py-4 px-6 font-bold text-center w-1/5 transition-colors ${
+                      isDark ? 'text-zinc-300' : 'text-slate-600'
+                    }`}
+                  >
+                    Ultra
+                  </th>
+                </tr>
+              </thead>
+              <tbody
+                className={`divide-y transition-colors ${
+                  isDark ? 'divide-white/[0.06]' : 'divide-slate-100'
+                }`}
+              >
+                {COMPARISON_ROWS.map((row, idx) => (
+                  <tr
+                    key={idx}
+                    className={`transition-colors ${
+                      isDark ? 'hover:bg-white/[0.02]' : 'hover:bg-slate-50/60'
+                    }`}
+                  >
+                    <td
+                      className={`py-3.5 px-6 font-medium transition-colors ${
+                        isDark ? 'text-zinc-300' : 'text-slate-700'
+                      }`}
+                    >
+                      {row.name}
+                    </td>
+                    <td
+                      className={`py-3.5 px-6 text-center transition-colors ${
+                        isDark ? 'text-zinc-400' : 'text-slate-600'
+                      }`}
+                    >
+                      {row.free}
+                    </td>
+                    <td
+                      className={`py-3.5 px-6 text-center font-semibold transition-colors ${
+                        isDark
+                          ? 'text-white bg-blue-950/20'
+                          : 'text-slate-900 bg-blue-50/30'
+                      }`}
+                    >
+                      {row.pro}
+                    </td>
+                    <td
+                      className={`py-3.5 px-6 text-center font-semibold transition-colors ${
+                        isDark ? 'text-zinc-200' : 'text-slate-800'
+                      }`}
+                    >
+                      {row.ultra}
+                    </td>
+                  </tr>
+                ))}
+
+                {/* Table Bottom Action Row */}
+                <tr
+                  className={`border-t transition-colors ${
+                    isDark
+                      ? 'border-white/[0.08] bg-white/[0.02]'
+                      : 'border-slate-200/80 bg-slate-50/50'
+                  }`}
+                >
+                  <td className="py-5 px-6 font-semibold"></td>
+                  <td className="py-5 px-6 text-center">
+                    <Link
+                      href="/"
+                      className={`inline-block px-5 py-2 rounded-xl text-xs font-semibold transition-colors shadow-xs ${
+                        isDark
+                          ? 'text-white bg-[#161B26] hover:bg-[#1E2433] border border-white/10'
+                          : 'text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200'
+                      }`}
+                    >
+                      Sign Up Now
+                    </Link>
+                  </td>
+                  <td
+                    className={`py-5 px-6 text-center ${
+                      isDark ? 'bg-blue-950/20' : 'bg-blue-50/30'
+                    }`}
+                  >
+                    <Link
+                      href="/?plan=pro"
+                      className="inline-block px-5 py-2 rounded-xl text-xs font-bold text-white bg-[#1E50F2] hover:bg-[#1945D4] transition-colors shadow-xs"
+                    >
+                      Start Free Trial
+                    </Link>
+                  </td>
+                  <td className="py-5 px-6 text-center">
+                    <Link
+                      href="/?plan=ultra"
+                      className={`inline-block px-5 py-2 rounded-xl text-xs font-semibold transition-colors shadow-xs ${
+                        isDark
+                          ? 'text-white bg-[#161B26] hover:bg-[#1E2433] border border-white/10'
+                          : 'text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200'
+                      }`}
+                    >
+                      Start Free Trial
+                    </Link>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-        </div>
-      </section>
+        </section>
+
+        {/* FREQUENTLY ASKED QUESTIONS SECTION */}
+        <section className="px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full py-12 space-y-6">
+          <div className="text-center space-y-2">
+            <h2
+              className={`!font-sans text-2xl sm:text-3xl font-extrabold tracking-tight transition-colors ${
+                isDark ? 'text-white' : 'text-slate-900'
+              }`}
+            >
+              Frequently Asked Questions
+            </h2>
+            <p
+              className={`!font-sans text-xs sm:text-sm font-normal transition-colors ${
+                isDark ? 'text-zinc-400' : 'text-slate-500'
+              }`}
+            >
+              Frequently asked questions regarding our pricing plans and processing services.
+            </p>
+          </div>
+
+          {/* Search Bar */}
+          <div className="relative max-w-md mx-auto pt-2">
+            <Search
+              className={`w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 ${
+                isDark ? 'text-zinc-400' : 'text-slate-400'
+              }`}
+            />
+            <input
+              id="pricing-faq-search-input"
+              type="text"
+              value={faqQuery}
+              onChange={(e) => setFaqQuery(e.target.value)}
+              placeholder="Search questions (e.g. security, refund, quota)..."
+              aria-label="Search frequently asked questions"
+              className={`!font-sans w-full rounded-xl pl-11 pr-4 py-2.5 text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-[#2B4BEE]/40 focus:border-[#2B4BEE] ${
+                isDark
+                  ? 'bg-[#0D111A] border border-white/[0.1] text-white placeholder-zinc-500'
+                  : 'bg-white border border-slate-200/80 text-slate-900 placeholder-slate-400 shadow-xs'
+              }`}
+            />
+            {faqQuery && (
+              <button
+                type="button"
+                onClick={() => setFaqQuery('')}
+                className={`!font-sans absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold cursor-pointer ${
+                  isDark
+                    ? 'text-zinc-400 hover:text-white'
+                    : 'text-slate-400 hover:text-slate-700'
+                }`}
+              >
+                Clear
+              </button>
+            )}
+          </div>
+
+          {/* 17 FAQs List */}
+          <div className="space-y-2.5 pt-2">
+            {filteredFaqs.length === 0 ? (
+              <div
+                className={`!font-sans text-center py-12 text-xs ${
+                  isDark ? 'text-zinc-400' : 'text-slate-500'
+                }`}
+              >
+                No matching questions found for &quot;{faqQuery}&quot;.
+              </div>
+            ) : (
+              filteredFaqs.map((faq, idx) => {
+                const isOpen = openFaq === idx;
+
+                return (
+                  <div
+                    key={idx}
+                    className={`rounded-xl border overflow-hidden transition-all ${
+                      isDark
+                        ? 'border-white/[0.08] bg-[#0D111A]'
+                        : 'border-slate-200/80 bg-white shadow-xs'
+                    }`}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setOpenFaq(isOpen ? null : idx)}
+                      className={`w-full flex items-center justify-between p-4 text-left transition-colors cursor-pointer ${
+                        isDark
+                          ? 'hover:bg-white/[0.02]'
+                          : 'hover:bg-slate-50/60'
+                      }`}
+                    >
+                      <span
+                        className={`!font-sans text-xs sm:text-sm font-semibold flex items-center gap-2 ${
+                          isDark ? 'text-white' : 'text-slate-900'
+                        }`}
+                      >
+                        <span
+                          className={`font-mono text-xs font-bold ${
+                            isDark ? 'text-zinc-500' : 'text-slate-400'
+                          }`}
+                        >
+                          {idx + 1}.
+                        </span>
+                        {faq.q}
+                      </span>
+                      <ChevronDown
+                        className={`w-4 h-4 transition-transform duration-200 shrink-0 ${
+                          isOpen
+                            ? isDark ? 'rotate-180 text-sky-400' : 'rotate-180 text-[#1E50F2]'
+                            : isDark ? 'text-zinc-400' : 'text-slate-400'
+                        }`}
+                      />
+                    </button>
+
+                    <AnimatePresence>
+                      {isOpen && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <div
+                            className={`!font-sans p-4 text-xs leading-relaxed border-t transition-colors ${
+                              isDark
+                                ? 'text-zinc-300 border-white/[0.06] bg-black/20'
+                                : 'text-slate-600 border-slate-100 bg-slate-50/40'
+                            }`}
+                          >
+                            <p>{faq.a}</p>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </section>
+
+        {/* BOTTOM CTA BANNER */}
+        <section className="px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full pb-20">
+          <div
+            className={`relative rounded-3xl p-8 sm:p-10 overflow-hidden border text-center space-y-6 shadow-xl transition-colors ${
+              isDark
+                ? 'border-white/[0.08] bg-[#0D111A]'
+                : 'border-slate-200/80 bg-white'
+            }`}
+          >
+            <div className="relative z-10 space-y-2 max-w-2xl mx-auto">
+              <h3
+                className={`!font-sans text-2xl sm:text-3xl font-bold tracking-tight transition-colors ${
+                  isDark ? 'text-white' : 'text-slate-900'
+                }`}
+              >
+                Ready to experience high-precision image editing?
+              </h3>
+              <p
+                className={`!font-sans text-xs sm:text-sm font-normal transition-colors ${
+                  isDark ? 'text-zinc-400' : 'text-slate-500'
+                }`}
+              >
+                Start free with no credit card required, or upgrade anytime for batch operations and ad-free editing.
+              </p>
+            </div>
+
+            <div className="relative z-10 flex flex-wrap items-center justify-center gap-3 pt-2">
+              <Link
+                href="/"
+                className={`!font-sans px-6 py-2.5 text-xs font-semibold rounded-xl transition-all shadow-xs cursor-pointer ${
+                  isDark
+                    ? 'text-white bg-[#161B26] hover:bg-[#1E2433] border border-white/10'
+                    : 'text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200/80'
+                }`}
+              >
+                Launch Studio Free
+              </Link>
+              <Link
+                href="/?plan=pro"
+                className="!font-sans px-6 py-2.5 text-xs font-bold text-white bg-[#1E50F2] hover:bg-[#1945D4] rounded-xl transition-all shadow-md cursor-pointer active:scale-98"
+              >
+                Start Free Trial
+              </Link>
+            </div>
+          </div>
+        </section>
+      </main>
 
       <Footer />
     </div>

@@ -1,13 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Roboto:wght@300;400;500;700&family=Source+Sans+3:wght@300;400;600;700;900&display=swap');
 @import "cropperjs/dist/cropper.css";
 @import "tailwindcss";
 
+@custom-variant dark (&:where([data-hero-theme="dark"], [data-hero-theme="dark"] *));
+
 @layer base {
   :root {
-    --font-serif-heading: 'Playfair Display', Georgia, serif;
-    --font-abril: 'Abril Fatface', cursive;
-    --font-sans-body: 'Source Sans 3', system-ui, sans-serif;
-    --font-roboto: 'Roboto', system-ui, sans-serif;
+    --font-serif-heading: var(--font-serif-heading, 'Playfair Display', Georgia, serif);
+    --font-abril: var(--font-abril, 'Abril Fatface', cursive);
+    --font-sans-body: var(--font-sans-body, 'Source Sans 3', system-ui, sans-serif);
+    --font-roboto: var(--font-roboto, 'Roboto', system-ui, sans-serif);
     --background: 210 40% 98%;
     --foreground: 222 47% 11%;
     --card: 0 0% 100%;
@@ -120,16 +121,16 @@ h1, h2, h3, .font-heading {
 }
 
 /* Scoped hero typography and accents when in dark mode */
-[data-hero-theme="dark"] .bg-sky-cloud-hero h1:not(#studio *):not(#converter-studio *),
-[data-hero-theme="dark"] .bg-sky-cloud-hero h2:not(#studio *):not(#how-to *):not(#converter-studio *),
-[data-hero-theme="dark"] .bg-sky-cloud-hero h3:not(#studio *):not(#how-to *):not(#converter-studio *) {
+[data-hero-theme="dark"] .bg-sky-cloud-hero h1:not(#studio *):not(#converter-studio *):not(#ip-studio *),
+[data-hero-theme="dark"] .bg-sky-cloud-hero h2:not(#studio *):not(#how-to *):not(#converter-studio *):not(#ip-studio *),
+[data-hero-theme="dark"] .bg-sky-cloud-hero h3:not(#studio *):not(#how-to *):not(#converter-studio *):not(#ip-studio *) {
   color: #F8FAFC !important;
   text-shadow: 0 2px 14px rgba(0, 0, 0, 0.5);
 }
 
-[data-hero-theme="dark"] .bg-sky-cloud-hero p.text-slate-700:not(#studio *):not(#how-to *):not(#converter-studio *),
-[data-hero-theme="dark"] .bg-sky-cloud-hero p.text-slate-600:not(#studio *):not(#how-to *):not(#converter-studio *),
-[data-hero-theme="dark"] .bg-sky-cloud-hero p.text-zinc-600:not(#studio *):not(#how-to *):not(#converter-studio *) {
+[data-hero-theme="dark"] .bg-sky-cloud-hero p.text-slate-700:not(#studio *):not(#how-to *):not(#converter-studio *):not(#ip-studio *),
+[data-hero-theme="dark"] .bg-sky-cloud-hero p.text-slate-600:not(#studio *):not(#how-to *):not(#converter-studio *):not(#ip-studio *),
+[data-hero-theme="dark"] .bg-sky-cloud-hero p.text-zinc-600:not(#studio *):not(#how-to *):not(#converter-studio *):not(#ip-studio *) {
   color: #CBD5E1 !important;
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
 }
@@ -176,7 +177,8 @@ h1, h2, h3, .font-heading {
 }
 
 [data-hero-theme="dark"] .home-page-container,
-[data-hero-theme="dark"] .converter-page-container {
+[data-hero-theme="dark"] .converter-page-container,
+[data-hero-theme="dark"] .ip-page-container {
   background-color: #060913 !important;
   color: #F8FAFC !important;
 }
