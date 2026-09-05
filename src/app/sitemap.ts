@@ -27,8 +27,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/convert/svg-to-png',
     '/convert/jpg-to-png',
     '/blog',
+    '/blog/how-to-draw-a-custom-freehand-shape-and-crop-an-image',
     '/blog/how-to-resize-image-without-losing-quality',
     '/blog/how-to-crop-festive-images-without-losing-quality',
+    '/blog/compress-image',
+    '/blog/how-to-resize-image-to-50kb',
   ];
 
   return routes.map((route) => ({

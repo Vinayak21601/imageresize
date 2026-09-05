@@ -147,15 +147,15 @@ export function CropCanvas({ imageSrc, aspectRatio, cropShape = 'rectangle', cor
       </div>
 
       {/* Canvas Controls Toolbar */}
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-2 px-3 py-2.5 rounded-2xl bg-zinc-50 border border-zinc-200/80">
-        <div className="flex items-center gap-2">
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2 p-2 sm:p-2.5 rounded-2xl bg-zinc-50 border border-zinc-200/80">
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
           <button
             type="button"
             onClick={handleRotateLeft}
             title="Rotate Left 90°"
-            className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-slate-700 bg-white hover:bg-slate-900 hover:text-white border border-zinc-200/80 rounded-xl transition-all shadow-sm active:scale-95 cursor-pointer"
+            className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 text-[11px] sm:text-xs font-bold text-slate-700 bg-white hover:bg-slate-900 hover:text-white border border-zinc-200/80 rounded-xl transition-all shadow-xs active:scale-95 cursor-pointer whitespace-nowrap"
           >
-            <RotateCcw className="w-3.5 h-3.5" />
+            <RotateCcw className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
             90° Left
           </button>
           
@@ -163,21 +163,21 @@ export function CropCanvas({ imageSrc, aspectRatio, cropShape = 'rectangle', cor
             type="button"
             onClick={handleRotateRight}
             title="Rotate Right 90°"
-            className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-slate-700 bg-white hover:bg-slate-900 hover:text-white border border-zinc-200/80 rounded-xl transition-all shadow-sm active:scale-95 cursor-pointer"
+            className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 text-[11px] sm:text-xs font-bold text-slate-700 bg-white hover:bg-slate-900 hover:text-white border border-zinc-200/80 rounded-xl transition-all shadow-xs active:scale-95 cursor-pointer whitespace-nowrap"
           >
-            <RotateCw className="w-3.5 h-3.5" />
+            <RotateCw className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
             90° Right
           </button>
 
-          <div className="h-4 w-px bg-zinc-200 mx-1" />
+          <div className="h-4 w-px bg-zinc-200 mx-0.5 sm:mx-1 hidden xs:block" />
 
           <button
             type="button"
             onClick={handleFlipH}
             title="Flip Horizontal"
-            className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-slate-700 bg-white hover:bg-slate-900 hover:text-white border border-zinc-200/80 rounded-xl transition-all shadow-sm active:scale-95 cursor-pointer"
+            className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 text-[11px] sm:text-xs font-bold text-slate-700 bg-white hover:bg-slate-900 hover:text-white border border-zinc-200/80 rounded-xl transition-all shadow-xs active:scale-95 cursor-pointer whitespace-nowrap"
           >
-            <FlipHorizontal className="w-3.5 h-3.5" />
+            <FlipHorizontal className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
             Flip H
           </button>
 
@@ -185,54 +185,54 @@ export function CropCanvas({ imageSrc, aspectRatio, cropShape = 'rectangle', cor
             type="button"
             onClick={handleFlipV}
             title="Flip Vertical"
-            className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-slate-700 bg-white hover:bg-slate-900 hover:text-white border border-zinc-200/80 rounded-xl transition-all shadow-sm active:scale-95 cursor-pointer"
+            className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 text-[11px] sm:text-xs font-bold text-slate-700 bg-white hover:bg-slate-900 hover:text-white border border-zinc-200/80 rounded-xl transition-all shadow-xs active:scale-95 cursor-pointer whitespace-nowrap"
           >
-            <FlipVertical className="w-3.5 h-3.5" />
+            <FlipVertical className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
             Flip V
           </button>
 
           {onChangeImage && (
             <>
-              <div className="h-4 w-px bg-zinc-200 mx-1 hidden sm:block" />
+              <div className="h-4 w-px bg-zinc-200 mx-0.5 sm:mx-1 hidden sm:block" />
               <button
                 type="button"
                 onClick={onChangeImage}
                 title="Upload or select a different image"
-                className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-slate-900 bg-white hover:bg-slate-900 hover:text-white border border-zinc-200/80 rounded-xl transition-all shadow-sm active:scale-95 cursor-pointer group"
+                className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 text-[11px] sm:text-xs font-bold text-slate-900 bg-white hover:bg-slate-900 hover:text-white border border-zinc-200/80 rounded-xl transition-all shadow-xs active:scale-95 cursor-pointer group whitespace-nowrap"
               >
-                <ImagePlus className="w-3.5 h-3.5 text-[#0284C7] group-hover:text-white transition-colors" />
+                <ImagePlus className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#0284C7] group-hover:text-white transition-colors" />
                 Change Image
               </button>
             </>
           )}
         </div>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1 sm:gap-1.5">
           <button
             type="button"
             onClick={handleZoomIn}
             title="Zoom In"
-            className="p-2.5 text-slate-700 bg-white hover:bg-slate-900 hover:text-white border border-zinc-200/80 rounded-xl transition-all shadow-sm active:scale-95 cursor-pointer"
+            className="p-1.5 sm:p-2 text-slate-700 bg-white hover:bg-slate-900 hover:text-white border border-zinc-200/80 rounded-xl transition-all shadow-xs active:scale-95 cursor-pointer"
           >
-            <ZoomIn className="w-4 h-4" />
+            <ZoomIn className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
 
           <button
             type="button"
             onClick={handleZoomOut}
             title="Zoom Out"
-            className="p-2.5 text-slate-700 bg-white hover:bg-slate-900 hover:text-white border border-zinc-200/80 rounded-xl transition-all shadow-sm active:scale-95 cursor-pointer"
+            className="p-1.5 sm:p-2 text-slate-700 bg-white hover:bg-slate-900 hover:text-white border border-zinc-200/80 rounded-xl transition-all shadow-xs active:scale-95 cursor-pointer"
           >
-            <ZoomOut className="w-4 h-4" />
+            <ZoomOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
 
           <button
             type="button"
             onClick={handleReset}
             title="Reset Canvas"
-            className="p-2.5 text-slate-700 bg-white hover:bg-slate-900 hover:text-white border border-zinc-200/80 rounded-xl transition-all shadow-sm active:scale-95 cursor-pointer"
+            className="p-1.5 sm:p-2 text-slate-700 bg-white hover:bg-slate-900 hover:text-white border border-zinc-200/80 rounded-xl transition-all shadow-xs active:scale-95 cursor-pointer"
           >
-            <RefreshCw className="w-4 h-4" />
+            <RefreshCw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
         </div>
       </div>

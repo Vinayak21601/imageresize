@@ -126,7 +126,7 @@ export default function ResizeImageBlogPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-blue-500 selection:text-white">
+    <div className="min-h-screen bg-white dark:bg-[#05070B] text-slate-900 dark:text-slate-100 font-sans selection:bg-slate-900 dark:selection:bg-blue-600 selection:text-white transition-colors duration-300">
       {/* JSON-LD Schemas */}
       <script
         id="blog-posting-schema"

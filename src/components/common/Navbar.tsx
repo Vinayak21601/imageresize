@@ -14,7 +14,8 @@ import {
   ArrowRight,
   Crop,
   Layers,
-  FileText
+  FileText,
+  Scissors
 } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/lib/redux/store';
 import { logoutUser } from '@/lib/redux/slices/authSlice';
@@ -30,6 +31,14 @@ const BLOG_NAV_FEATURED = {
 };
 
 const BLOG_NAV_ARTICLES = [
+  {
+    slug: 'how-to-draw-a-custom-freehand-shape-and-crop-an-image',
+    title: 'Custom Freehand Shape Crop',
+    desc: 'Draw outlines around objects, products & signatures with PNG export.',
+    category: 'Custom Crop',
+    readTime: '6 min',
+    icon: Scissors,
+  },
   {
     slug: 'how-to-resize-image-without-losing-quality',
     title: 'Resize Without Losing Quality',
