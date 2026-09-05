@@ -328,7 +328,7 @@ export default function Home() {
 
       <main className="flex-1 w-full">
         {/* HERO + STUDIO SECTION WITH BACKGROUND IMAGE BACKDROP */}
-        <div className="relative bg-sky-cloud-hero overflow-hidden min-h-screen flex flex-col justify-between">
+        <div className="relative bg-sky-cloud-hero min-h-screen flex flex-col justify-between">
           <Navbar />
 
           <section className="pt-8 pb-8 px-4 sm:px-6 lg:px-8">

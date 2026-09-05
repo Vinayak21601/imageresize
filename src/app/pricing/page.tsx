@@ -19,16 +19,17 @@ const PRICING_TIERS = [
     name: 'Free',
     price: '$0',
     unit: 'Forever',
-    subtitle: 'For casual image editing',
+    subtitle: 'For casual image editing & conversion',
     buttonText: 'Sign Up Now',
     buttonHref: '/',
     subButtonNote: 'Billed monthly',
     featuresHeading: 'Free plan includes:',
     features: [
-      'Standard image conversion speed',
+      'Universal format converter (PNG, JPG, WEBP)',
       'Basic image cropping & aspect ratios',
       '10MB max file size per image',
       'Standard compression algorithm',
+      'Target size compressor (up to 200KB)',
       'Watermark-free exports',
       'Community & email support',
       'Ad-supported interface'
@@ -45,13 +46,13 @@ const PRICING_TIERS = [
     subButtonNote: 'Billed monthly',
     featuresHeading: 'All free plan features, plus:',
     features: [
-      'Full access to image resizer tools',
+      'Full access to image converter & compressor',
+      'Convert PNG, JPG, WEBP, HEIC, AVIF & PDF',
       'Multi-unit converter (px, in, cm, mm)',
+      'Custom target file size compressor (KB/MB limits)',
       '50MB max file size per image',
-      'Fast image processing speed (2x)',
-      'Batch conversion (up to 50 files)',
-      'Target file size compressor (KB limits)',
-      'Saved custom cropper presets',
+      'Fast batch conversion (up to 50 files)',
+      'Saved custom cropper & format presets',
       '100% Ad-free experience',
       '24/7 Priority support'
     ]
@@ -67,12 +68,12 @@ const PRICING_TIERS = [
     subButtonNote: 'Billed monthly',
     featuresHeading: 'All pro plan features, plus:',
     features: [
-      'Maximum image processing speed (5x)',
-      'Unlimited batch processing size',
+      'Maximum conversion speed (5x rendering)',
+      'Unlimited batch conversion & compression',
       '500MB max file size per image',
-      'Advanced target compression (KB/MB)',
-      'Custom QR brand logo overlays',
-      'Custom domain short links',
+      'Ultra-high precision KB/MB compression loop',
+      'All next-gen formats (HEIC, AVIF, TIFF, PDF)',
+      'Custom QR brand logo overlays & short links',
       '100% Ad-free experience',
       'Priority 24/7 VIP Support'
     ]
@@ -82,58 +83,58 @@ const PRICING_TIERS = [
 // Feature Comparison Matrix
 const COMPARISON_ROWS = [
   {
-    name: 'Starting per image',
-    free: '10MB',
-    pro: 'Larger file size (50MB)',
-    ultra: 'Highest file size (500MB)'
+    name: 'Supported Formats',
+    free: 'PNG, JPG, WEBP',
+    pro: 'All Formats (PNG, JPG, WEBP, HEIC, AVIF)',
+    ultra: 'All Formats + TIFF, BMP, PDF'
   },
   {
-    name: 'Batch Processing',
+    name: 'Format Converter Studio',
+    free: 'Basic conversion',
+    pro: 'Advanced conversion & scaling',
+    ultra: 'Unlimited high-speed conversion'
+  },
+  {
+    name: 'Target Size Compressor',
+    free: 'Preset KB limits',
+    pro: 'Custom KB & MB limits',
+    ultra: 'Custom KB/MB limits + Binary search'
+  },
+  {
+    name: 'Max File Size per Image',
+    free: '10MB',
+    pro: '50MB',
+    ultra: '500MB'
+  },
+  {
+    name: 'Batch Conversion Limit',
     free: 'Limited (3 files)',
     pro: 'Large batch (50 files)',
-    ultra: 'Highest batch limit (Unlimited)'
+    ultra: 'Unlimited batch'
   },
   {
-    name: 'Other Tools',
-    free: 'Full access to basic tools',
-    pro: 'Full access to premium tools',
-    ultra: 'Full access to all suite tools'
+    name: 'Cropper & Unit Converter',
+    free: 'Basic cropper (px)',
+    pro: 'Full units (px, in, cm, mm)',
+    ultra: 'Full units + Custom shapes'
   },
   {
-    name: 'Output image limit',
-    free: '100 images / 1 hour image processing',
-    pro: '100 images / 1 hour image processing',
+    name: 'Output Image Limit',
+    free: '100 images / hour',
+    pro: '1000 images / hour',
     ultra: 'Unlimited images'
+  },
+  {
+    name: 'Ad Policy',
+    free: 'Ad-supported',
+    pro: '100% Ad-free',
+    ultra: '100% Ad-free'
   },
   {
     name: 'Support',
     free: 'Community Support',
-    pro: 'Priority Support',
-    ultra: '24/7 Support'
-  },
-  {
-    name: 'One-time Processing',
-    free: 'Included',
-    pro: 'Included',
-    ultra: 'Included'
-  },
-  {
-    name: 'Secure and Certified (HTTPS)',
-    free: 'Included',
-    pro: 'Included',
-    ultra: 'Included'
-  },
-  {
-    name: 'SSL/TLS Certified',
-    free: 'Included',
-    pro: 'Included',
-    ultra: 'Included'
-  },
-  {
-    name: 'Ad policy',
-    free: 'Ad-supported',
-    pro: 'No ads',
-    ultra: 'No ads'
+    pro: '24/7 Priority Support',
+    ultra: '24/7 VIP Support'
   }
 ];
 
@@ -213,6 +214,7 @@ export default function PricingPage() {
   const { theme } = useHeroTheme();
   const isDark = theme === 'dark';
 
+  const [mobileTab, setMobileTab] = useState<'free' | 'pro' | 'ultra'>('pro');
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [faqQuery, setFaqQuery] = useState('');
 
@@ -232,15 +234,15 @@ export default function PricingPage() {
     >
       {/* HERO SECTION WITH CLOUD BACKDROP (MATCHING OTHER SECTIONS) */}
       <div
-        className={`relative bg-sky-cloud-hero border-b overflow-hidden transition-colors duration-300 ${
+        className={`relative bg-sky-cloud-hero border-b transition-colors duration-300 ${
           isDark ? 'border-white/10' : 'border-zinc-200/60'
         }`}
       >
         <Navbar />
 
-        {/* HERO HEADLINE (MATCHING OTHER HERO SECTIONS) */}
-        <section className="pt-10 pb-8 px-4 sm:px-6 lg:px-8 text-center">
-          <div className="max-w-4xl mx-auto space-y-4">
+        {/* HERO HEADLINE */}
+        <section className="pt-6 sm:pt-8 pb-4 sm:pb-6 px-4 sm:px-6 lg:px-8 text-center">
+          <div className="max-w-4xl mx-auto space-y-2">
             <h1
               className={`text-3xl sm:text-3xl md:text-3xl font-black tracking-tight leading-tight max-w-4xl mx-auto font-heading transition-colors duration-300 ${
                 isDark ? 'text-white' : 'text-slate-900'
@@ -257,7 +259,7 @@ export default function PricingPage() {
             </h1>
 
             <p
-              className={`text-sm sm:text-base md:text-lg max-w-xl mx-auto font-normal leading-relaxed transition-colors duration-300 ${
+              className={`text-sm sm:text-base max-w-xl mx-auto font-normal leading-relaxed transition-colors duration-300 ${
                 isDark ? 'text-slate-300' : 'text-slate-600'
               }`}
             >
@@ -267,20 +269,20 @@ export default function PricingPage() {
         </section>
 
         {/* THE 3 PRICING CARDS */}
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 pt-2">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 pt-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6 items-stretch">
               
               {/* CARD 1: FREE */}
               <div
-                className={`rounded-[2rem] p-7 sm:p-8 flex flex-col justify-between transition-all duration-300 ${
+                className={`rounded-[2rem] p-7 sm:p-8 flex flex-col justify-between transition-all duration-300 transform hover:-translate-y-2 cursor-pointer ${
                   isDark
-                    ? 'bg-[#0D111A] border border-white/[0.08] shadow-[0_10px_30px_rgba(0,0,0,0.5)] hover:border-white/20'
-                    : 'bg-white border border-slate-200/80 shadow-[0_4px_24px_rgba(0,0,0,0.04)] hover:border-blue-200 hover:shadow-[0_10px_30px_rgba(30,80,242,0.06)]'
+                    ? 'bg-[#0D111A] border border-white/[0.08] shadow-[0_10px_30px_rgba(0,0,0,0.5)] hover:border-white/25 hover:shadow-[0_20px_45px_rgba(255,255,255,0.06)]'
+                    : 'bg-white border border-slate-200/80 shadow-[0_4px_24px_rgba(0,0,0,0.04)] hover:border-blue-300 hover:shadow-[0_20px_40px_rgba(30,80,242,0.12)]'
                 }`}
               >
                 <div className="space-y-5">
                   <h3
-                    className={`!font-sans text-base font-bold transition-colors ${
+                    className={`text-base font-bold transition-colors ${
                       isDark ? 'text-white' : 'text-slate-900'
                     }`}
                   >
@@ -290,14 +292,14 @@ export default function PricingPage() {
                   {/* Price */}
                   <div className="flex items-baseline gap-1.5">
                     <span
-                      className={`!font-sans text-4xl sm:text-5xl font-extrabold tracking-tight transition-colors ${
+                      className={`text-4xl sm:text-5xl font-extrabold tracking-tight transition-colors ${
                         isDark ? 'text-white' : 'text-slate-900'
                       }`}
                     >
                       $0
                     </span>
                     <span
-                      className={`!font-sans text-xs font-medium transition-colors ${
+                      className={`text-xs font-medium transition-colors ${
                         isDark ? 'text-zinc-400' : 'text-slate-500'
                       }`}
                     >
@@ -306,7 +308,7 @@ export default function PricingPage() {
                   </div>
 
                   <p
-                    className={`!font-sans text-xs font-normal leading-relaxed min-h-[32px] transition-colors ${
+                    className={`text-xs font-normal leading-relaxed min-h-[32px] transition-colors ${
                       isDark ? 'text-zinc-400' : 'text-slate-500'
                     }`}
                   >
@@ -317,7 +319,7 @@ export default function PricingPage() {
                   <div className="pt-2">
                     <Link
                       href="/"
-                      className={`!font-sans w-full py-3 px-4 rounded-xl text-xs font-semibold transition-all shadow-xs flex items-center justify-center cursor-pointer active:scale-98 ${
+                      className={`w-full py-3 px-4 rounded-xl text-xs font-semibold transition-all shadow-xs flex items-center justify-center cursor-pointer active:scale-98 ${
                         isDark
                           ? 'bg-[#161B26] hover:bg-[#1E2433] border border-white/10 text-white'
                           : 'bg-slate-100 hover:bg-slate-200 text-slate-900 border border-slate-200/80'
@@ -326,7 +328,7 @@ export default function PricingPage() {
                       Sign Up Now
                     </Link>
                     <span
-                      className={`!font-sans text-[11px] text-center block mt-2 font-normal transition-colors ${
+                      className={`text-[11px] text-center block mt-2 font-normal transition-colors ${
                         isDark ? 'text-zinc-500' : 'text-slate-400'
                       }`}
                     >
@@ -344,14 +346,14 @@ export default function PricingPage() {
                   {/* Features */}
                   <div className="space-y-3 pt-1">
                     <div
-                      className={`!font-sans text-xs font-bold transition-colors ${
+                      className={`text-xs font-bold transition-colors ${
                         isDark ? 'text-white' : 'text-slate-900'
                       }`}
                     >
                       Free plan includes:
                     </div>
                     <ul
-                      className={`space-y-2.5 text-xs font-normal !font-sans transition-colors ${
+                      className={`space-y-2.5 text-xs font-normal transition-colors ${
                         isDark ? 'text-zinc-300' : 'text-slate-600'
                       }`}
                     >
@@ -371,23 +373,23 @@ export default function PricingPage() {
               </div>
 
               {/* CARD 2: PRO (THE HERO RADIANT BLUE CARD) */}
-              <div className="rounded-[2rem] p-7 sm:p-8 bg-gradient-to-b from-[#2B4BEE] via-[#243ED4] to-[#182B99] text-white border border-blue-400/30 shadow-[0_12px_45px_rgba(37,99,235,0.35)] flex flex-col justify-between relative transition-all duration-300 hover:shadow-[0_16px_55px_rgba(37,99,235,0.45)] md:-translate-y-2">
+              <div className="rounded-[2rem] p-7 sm:p-8 bg-gradient-to-b from-[#2B4BEE] via-[#243ED4] to-[#182B99] text-white border border-blue-400/30 shadow-[0_12px_45px_rgba(37,99,235,0.35)] flex flex-col justify-between relative transition-all duration-300 hover:shadow-[0_22px_60px_rgba(37,99,235,0.55)] md:-translate-y-2 hover:-translate-y-3 hover:scale-[1.02] cursor-pointer">
                 <div className="space-y-5">
-                  <h3 className="!font-sans text-base font-bold text-white">
+                  <h3 className="text-base font-bold text-white">
                     Pro
                   </h3>
 
                   {/* Price */}
                   <div className="flex items-baseline gap-1.5">
-                    <span className="!font-sans text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
+                    <span className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
                       $6.99
                     </span>
-                    <span className="!font-sans text-xs text-blue-100 font-medium">
+                    <span className="text-xs text-blue-100 font-medium">
                       / month
                     </span>
                   </div>
 
-                  <p className="!font-sans text-xs text-blue-100/90 font-normal leading-relaxed min-h-[32px]">
+                  <p className="text-xs text-blue-100/90 font-normal leading-relaxed min-h-[32px]">
                     For professionals &amp; creators
                   </p>
 
@@ -395,11 +397,11 @@ export default function PricingPage() {
                   <div className="pt-2">
                     <Link
                       href="/?plan=pro"
-                      className="!font-sans w-full py-3.5 px-4 rounded-xl text-xs font-bold bg-white hover:bg-slate-100 text-slate-950 transition-all shadow-md flex items-center justify-center cursor-pointer active:scale-98"
+                      className="w-full py-3.5 px-4 rounded-xl text-xs font-bold bg-white hover:bg-slate-100 text-slate-950 transition-all shadow-md flex items-center justify-center cursor-pointer active:scale-98"
                     >
                       Start Free Trial
                     </Link>
-                    <span className="!font-sans text-[11px] text-blue-200/90 text-center block mt-2 font-normal">
+                    <span className="text-[11px] text-blue-200/90 text-center block mt-2 font-normal">
                       Billed monthly
                     </span>
                   </div>
@@ -409,10 +411,10 @@ export default function PricingPage() {
 
                   {/* Features */}
                   <div className="space-y-3 pt-1">
-                    <div className="!font-sans text-xs font-bold text-white">
+                    <div className="text-xs font-bold text-white">
                       All free plan features, plus:
                     </div>
-                    <ul className="space-y-2.5 text-xs text-white font-normal !font-sans">
+                    <ul className="space-y-2.5 text-xs text-white font-normal">
                       {PRICING_TIERS[1].features.map((feature, idx) => (
                         <li key={idx} className="flex items-center gap-2.5">
                           <Check className="w-3.5 h-3.5 text-white stroke-[2.5] shrink-0" />
@@ -426,15 +428,15 @@ export default function PricingPage() {
 
               {/* CARD 3: ULTRA */}
               <div
-                className={`rounded-[2rem] p-7 sm:p-8 flex flex-col justify-between transition-all duration-300 ${
+                className={`rounded-[2rem] p-7 sm:p-8 flex flex-col justify-between transition-all duration-300 transform hover:-translate-y-2 cursor-pointer ${
                   isDark
-                    ? 'bg-[#0D111A] border border-white/[0.08] shadow-[0_10px_30px_rgba(0,0,0,0.5)] hover:border-white/20'
-                    : 'bg-white border border-slate-200/80 shadow-[0_4px_24px_rgba(0,0,0,0.04)] hover:border-blue-200 hover:shadow-[0_10px_30px_rgba(30,80,242,0.06)]'
+                    ? 'bg-[#0D111A] border border-white/[0.08] shadow-[0_10px_30px_rgba(0,0,0,0.5)] hover:border-white/25 hover:shadow-[0_20px_45px_rgba(255,255,255,0.06)]'
+                    : 'bg-white border border-slate-200/80 shadow-[0_4px_24px_rgba(0,0,0,0.04)] hover:border-blue-300 hover:shadow-[0_20px_40px_rgba(30,80,242,0.12)]'
                 }`}
               >
                 <div className="space-y-5">
                   <h3
-                    className={`!font-sans text-base font-bold transition-colors ${
+                    className={`text-base font-bold transition-colors ${
                       isDark ? 'text-white' : 'text-slate-900'
                     }`}
                   >
@@ -444,14 +446,14 @@ export default function PricingPage() {
                   {/* Price */}
                   <div className="flex items-baseline gap-1.5">
                     <span
-                      className={`!font-sans text-4xl sm:text-5xl font-extrabold tracking-tight transition-colors ${
+                      className={`text-4xl sm:text-5xl font-extrabold tracking-tight transition-colors ${
                         isDark ? 'text-white' : 'text-slate-900'
                       }`}
                     >
                       $9.99
                     </span>
                     <span
-                      className={`!font-sans text-xs font-medium transition-colors ${
+                      className={`text-xs font-medium transition-colors ${
                         isDark ? 'text-zinc-400' : 'text-slate-500'
                       }`}
                     >
@@ -460,7 +462,7 @@ export default function PricingPage() {
                   </div>
 
                   <p
-                    className={`!font-sans text-xs font-normal leading-relaxed min-h-[32px] transition-colors ${
+                    className={`text-xs font-normal leading-relaxed min-h-[32px] transition-colors ${
                       isDark ? 'text-zinc-400' : 'text-slate-500'
                     }`}
                   >
@@ -471,7 +473,7 @@ export default function PricingPage() {
                   <div className="pt-2">
                     <Link
                       href="/?plan=ultra"
-                      className={`!font-sans w-full py-3 px-4 rounded-xl text-xs font-semibold transition-all shadow-xs flex items-center justify-center cursor-pointer active:scale-98 ${
+                      className={`w-full py-3 px-4 rounded-xl text-xs font-semibold transition-all shadow-xs flex items-center justify-center cursor-pointer active:scale-98 ${
                         isDark
                           ? 'bg-[#161B26] hover:bg-[#1E2433] border border-white/10 text-white'
                           : 'bg-slate-100 hover:bg-slate-200 text-slate-900 border border-slate-200/80'
@@ -480,7 +482,7 @@ export default function PricingPage() {
                       Start Free Trial
                     </Link>
                     <span
-                      className={`!font-sans text-[11px] text-center block mt-2 font-normal transition-colors ${
+                      className={`text-[11px] text-center block mt-2 font-normal transition-colors ${
                         isDark ? 'text-zinc-500' : 'text-slate-400'
                       }`}
                     >
@@ -498,14 +500,14 @@ export default function PricingPage() {
                   {/* Features */}
                   <div className="space-y-3 pt-1">
                     <div
-                      className={`!font-sans text-xs font-bold transition-colors ${
+                      className={`text-xs font-bold transition-colors ${
                         isDark ? 'text-white' : 'text-slate-900'
                       }`}
                     >
                       All pro plan features, plus:
                     </div>
                     <ul
-                      className={`space-y-2.5 text-xs font-normal !font-sans transition-colors ${
+                      className={`space-y-2.5 text-xs font-normal transition-colors ${
                         isDark ? 'text-zinc-300' : 'text-slate-600'
                       }`}
                     >
@@ -530,17 +532,17 @@ export default function PricingPage() {
 
       {/* MAIN BODY: COMPARISON MATRIX & FAQ */}
       <main className="flex-1 w-full">
-        <section className="px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full py-16 space-y-8">
-          <div className="text-center space-y-2">
+        <section className="px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full py-8 sm:py-10 space-y-6">
+          <div className="text-center space-y-1.5">
             <h2
-              className={`!font-sans text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight transition-colors ${
+              className={`text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight transition-colors ${
                 isDark ? 'text-white' : 'text-slate-900'
               }`}
             >
               Compare plan features
             </h2>
             <p
-              className={`!font-sans text-xs sm:text-sm font-normal transition-colors ${
+              className={`text-xs sm:text-sm font-normal transition-colors ${
                 isDark ? 'text-zinc-400' : 'text-slate-500'
               }`}
             >
@@ -548,161 +550,173 @@ export default function PricingPage() {
             </p>
           </div>
 
-          {/* Clean Day / Dark Table */}
-          <div
-            className={`overflow-x-auto rounded-3xl border shadow-xl transition-colors ${
-              isDark
-                ? 'border-white/[0.08] bg-[#0D111A]'
-                : 'border-slate-200/80 bg-white'
-            }`}
-          >
-            <table className="w-full text-left border-collapse min-w-[650px] text-xs !font-sans">
-              <thead>
-                <tr
-                  className={`border-b transition-colors ${
-                    isDark
-                      ? 'border-white/[0.08] bg-white/[0.02]'
-                      : 'border-slate-200/80 bg-slate-50/70'
+          {/* UNIFIED PREMIUM RESPONSIVE COMPARISON TABLE WITH STICKY FIRST COLUMN & TOUCH SWIPE HINT */}
+          <div className="relative">
+            {/* Mobile Scroll Indicator Hint */}
+            <div className="flex items-center justify-between text-[11px] font-semibold text-slate-400 dark:text-zinc-500 mb-2 md:hidden px-1">
+              <span>Feature breakdown</span>
+              <span className="flex items-center gap-1 text-[#1E50F2] dark:text-sky-400 font-bold">
+                Swipe table &rarr;
+              </span>
+            </div>
+
+            <div
+              className={`overflow-x-auto rounded-2xl sm:rounded-3xl border shadow-xl transition-colors scrollbar-thin ${
+                isDark
+                  ? 'border-white/[0.08] bg-[#0D111A]'
+                  : 'border-slate-200/80 bg-white'
+              }`}
+            >
+              <table className="w-full text-left border-collapse min-w-[580px] sm:min-w-[650px] text-xs">
+                <thead>
+                  <tr
+                    className={`border-b transition-colors ${
+                      isDark
+                        ? 'border-white/[0.08] bg-slate-900/90'
+                        : 'border-slate-200/80 bg-slate-50/90'
+                    }`}
+                  >
+                    <th
+                      className={`sticky left-0 z-20 py-3.5 sm:py-4 px-4 sm:px-6 font-bold w-2/5 shadow-xs transition-colors ${
+                        isDark ? 'bg-[#0D111A] text-white' : 'bg-white text-slate-900'
+                      }`}
+                    >
+                      Overview
+                    </th>
+                    <th
+                      className={`py-3.5 sm:py-4 px-3 sm:px-6 font-bold text-center w-1/5 transition-colors ${
+                        isDark ? 'text-zinc-300' : 'text-slate-600'
+                      }`}
+                    >
+                      Free
+                    </th>
+                    <th
+                      className={`py-3.5 sm:py-4 px-3 sm:px-6 font-bold text-center w-1/5 transition-colors ${
+                        isDark ? 'text-sky-400 bg-blue-950/40' : 'text-[#1E50F2] bg-blue-50/70'
+                      }`}
+                    >
+                      Pro
+                    </th>
+                    <th
+                      className={`py-3.5 sm:py-4 px-3 sm:px-6 font-bold text-center w-1/5 transition-colors ${
+                        isDark ? 'text-zinc-300' : 'text-slate-600'
+                      }`}
+                    >
+                      Ultra
+                    </th>
+                  </tr>
+                </thead>
+                <tbody
+                  className={`divide-y transition-colors ${
+                    isDark ? 'divide-white/[0.06]' : 'divide-slate-100'
                   }`}
                 >
-                  <th
-                    className={`py-4 px-6 font-bold w-2/5 transition-colors ${
-                      isDark ? 'text-white' : 'text-slate-900'
-                    }`}
-                  >
-                    Overview
-                  </th>
-                  <th
-                    className={`py-4 px-6 font-bold text-center w-1/5 transition-colors ${
-                      isDark ? 'text-zinc-300' : 'text-slate-600'
-                    }`}
-                  >
-                    Free
-                  </th>
-                  <th
-                    className={`py-4 px-6 font-bold text-center w-1/5 transition-colors ${
-                      isDark ? 'text-sky-400 bg-blue-950/30' : 'text-[#1E50F2] bg-blue-50/50'
-                    }`}
-                  >
-                    Pro
-                  </th>
-                  <th
-                    className={`py-4 px-6 font-bold text-center w-1/5 transition-colors ${
-                      isDark ? 'text-zinc-300' : 'text-slate-600'
-                    }`}
-                  >
-                    Ultra
-                  </th>
-                </tr>
-              </thead>
-              <tbody
-                className={`divide-y transition-colors ${
-                  isDark ? 'divide-white/[0.06]' : 'divide-slate-100'
-                }`}
-              >
-                {COMPARISON_ROWS.map((row, idx) => (
+                  {COMPARISON_ROWS.map((row, idx) => (
+                    <tr
+                      key={idx}
+                      className={`transition-colors ${
+                        isDark ? 'hover:bg-white/[0.02]' : 'hover:bg-slate-50/60'
+                      }`}
+                    >
+                      <td
+                        className={`sticky left-0 z-10 py-3 sm:py-3.5 px-4 sm:px-6 font-semibold transition-colors shadow-xs ${
+                          isDark ? 'bg-[#0D111A] text-zinc-200' : 'bg-white text-slate-800'
+                        }`}
+                      >
+                        {row.name}
+                      </td>
+                      <td
+                        className={`py-3 sm:py-3.5 px-3 sm:px-6 text-center transition-colors ${
+                          isDark ? 'text-zinc-400' : 'text-slate-600'
+                        }`}
+                      >
+                        {row.free}
+                      </td>
+                      <td
+                        className={`py-3 sm:py-3.5 px-3 sm:px-6 text-center font-bold transition-colors ${
+                          isDark
+                            ? 'text-sky-300 bg-blue-950/20'
+                            : 'text-[#1E50F2] bg-blue-50/30'
+                        }`}
+                      >
+                        {row.pro}
+                      </td>
+                      <td
+                        className={`py-3 sm:py-3.5 px-3 sm:px-6 text-center font-medium transition-colors ${
+                          isDark ? 'text-zinc-200' : 'text-slate-800'
+                        }`}
+                      >
+                        {row.ultra}
+                      </td>
+                    </tr>
+                  ))}
+
+                  {/* Table Bottom Action Row */}
                   <tr
-                    key={idx}
-                    className={`transition-colors ${
-                      isDark ? 'hover:bg-white/[0.02]' : 'hover:bg-slate-50/60'
+                    className={`border-t transition-colors ${
+                      isDark
+                        ? 'border-white/[0.08] bg-white/[0.02]'
+                        : 'border-slate-200/80 bg-slate-50/50'
                     }`}
                   >
-                    <td
-                      className={`py-3.5 px-6 font-medium transition-colors ${
-                        isDark ? 'text-zinc-300' : 'text-slate-700'
-                      }`}
-                    >
-                      {row.name}
+                    <td className={`sticky left-0 z-10 py-4 px-4 sm:px-6 font-semibold shadow-xs ${
+                      isDark ? 'bg-[#0D111A]' : 'bg-white'
+                    }`}></td>
+                    <td className="py-4 px-3 sm:px-6 text-center">
+                      <Link
+                        href="/"
+                        className={`inline-block px-3 sm:px-5 py-2 rounded-xl text-[11px] sm:text-xs font-semibold transition-colors shadow-xs whitespace-nowrap ${
+                          isDark
+                            ? 'text-white bg-[#161B26] hover:bg-[#1E2433] border border-white/10'
+                            : 'text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200'
+                        }`}
+                      >
+                        Sign Up
+                      </Link>
                     </td>
                     <td
-                      className={`py-3.5 px-6 text-center transition-colors ${
-                        isDark ? 'text-zinc-400' : 'text-slate-600'
+                      className={`py-4 px-3 sm:px-6 text-center ${
+                        isDark ? 'bg-blue-950/20' : 'bg-blue-50/30'
                       }`}
                     >
-                      {row.free}
+                      <Link
+                        href="/?plan=pro"
+                        className="inline-block px-3 sm:px-5 py-2 rounded-xl text-[11px] sm:text-xs font-bold text-white bg-[#1E50F2] hover:bg-[#1945D4] transition-colors shadow-md whitespace-nowrap"
+                      >
+                        Try Pro
+                      </Link>
                     </td>
-                    <td
-                      className={`py-3.5 px-6 text-center font-semibold transition-colors ${
-                        isDark
-                          ? 'text-white bg-blue-950/20'
-                          : 'text-slate-900 bg-blue-50/30'
-                      }`}
-                    >
-                      {row.pro}
-                    </td>
-                    <td
-                      className={`py-3.5 px-6 text-center font-semibold transition-colors ${
-                        isDark ? 'text-zinc-200' : 'text-slate-800'
-                      }`}
-                    >
-                      {row.ultra}
+                    <td className="py-4 px-3 sm:px-6 text-center">
+                      <Link
+                        href="/?plan=ultra"
+                        className={`inline-block px-3 sm:px-5 py-2 rounded-xl text-[11px] sm:text-xs font-semibold transition-colors shadow-xs whitespace-nowrap ${
+                          isDark
+                            ? 'text-white bg-[#161B26] hover:bg-[#1E2433] border border-white/10'
+                            : 'text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200'
+                        }`}
+                      >
+                        Try Ultra
+                      </Link>
                     </td>
                   </tr>
-                ))}
-
-                {/* Table Bottom Action Row */}
-                <tr
-                  className={`border-t transition-colors ${
-                    isDark
-                      ? 'border-white/[0.08] bg-white/[0.02]'
-                      : 'border-slate-200/80 bg-slate-50/50'
-                  }`}
-                >
-                  <td className="py-5 px-6 font-semibold"></td>
-                  <td className="py-5 px-6 text-center">
-                    <Link
-                      href="/"
-                      className={`inline-block px-5 py-2 rounded-xl text-xs font-semibold transition-colors shadow-xs ${
-                        isDark
-                          ? 'text-white bg-[#161B26] hover:bg-[#1E2433] border border-white/10'
-                          : 'text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200'
-                      }`}
-                    >
-                      Sign Up Now
-                    </Link>
-                  </td>
-                  <td
-                    className={`py-5 px-6 text-center ${
-                      isDark ? 'bg-blue-950/20' : 'bg-blue-50/30'
-                    }`}
-                  >
-                    <Link
-                      href="/?plan=pro"
-                      className="inline-block px-5 py-2 rounded-xl text-xs font-bold text-white bg-[#1E50F2] hover:bg-[#1945D4] transition-colors shadow-xs"
-                    >
-                      Start Free Trial
-                    </Link>
-                  </td>
-                  <td className="py-5 px-6 text-center">
-                    <Link
-                      href="/?plan=ultra"
-                      className={`inline-block px-5 py-2 rounded-xl text-xs font-semibold transition-colors shadow-xs ${
-                        isDark
-                          ? 'text-white bg-[#161B26] hover:bg-[#1E2433] border border-white/10'
-                          : 'text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200'
-                      }`}
-                    >
-                      Start Free Trial
-                    </Link>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                </tbody>
+              </table>
+            </div>
           </div>
         </section>
 
         {/* FREQUENTLY ASKED QUESTIONS SECTION */}
-        <section className="px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full py-12 space-y-6">
-          <div className="text-center space-y-2">
+        <section className="px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full py-6 sm:py-8 space-y-5">
+          <div className="text-center space-y-1.5">
             <h2
-              className={`!font-sans text-2xl sm:text-3xl font-extrabold tracking-tight transition-colors ${
+              className={`text-2xl sm:text-3xl font-extrabold tracking-tight transition-colors ${
                 isDark ? 'text-white' : 'text-slate-900'
               }`}
             >
               Frequently Asked Questions
             </h2>
             <p
-              className={`!font-sans text-xs sm:text-sm font-normal transition-colors ${
+              className={`text-xs sm:text-sm font-normal transition-colors ${
                 isDark ? 'text-zinc-400' : 'text-slate-500'
               }`}
             >
@@ -724,7 +738,7 @@ export default function PricingPage() {
               onChange={(e) => setFaqQuery(e.target.value)}
               placeholder="Search questions (e.g. security, refund, quota)..."
               aria-label="Search frequently asked questions"
-              className={`!font-sans w-full rounded-xl pl-11 pr-4 py-2.5 text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-[#2B4BEE]/40 focus:border-[#2B4BEE] ${
+              className={`w-full rounded-xl pl-11 pr-4 py-2.5 text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-[#2B4BEE]/40 focus:border-[#2B4BEE] ${
                 isDark
                   ? 'bg-[#0D111A] border border-white/[0.1] text-white placeholder-zinc-500'
                   : 'bg-white border border-slate-200/80 text-slate-900 placeholder-slate-400 shadow-xs'
@@ -734,7 +748,7 @@ export default function PricingPage() {
               <button
                 type="button"
                 onClick={() => setFaqQuery('')}
-                className={`!font-sans absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold cursor-pointer ${
+                className={`absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold cursor-pointer ${
                   isDark
                     ? 'text-zinc-400 hover:text-white'
                     : 'text-slate-400 hover:text-slate-700'
@@ -749,7 +763,7 @@ export default function PricingPage() {
           <div className="space-y-2.5 pt-2">
             {filteredFaqs.length === 0 ? (
               <div
-                className={`!font-sans text-center py-12 text-xs ${
+                className={`text-center py-12 text-xs ${
                   isDark ? 'text-zinc-400' : 'text-slate-500'
                 }`}
               >
@@ -778,7 +792,7 @@ export default function PricingPage() {
                       }`}
                     >
                       <span
-                        className={`!font-sans text-xs sm:text-sm font-semibold flex items-center gap-2 ${
+                        className={`text-xs sm:text-sm font-semibold flex items-center gap-2 ${
                           isDark ? 'text-white' : 'text-slate-900'
                         }`}
                       >
@@ -809,7 +823,7 @@ export default function PricingPage() {
                           transition={{ duration: 0.2 }}
                         >
                           <div
-                            className={`!font-sans p-4 text-xs leading-relaxed border-t transition-colors ${
+                            className={`p-4 text-xs leading-relaxed border-t transition-colors ${
                               isDark
                                 ? 'text-zinc-300 border-white/[0.06] bg-black/20'
                                 : 'text-slate-600 border-slate-100 bg-slate-50/40'
@@ -828,7 +842,7 @@ export default function PricingPage() {
         </section>
 
         {/* BOTTOM CTA BANNER */}
-        <section className="px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full pb-20">
+        <section className="px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full pb-10 sm:pb-12">
           <div
             className={`relative rounded-3xl p-8 sm:p-10 overflow-hidden border text-center space-y-6 shadow-xl transition-colors ${
               isDark
@@ -838,14 +852,14 @@ export default function PricingPage() {
           >
             <div className="relative z-10 space-y-2 max-w-2xl mx-auto">
               <h3
-                className={`!font-sans text-2xl sm:text-3xl font-bold tracking-tight transition-colors ${
+                className={`text-2xl sm:text-3xl font-bold tracking-tight transition-colors ${
                   isDark ? 'text-white' : 'text-slate-900'
                 }`}
               >
                 Ready to experience high-precision image editing?
               </h3>
               <p
-                className={`!font-sans text-xs sm:text-sm font-normal transition-colors ${
+                className={`text-xs sm:text-sm font-normal transition-colors ${
                   isDark ? 'text-zinc-400' : 'text-slate-500'
                 }`}
               >
@@ -856,7 +870,7 @@ export default function PricingPage() {
             <div className="relative z-10 flex flex-wrap items-center justify-center gap-3 pt-2">
               <Link
                 href="/"
-                className={`!font-sans px-6 py-2.5 text-xs font-semibold rounded-xl transition-all shadow-xs cursor-pointer ${
+                className={`px-6 py-2.5 text-xs font-semibold rounded-xl transition-all shadow-xs cursor-pointer ${
                   isDark
                     ? 'text-white bg-[#161B26] hover:bg-[#1E2433] border border-white/10'
                     : 'text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200/80'
@@ -866,7 +880,7 @@ export default function PricingPage() {
               </Link>
               <Link
                 href="/?plan=pro"
-                className="!font-sans px-6 py-2.5 text-xs font-bold text-white bg-[#1E50F2] hover:bg-[#1945D4] rounded-xl transition-all shadow-md cursor-pointer active:scale-98"
+                className="px-6 py-2.5 text-xs font-bold text-white bg-[#1E50F2] hover:bg-[#1945D4] rounded-xl transition-all shadow-md cursor-pointer active:scale-98"
               >
                 Start Free Trial
               </Link>

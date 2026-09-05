@@ -25,7 +25,7 @@ export default function ConvertPairPage({ params }: ConvertPageProps) {
     <div className="converter-page-container min-h-screen flex flex-col bg-[#F8FAFC] text-slate-900 font-sans selection:bg-slate-900 selection:text-white transition-colors duration-300">
       <main className="flex-1 w-full">
         {/* HERO SECTION WITH CLOUD BACKDROP */}
-        <div className="relative bg-sky-cloud-hero border-b border-zinc-200/60 overflow-hidden min-h-screen flex flex-col justify-between pb-16">
+        <div className="relative bg-sky-cloud-hero border-b border-zinc-200/60 min-h-screen flex flex-col justify-between pb-16">
           <div>
             <Navbar />
 

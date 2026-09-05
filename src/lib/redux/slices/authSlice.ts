@@ -46,6 +46,53 @@ export const loginWithGoogle = createAsyncThunk(
   }
 );
 
+// Async Thunk: Request Email OTP Verification Code
+export const requestEmailOtp = createAsyncThunk(
+  'auth/requestEmailOtp',
+  async (email: string, { rejectWithValue }) => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/auth/request-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        return rejectWithValue(data.error || 'Failed to send verification code.');
+      }
+
+      return data.message as string;
+    } catch (err: any) {
+      return rejectWithValue(err.message || 'Network error while requesting verification code.');
+    }
+  }
+);
+
+// Async Thunk: Verify Email OTP & Login (Sets HttpOnly Cookie via Backend Express Server)
+export const verifyEmailOtp = createAsyncThunk(
+  'auth/verifyEmailOtp',
+  async ({ email, otp }: { email: string; otp: string }, { rejectWithValue }) => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/auth/verify-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email, otp }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        return rejectWithValue(data.error || 'Invalid or expired verification code.');
+      }
+
+      return data.user as UserProfile;
+    } catch (err: any) {
+      return rejectWithValue(err.message || 'Network error while verifying OTP.');
+    }
+  }
+);
+
 // Async Thunk: Re-hydrate user session on app launch from HttpOnly Cookie (Backend Express Server)
 export const fetchCurrentUser = createAsyncThunk(
   'auth/fetchCurrentUser',
@@ -103,6 +150,23 @@ const authSlice = createSlice({
         state.user = action.payload;
       })
       .addCase(loginWithGoogle.rejected, (state, action) => {
+        state.loading = false;
+        state.isAuthenticated = false;
+        state.error = action.payload as string;
+      });
+
+    // verifyEmailOtp
+    builder
+      .addCase(verifyEmailOtp.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(verifyEmailOtp.fulfilled, (state, action: PayloadAction<UserProfile>) => {
+        state.loading = false;
+        state.isAuthenticated = true;
+        state.user = action.payload;
+      })
+      .addCase(verifyEmailOtp.rejected, (state, action) => {
         state.loading = false;
         state.isAuthenticated = false;
         state.error = action.payload as string;

@@ -652,24 +652,24 @@ export function ImageConverterStudio({
       </div>
 
       {/* 2. TARGET FORMAT & SETTINGS PANEL */}
-      <div className={`border rounded-3xl p-6 sm:p-8 transition-all duration-300 space-y-6 ${
+      <div className={`p-6 sm:p-8 transition-all duration-300 space-y-6 ${
         isDark
-          ? 'bg-[#0B1226]/85 border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-xl text-white'
-          : 'bg-white border-zinc-200/80 shadow-sm text-slate-900'
+          ? 'text-white'
+          : 'text-slate-900'
       }`}>
 
         {/* ROW 1: FORMAT SELECTION HEADER */}
-        <div className={`flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b transition-colors ${
+        <div className={`flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 transition-colors ${
           isDark ? 'border-white/10' : 'border-zinc-100'
         }`}>
           <div>
             <div className={`text-base sm:text-lg font-bold flex items-center gap-2 font-sans font-body !font-sans ${
               isDark ? 'text-white' : 'text-slate-900'
             }`}>
-              <Layers className={`w-5 h-5 ${isDark ? 'text-sky-400' : 'text-slate-800'}`} />
+             
               <span>1. Choose Target Output Format</span>
             </div>
-            <p className={`text-xs font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+            <p className={`text-xs font-medium ${isDark ? 'text-slate-400' : 'text-slate-900'}`}>
               Select the file format you want your images converted into.
             </p>
           </div>
@@ -710,41 +710,30 @@ export function ImageConverterStudio({
                 key={opt.id}
                 type="button"
                 onClick={() => handleGlobalTargetFormatChange(opt.id)}
-                className={`p-3 rounded-2xl border text-left transition-all relative group cursor-pointer flex flex-col justify-between ${
+                className={`p-3.5 rounded-2xl text-left transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] relative group cursor-pointer flex flex-col justify-between active:scale-95 overflow-hidden ${
                   isSelected
-                    ? isDark
-                      ? 'bg-white text-slate-950 border-white shadow-md ring-2 ring-white/30 font-bold'
-                      : 'bg-slate-900 text-white border-slate-900 shadow-md ring-2 ring-slate-900/20'
+                    ? 'bg-[#1E50F2] text-white shadow-[0_8px_24px_rgba(30,80,242,0.45)] font-bold scale-[1.03] z-10'
                     : isDark
-                      ? 'bg-slate-900/70 hover:bg-slate-800/90 text-slate-200 border-white/10 hover:border-white/25'
-                      : 'bg-zinc-50 hover:bg-white text-slate-900 border-zinc-200/80 hover:border-slate-300'
+                      ? 'bg-slate-900/70 hover:bg-slate-800 text-slate-200 hover:shadow-[0_6px_24px_rgba(30,80,242,0.25)] hover:scale-[1.02]'
+                      : 'bg-zinc-100/90 hover:bg-white text-slate-900 hover:shadow-lg hover:scale-[1.02]'
                 }`}
               >
                 <div>
-                  <div className="flex items-center justify-between gap-1 mb-1">
+                  <div className="mb-1">
                     <span className="font-bold text-xs sm:text-sm">{opt.label}</span>
-                    <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded-full uppercase ${
-                      isSelected
-                        ? isDark ? 'bg-slate-950/15 text-slate-950 font-black' : 'bg-white/20 text-white'
-                        : isDark ? 'bg-slate-800 text-slate-300' : 'bg-zinc-200 text-slate-700'
-                    }`}>
-                      {opt.ext}
-                    </span>
                   </div>
                   <p className={`text-[10px] line-clamp-2 leading-snug font-normal ${
                     isSelected
-                      ? isDark ? 'text-slate-800 font-medium' : 'text-slate-300'
-                      : isDark ? 'text-slate-400' : 'text-slate-500'
+                      ? 'text-blue-100 font-medium'
+                      : isDark ? 'text-slate-400 group-hover:text-slate-200' : 'text-slate-500'
                   }`}>
                     {opt.description}
                   </p>
                 </div>
 
                 {isSelected && (
-                  <div className={`mt-2 flex items-center gap-1 text-[10px] font-bold ${
-                    isDark ? 'text-emerald-700' : 'text-emerald-400'
-                  }`}>
-                    <CheckCircle2 className="w-3 h-3" />
+                  <div className="mt-2 flex items-center gap-1 text-[10px] font-extrabold text-white animate-in fade-in zoom-in-75 duration-200">
+                    <CheckCircle2 className="w-3 h-3 text-white fill-white/20" />
                     <span>Selected</span>
                   </div>
                 )}
@@ -754,7 +743,7 @@ export function ImageConverterStudio({
         </div>
 
         {/* ROW 2: OPTIONAL CUSTOM DIMENSIONS */}
-        <div className={`pt-4 border-t space-y-4 transition-colors ${
+        <div className={`pt-4 space-y-4 transition-colors ${
           isDark ? 'border-white/10' : 'border-zinc-100'
         }`}>
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -762,10 +751,10 @@ export function ImageConverterStudio({
               <div className={`text-sm font-bold flex items-center gap-2 font-sans font-body !font-sans ${
                 isDark ? 'text-white' : 'text-slate-900'
               }`}>
-                <Scaling className={`w-4 h-4 ${isDark ? 'text-sky-400' : 'text-slate-700'}`} />
+                
                 <span>2. Custom Output Dimensions (Optional)</span>
               </div>
-              <p className={`text-xs font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+              <p className={`text-xs font-medium ${isDark ? 'text-slate-400' : 'text-slate-900'}`}>
                 Keep original image resolution or resize to custom width &amp; height.
               </p>
             </div>
@@ -897,14 +886,12 @@ export function ImageConverterStudio({
                           key={preset.label}
                           type="button"
                           onClick={() => applyPreset(preset)}
-                          className={`px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border transition-all cursor-pointer ${
+                          className={`px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-95 cursor-pointer ${
                             isPresetActive
-                              ? isDark
-                                ? 'bg-white text-slate-950 border-white'
-                                : 'bg-slate-900 text-white border-slate-900'
+                              ? 'bg-[#1E50F2] text-white shadow-[0_4px_16px_rgba(30,80,242,0.4)] scale-[1.04]'
                               : isDark
-                                ? 'bg-slate-950/80 text-slate-300 border-white/15 hover:bg-slate-800'
-                                : 'bg-white text-slate-700 border-zinc-200 hover:bg-zinc-100'
+                                ? 'bg-slate-900/60 text-slate-300 hover:bg-slate-800 hover:text-white hover:shadow-[0_4px_14px_rgba(30,80,242,0.2)]'
+                                : 'bg-zinc-100 text-slate-700 hover:bg-white hover:text-blue-600 hover:shadow-md'
                           }`}
                         >
                           {preset.label}
@@ -954,14 +941,12 @@ export function ImageConverterStudio({
                     key={pct}
                     type="button"
                     onClick={() => setScalePercent(pct)}
-                    className={`px-3 py-1 rounded-lg text-xs font-bold border transition-colors cursor-pointer ${
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-95 cursor-pointer ${
                       scalePercent === pct
-                        ? isDark
-                          ? 'bg-white text-slate-950 border-white'
-                          : 'bg-slate-900 text-white border-slate-900'
+                        ? 'bg-[#1E50F2] text-white shadow-[0_4px_16px_rgba(30,80,242,0.4)] scale-[1.04]'
                         : isDark
-                          ? 'bg-slate-950/80 text-slate-300 border-white/15 hover:bg-slate-800'
-                          : 'bg-white text-slate-700 border-zinc-200 hover:bg-zinc-100'
+                          ? 'bg-slate-900/60 text-slate-300 hover:bg-slate-800 hover:text-white hover:shadow-[0_4px_14px_rgba(30,80,242,0.2)]'
+                          : 'bg-zinc-100 text-slate-700 hover:bg-white hover:text-blue-600 hover:shadow-md'
                     }`}
                   >
                     {pct}%
@@ -974,7 +959,7 @@ export function ImageConverterStudio({
         </div>
 
         {/* ROW 3: TARGET OUTPUT FILE SIZE (KB / MB) */}
-        <div className={`pt-4 border-t space-y-4 transition-colors ${
+        <div className={`pt-4 space-y-4 transition-colors ${
           isDark ? 'border-white/10' : 'border-zinc-100'
         }`}>
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -982,10 +967,9 @@ export function ImageConverterStudio({
               <div className={`text-sm font-bold flex items-center gap-2 font-sans font-body !font-sans ${
                 isDark ? 'text-white' : 'text-slate-900'
               }`}>
-                <Gauge className={`w-4 h-4 ${isDark ? 'text-emerald-400' : 'text-slate-700'}`} />
                 <span>3. Target Output File Size in KB / MB (Optional)</span>
               </div>
-              <p className={`text-xs font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+              <p className={`text-xs font-medium ${isDark ? 'text-slate-400' : 'text-slate-900'}`}>
                 Compress the output image to stay strictly under a specific KB or MB limit (e.g. for portals, forms, email limits).
               </p>
             </div>
@@ -1015,8 +999,10 @@ export function ImageConverterStudio({
 
           {/* TARGET FILE SIZE INPUT & PRESETS */}
           {targetSizeEnabled && (
-            <div className={`p-4 sm:p-5 rounded-2xl border space-y-4 animate-in fade-in duration-150 transition-colors ${
-              isDark ? 'bg-slate-900/60 border-white/10' : 'bg-zinc-50 border-zinc-200/80'
+            <div className={`p-4 sm:p-5 rounded-2xl border space-y-4 animate-in fade-in duration-150 transition-all ${
+              isDark
+                ? 'bg-[#0B1226]/90 border-blue-500/20 shadow-[0_8px_32px_rgba(0,0,0,0.5)]'
+                : 'bg-slate-50 border-slate-200/80 shadow-xs'
             }`}>
               <div className="flex flex-wrap items-center gap-4">
 
@@ -1087,14 +1073,12 @@ export function ImageConverterStudio({
                           key={preset.label}
                           type="button"
                           onClick={() => applyTargetSizePreset(preset)}
-                          className={`px-3 py-1.5 rounded-lg text-[11px] font-bold border transition-all cursor-pointer ${
+                          className={`px-3.5 py-1.5 rounded-xl text-[11px] font-bold transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-95 cursor-pointer ${
                             isPresetSel
-                              ? isDark
-                                ? 'bg-white text-slate-950 border-white'
-                                : 'bg-slate-900 text-white border-slate-900'
+                              ? 'bg-[#1E50F2] text-white shadow-[0_4px_16px_rgba(30,80,242,0.4)] scale-[1.04]'
                               : isDark
-                                ? 'bg-slate-950/80 text-slate-300 border-white/15 hover:bg-slate-800'
-                                : 'bg-white text-slate-700 border-zinc-200 hover:bg-zinc-100'
+                                ? 'bg-slate-900/60 text-slate-300 hover:bg-slate-800 hover:text-white hover:shadow-[0_4px_14px_rgba(30,80,242,0.2)]'
+                                : 'bg-zinc-100 text-slate-700 hover:bg-white hover:text-blue-600 hover:shadow-md'
                           }`}
                         >
                           {preset.label}

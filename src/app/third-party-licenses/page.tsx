@@ -158,7 +158,7 @@ export default function ThirdPartyLicensesPage() {
     <div className="min-h-screen flex flex-col bg-[#F8FAFC] text-slate-900 font-sans selection:bg-slate-900 selection:text-white">
       <main className="flex-1 w-full">
         {/* HERO SECTION WITH CLOUD BACKDROP */}
-        <div className="relative bg-sky-cloud-hero border-b border-zinc-200/60 overflow-hidden">
+        <div className="relative bg-sky-cloud-hero border-b border-zinc-200/60">
           <Navbar />
 
           <section className="pt-8 pb-12 px-4 sm:px-6 lg:px-8 text-center">

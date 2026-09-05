@@ -985,7 +985,7 @@ export function WhatIsMyIpView() {
         <main className="flex-1 w-full">
           {/* HERO SECTION WITH CLOUD BACKDROP */}
           <div
-            className={`relative bg-sky-cloud-hero border-b overflow-hidden min-h-screen flex flex-col justify-between transition-colors duration-300 ${
+            className={`relative bg-sky-cloud-hero border-b min-h-screen flex flex-col justify-between transition-colors duration-300 ${
               isDark ? 'border-white/10' : 'border-zinc-200/60'
             }`}
           >
